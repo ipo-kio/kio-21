@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Kio Problem</title>
+    <script src="../kio_test_box/jquery-1.7.2.min.js"></script>
+    <script src="../kio_test_box/easeljs-1.0.0.min.js"></script>
+    <script src="../kio_test_box/preloadjs-1.0.0.min.js"></script>
+    <script src="../kio_test_box/dces2contest.js"></script>
+    <script src="../kio_test_box/kio_api.js"></script>
+    <link rel="stylesheet" type="text/css" href="../kio_test_box/kio_api.css">
+
+    <!--<link rel="stylesheet" type="text/css" href="rangeslider.css">-->
+    <script src="[TASKNAME].js"></script>
+    <link rel="stylesheet" type="text/css" href="[TASKNAME].css">
+    <script> <!--TODO convert other (not only level) url arguments to the task settings-->
+        var query = location.search.substr(1).trim().split('&');
+        var level = 0;
+        // console.log(query);
+        for (var i = 0; i < query.length; i++) {
+            if (query[i] === "level=1")
+                level = 1;
+            else if (query[i] === "level=2")
+                level = 2;
+        }
+
+        console.log('level', level);
+
+        $(function () {
+            kio_api.initializeKioProblem(
+                [TASKNAME].[TASKNAME|CAPITALIZE],
+                document.getElementById('problem'),
+                {level: level}
+            );
+        });
+    </script>
+</head>
+<body>
+<div id="stud-unique-id" style="display: none">kio-task-[TASKNAME]</div> <!--TODO get this somehow from task id -->
+<script>$('#stud-unique-id').text('kio-task-[TASKNAME]-' + level);</script>
+<div id="problem">
+</div>
+</body>
+</html>
