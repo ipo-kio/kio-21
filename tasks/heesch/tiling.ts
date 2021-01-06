@@ -2,6 +2,17 @@ export const EPS = 1e-10;
 
 export type int = number;
 
+function gcd(a: int, b: int): int {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (b != 0) {
+        let t = a;
+        a = a % b;
+        b = t;
+    }
+    return a;
+}
+
 export class Point {
     readonly x: number;
     readonly y: number;
@@ -23,6 +34,14 @@ export class Point {
         return new Point(this.x - that.x, this.y - that.y);
     }
 
+    mul(k: number): Point {
+        return new Point(this.x * k, this.y * k);
+    }
+
+    div(k: number): Point {
+        return new Point(this.x / k, this.y / k)
+    }
+
     equals(that: Point) {
         return Math.abs(this.x - that.x) + Math.abs(this.y - that.y) < EPS;
     }
@@ -34,10 +53,26 @@ export class Point {
     vec(that:Point) {
         return this.x * that.y - this.y * that.x;
     }
+
+    get length2():number {
+        return this.x * this.x + this.y * this.y;
+    }
+
+    get length(): number {
+        return Math.sqrt(this.length2);
+    }
+
+    get angle(): number {
+        return Math.atan2(this.y, this.x);
+    }
 }
 
 export class Piece {
     readonly points: Point[] = [];
+
+    constructor(points: Point[]) {
+        this.points = points;
+    }
 
     get size(): int {
         return this.points.length;
@@ -53,6 +88,35 @@ export class Piece {
 
     part(ind1: int, ind2: int, forward: boolean = true): PolyLine {
         return new PiecePart(this, ind1, ind2, forward);
+    }
+
+    fulfill(): Piece {
+        let new_points: Point[] = [];
+
+        function update(p0: Point, p1: Point): void {
+            if (p0.equals(p1))
+                return;
+
+            let dx = p1.x - p0.x;
+            let dy = p1.y - p0.y;
+
+            let d = gcd(dx, dy);
+
+            let lx = dx / d;
+            let ly = dy / d;
+
+            for (let i = 1; i <= d; i++)
+                new_points.push(new Point(p0.x + i * lx, p0.y + i * ly));
+        }
+
+        for (let i = 1; i < this.size; i++) {
+            let p0 = this.point(i - 1);
+            let p1 = this.point(i);
+            update(p0, p1);
+        }
+        update(this.point(this.size - 1), this.point(0));
+
+        return new Piece(new_points);
     }
 }
 
@@ -149,6 +213,42 @@ export class PolyLineUtils {
     }
 
     static isG(p1: PolyLine, p2: PolyLine): boolean {
+        let n = p1.size;
+        if (n != p2.size)
+            return false;
 
+        let s1 = p1.point(0); //start 1
+        let s2 = p2.point(0); //start 2
+        let e1 = p1.point(n - 1); //end 1
+        let e2 = p2.point(n - 1); //end 2
+
+        let v1 = e1.sub(s1);
+        let v2 = e2.sub(e1);
+
+        //bisector v1 and v2 is a reflexion line, angle = a
+        let aMul2 = v1.angle + v2.angle;
+        // transform matrix:
+        // p q
+        // q -p
+        // p = cos(2a)
+        // q = sin(2a)
+        let p = Math.cos(aMul2);
+        let q = Math.sin(aMul2);
+    }
+}
+
+export class Transform {
+    private a: number;
+    private b: number;
+    private c: number;
+    private d: number;
+    private e: number;
+    private f: number;
+
+    apply(p: Point): Point {
+        return new Point(
+            this.a * p.x + this.b * p.y + this.c,
+            this.d * p.x + this.e * p.y + this.f
+        );
     }
 }
