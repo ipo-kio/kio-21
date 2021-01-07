@@ -80,16 +80,16 @@ interface Solution {
 
 function test() {
     let p = new Piece([
-        new Point(0, 0),
-        new Point(0, 2),
-        new Point(1, 3),
-        new Point(0, 4),
-        new Point(2, 4),
-        new Point(3, 5),
-        new Point(4, 4),
-        new Point(3, 3),
-        new Point(4, 2),
-        new Point(4, 0)
+        new Point(0, -0),
+        new Point(0, -2),
+        new Point(1, -3),
+        new Point(0, -4),
+        new Point(2, -4),
+        new Point(3, -5),
+        new Point(4, -4),
+        new Point(3, -3),
+        new Point(4, -2),
+        new Point(4, -0)
     ]);
 
     let q = p.fulfill();

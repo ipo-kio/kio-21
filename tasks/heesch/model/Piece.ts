@@ -1,6 +1,7 @@
 import {PolyLine} from "./PolyLine";
 import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
+import {ALL_PIECE_TYPES, PieceType} from "./PieceType";
 
 export const EPS = 1e-10;
 
@@ -75,10 +76,25 @@ export class Piece {
         return this.points.join("~");
     }
 
-    searchForType() {
-        // "CTG4"
-        function search(type: string, ) {
+    searchForType(callback: (type: PieceType, indexes: int[]) => void) {
+        function search(type: PieceType, point_indexes: int[], ind: int) {
+            //next polyline: type[ind]
+            //next index to be put into point_indexes[ind + 1]
+            let k = type.size;
 
+            let [letter, index] = type.type[ind];
+
+            let need_search =
+        }
+
+        let n = this.size;
+
+        for (let type of ALL_PIECE_TYPES) {
+            let point_indexes: int[] = new Array<int>(type.size);
+            for (let i = 0; i < n; i++) {
+                point_indexes[0] = i;
+                search(type, point_indexes, 0);
+            }
         }
     }
 }

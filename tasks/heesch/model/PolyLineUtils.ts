@@ -54,8 +54,8 @@ export class PolyLineUtils {
             let vec = v1.vec(v2);
             let dot = v1.dot(v2);
 
-            //must hold: dot == 0, v1.len = v2.len, vec > 0
-            if (Math.abs(dot) >= EPS || Math.abs(v1.length2 - v2.length2) >= EPS || vec < 0)
+            //must hold: dot == 0, v1.len = v2.len, vec < 0
+            if (Math.abs(dot) >= EPS || Math.abs(v1.length2 - v2.length2) >= EPS || vec > 0)
                 return false;
         }
 
