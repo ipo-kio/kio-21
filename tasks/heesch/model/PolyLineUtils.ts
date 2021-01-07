@@ -15,7 +15,8 @@ export class PolyLineUtils {
             let pi = p.point(i);
             let pj = p.point(n - i - 1);
 
-            if (!c.equals(pi.middle(pj)))
+            let cc = pi.middle(pj);
+            if (!c.equals(cc))
                 return false;
         }
         return true;
@@ -36,6 +37,7 @@ export class PolyLineUtils {
         return true;
     }
 
+    // p1 rotated 90 in positive direction around p1 beginning equals p2
     static isC4(p1: PolyLine, p2: PolyLine): boolean {
         //p1 rotated around p1[0] goes to p2
         let o = p1.point(0);
@@ -52,7 +54,8 @@ export class PolyLineUtils {
             let vec = v1.vec(v2);
             let dot = v1.dot(v2);
 
-            if (Math.abs(dot) >= EPS || vec > 0)
+            //must hold: dot == 0, v1.len = v2.len, vec > 0
+            if (Math.abs(dot) >= EPS || Math.abs(v1.length2 - v2.length2) >= EPS || vec < 0)
                 return false;
         }
 

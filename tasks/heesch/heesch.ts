@@ -1,9 +1,9 @@
 import './heesch.scss'; //TODO заменить имя файла со стилями
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import Stage = createjs.Stage;
-import {Piece} from "./Piece";
-import {Point} from "./Point";
-import {PolyLineUtils} from "./PolyLineUtils";
+import {Piece} from "./model/Piece";
+import {Point} from "./model/Point";
+import {PolyLineUtils} from "./model/PolyLineUtils";
 
 export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -87,7 +87,7 @@ function test() {
         new Point(2, 4),
         new Point(3, 5),
         new Point(4, 4),
-        new Point(5, 3),
+        new Point(3, 3),
         new Point(4, 2),
         new Point(4, 0)
     ]);
@@ -99,12 +99,25 @@ function test() {
     let line1 = q.part(15, 3);
     let line2 = q.part(3, 7);
     let line3 = q.part(7, 11);
+    let line4 = q.part(11, 15);
+    let line5 = q.part(13, 1);
 
     console.log("line1", PolyLineUtils.toString(line1));
     console.log("line2", PolyLineUtils.toString(line2));
     console.log("line2revert", PolyLineUtils.toString(line2.revert()));
     console.log("line3", PolyLineUtils.toString(line3));
+    console.log("line4", PolyLineUtils.toString(line4));
+    console.log("line5", PolyLineUtils.toString(line5));
 
     console.log(PolyLineUtils.isG(line1, line2), line1, line2);
     console.log(PolyLineUtils.isC4(line2.revert(), line3));
+    console.log(PolyLineUtils.isC4(line3, line2.revert()));
+    console.log("---------- test C ---------");
+    console.log(PolyLineUtils.isC(line4));
+    console.log(PolyLineUtils.isC(line5));
+    console.log(PolyLineUtils.isC(line4.revert()));
+    console.log(PolyLineUtils.isC(line5.revert()));
+    console.log(PolyLineUtils.isC(line1));
+    console.log(PolyLineUtils.isC(line2));
+    console.log(PolyLineUtils.isC(line3));
 }

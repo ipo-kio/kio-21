@@ -74,4 +74,11 @@ export class Piece {
     toString() {
         return this.points.join("~");
     }
+
+    searchForType() {
+        // "CTG4"
+        function search(type: string, ) {
+
+        }
+    }
 }
