@@ -1,6 +1,9 @@
-import './heat.scss'; //TODO заменить имя файла со стилями
+import './heesch.scss'; //TODO заменить имя файла со стилями
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import Stage = createjs.Stage;
+import {Piece} from "./Piece";
+import {Point} from "./Point";
+import {PolyLineUtils} from "./PolyLineUtils";
 
 export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -46,19 +49,19 @@ export class Heesch { //TODO название класса должно совп
         createjs.Ticker.addEventListener('tick', stage);
 
         domNode.appendChild(this.canvas);
-        domNode.classList.add('heat-task-container');
+        domNode.classList.add('heesch-task-container');
+
+        test();
     }
 
-    static preloadManifest(): KioResourceDescription[] {
-        return [
-            // {id: "", src: "heesch-resources/air.jpg"},
-        ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
+    static preloadManifest(): void { //KioResourceDescription[] {
+        // return [
+        //     {id: "", src: "heesch-resources/air.jpg"},
+        // ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
     }
 
-    parameters() {
-        return [
-
-        ];
+    parameters(): KioResourceDescription[] {
+        return [];
     }
 
     loadSolution(solution: Solution) {
@@ -73,4 +76,35 @@ export class Heesch { //TODO название класса должно совп
 }
 
 interface Solution {
+}
+
+function test() {
+    let p = new Piece([
+        new Point(0, 0),
+        new Point(0, 2),
+        new Point(1, 3),
+        new Point(0, 4),
+        new Point(2, 4),
+        new Point(3, 5),
+        new Point(4, 4),
+        new Point(5, 3),
+        new Point(4, 2),
+        new Point(4, 0)
+    ]);
+
+    let q = p.fulfill();
+    console.log("p", p.toString());
+    console.log("q", q.toString());
+
+    let line1 = q.part(15, 3);
+    let line2 = q.part(3, 7);
+    let line3 = q.part(7, 11);
+
+    console.log("line1", PolyLineUtils.toString(line1));
+    console.log("line2", PolyLineUtils.toString(line2));
+    console.log("line2revert", PolyLineUtils.toString(line2.revert()));
+    console.log("line3", PolyLineUtils.toString(line3));
+
+    console.log(PolyLineUtils.isG(line1, line2), line1, line2);
+    console.log(PolyLineUtils.isC4(line2.revert(), line3));
 }

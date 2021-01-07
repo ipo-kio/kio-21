@@ -27,8 +27,7 @@
   "scripts": {
     "compile": "webpack",
     "watch": "webpack --watch",
-    "compile-prod": "webpack --env mode=production",
-    "compile-help": "webpack --help"
+    "compile-prod": "webpack --env mode=production"
   },
   "author": "Ilya Posov",
   "license": "ISC"
