@@ -136,7 +136,7 @@ export class Piece {
                                     continue;
                                 break;
                             case 'C4':
-                                if (!PolyLineUtils.isC4(previous_polyline, current_polyline))
+                                if (!PolyLineUtils.isC4(previous_polyline.revert(), current_polyline))
                                     continue;
                                 break;
                         }
@@ -157,9 +157,6 @@ export class Piece {
             }
         }
 
-        /*let type = TYPE_TCCTGG;
-        let point_indexes: int[] = new Array<int>(type.size);
-        point_indexes[0] = 0;
-        search(type, point_indexes, 0);*/
+        //TODO TG1G1TG2G2 will always be found two times
     }
 }

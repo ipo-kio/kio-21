@@ -141,4 +141,14 @@ function test() {
     tcctgg = tcctgg.fulfill();
     console.log(tcctgg.toString());
     tcctgg.searchForType((pt, ind) => console.log("FOUND!!!", pt.name, ind.join(",")));
+    let square = new Piece([
+        new Point(0, 0),
+        new Point(3, 0),
+        new Point(3, 3),
+        new Point(0, 3)
+    ]);
+
+    square = square.fulfill();
+    console.log(square.toString());
+    square.searchForType((pt, ind) => console.log("FOUND!!!", pt.name, ind.join(",")));
 }
