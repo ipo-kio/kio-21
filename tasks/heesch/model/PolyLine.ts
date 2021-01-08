@@ -1,5 +1,5 @@
-import {int} from "./Piece";
-import {Point} from "./Point";
+import {int} from "Piece";
+import {Point} from "Point";
 
 export interface PolyLine {
     size: int;

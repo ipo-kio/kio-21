@@ -1,7 +1,8 @@
 import {PolyLine} from "./PolyLine";
 import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
-import {ALL_PIECE_TYPES, PieceType} from "./PieceType";
+import {ALL_PIECE_TYPES, PieceType, TYPE_TCCTGG} from "./PieceType";
+import {PolyLineUtils} from "./PolyLineUtils";
 
 export const EPS = 1e-10;
 
@@ -56,7 +57,7 @@ export class Piece {
             let lx = dx / d;
             let ly = dy / d;
 
-            for (let i = 1; i <= d; i++) {
+            for (let i = 0; i < d; i++) {
                 let new_point = new Point(p0.x + i * lx, p0.y + i * ly);
                 new_points.push(new_point);
             }
@@ -77,17 +78,76 @@ export class Piece {
     }
 
     searchForType(callback: (type: PieceType, indexes: int[]) => void) {
+        let piece = this;
+        let n = this.size;
+
         function search(type: PieceType, point_indexes: int[], ind: int) {
             //next polyline: type[ind]
             //next index to be put into point_indexes[ind + 1]
             let k = type.size;
 
-            let [letter, index] = type.type[ind];
+            if (ind == k) {
+                callback(type, point_indexes);
+                return;
+            }
 
-            let need_search =
+            let [letter, corresponding_index] = type.type[ind];
+
+            let ind_min;
+            let ind_max;
+            let circle_index = point_indexes[0] + n;
+            if (letter == '.' || letter == 'C') {
+                ind_min = point_indexes[ind];
+                ind_max = circle_index;
+            } else {
+                let len = point_indexes[corresponding_index + 1] - point_indexes[corresponding_index];
+                ind_min = point_indexes[ind] + len;
+                ind_max = ind_min;
+            }
+
+            // maximal index is always the circle index
+            ind_max = Math.min(circle_index, ind_max);
+
+            //at last step we should go exactly to the index point_indexes[0] + n
+            if (ind == k - 1) {
+                ind_min = Math.max(circle_index, ind_min);
+                //ind_max = Math.min(circle_index, ind_max);
+            }
+
+            for (let i = ind_min; i <= ind_max; i++) {
+
+                if (letter != '.') {
+                    let current_polyline = piece.part(point_indexes[ind], i);
+                    if (letter == 'C') {
+                        if (!PolyLineUtils.isC(current_polyline))
+                            continue;
+                    } else {
+                        let previous_polyline = piece.part(
+                            point_indexes[corresponding_index],
+                            point_indexes[corresponding_index + 1]
+                        );
+                        switch (letter) {
+                            case 'G':
+                                if (!PolyLineUtils.isG(previous_polyline, current_polyline))
+                                    continue;
+                                break;
+                            case 'T':
+                                if (!PolyLineUtils.isT(previous_polyline.revert(), current_polyline))
+                                    continue;
+                                break;
+                            case 'C4':
+                                if (!PolyLineUtils.isC4(previous_polyline, current_polyline))
+                                    continue;
+                                break;
+                        }
+                    }
+                }
+
+                if (ind < k - 1)
+                    point_indexes[ind + 1] = i;
+                search(type, point_indexes, ind + 1);
+            }
         }
-
-        let n = this.size;
 
         for (let type of ALL_PIECE_TYPES) {
             let point_indexes: int[] = new Array<int>(type.size);
@@ -96,5 +156,10 @@ export class Piece {
                 search(type, point_indexes, 0);
             }
         }
+
+        /*let type = TYPE_TCCTGG;
+        let point_indexes: int[] = new Array<int>(type.size);
+        point_indexes[0] = 0;
+        search(type, point_indexes, 0);*/
     }
 }

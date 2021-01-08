@@ -109,7 +109,7 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
         ['C'],
         ['.'],
         ['G', 1],
-        ['.', 3]
+        ['G', 3]
     ]
 );
 

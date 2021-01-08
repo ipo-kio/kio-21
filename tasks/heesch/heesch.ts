@@ -120,4 +120,25 @@ function test() {
     console.log(PolyLineUtils.isC(line1));
     console.log(PolyLineUtils.isC(line2));
     console.log(PolyLineUtils.isC(line3));
+
+    console.log("-----------------------");
+
+    let tcctgg = new Piece([
+        new Point(4, 3),
+        new Point(1, 4),
+        new Point(0, 2),
+        new Point(-2, 1),
+        new Point(-2, -1),
+        new Point(0, -2),
+        new Point(0, -4),
+        new Point(1, -2),
+        new Point(4, -3),
+        new Point(5, 0),
+        new Point(6, 0),
+        new Point(5, 3),
+    ]);
+
+    tcctgg = tcctgg.fulfill();
+    console.log(tcctgg.toString());
+    tcctgg.searchForType((pt, ind) => console.log("FOUND!!!", pt.name, ind.join(",")));
 }

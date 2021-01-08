@@ -1,7 +1,6 @@
 import {PolyLine} from "./PolyLine";
 import {Point} from "./Point";
 import {int, Piece} from "./Piece";
-import {PolyLineUtils} from "./PolyLineUtils";
 
 export class PiecePart implements PolyLine {
     readonly size: int;
