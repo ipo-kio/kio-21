@@ -43,11 +43,11 @@ export class Heesch { //TODO название класса должно совп
         this.canvas.width = 900;
         this.canvas.height = 610;
 
-        let stage: Stage = new Stage(this.canvas);
+        // let stage: Stage = new Stage(this.canvas);
 
-        stage.enableMouseOver();
+        // stage.enableMouseOver();
 
-        createjs.Ticker.addEventListener('tick', stage);
+        // createjs.Ticker.addEventListener('tick', stage);
 
         domNode.appendChild(this.canvas);
         domNode.classList.add('heesch-task-container');
@@ -140,7 +140,7 @@ function test(ctx: CanvasRenderingContext2D) {
     ]);
 
     let color_index = 0;
-    let colors = ['red', 'black', 'blue']
+    let colors = ['!red', 'black', 'blue']
 
     tcctgg = tcctgg.fulfill();
     console.log(tcctgg.toString());
@@ -148,8 +148,12 @@ function test(ctx: CanvasRenderingContext2D) {
         console.log("FOUND!!!", pt.name, ind.join(","));
         let tesselation = pt.tessellate(tcctgg, ind);
         let tesselationView = new TesselationView(tesselation, 300, 400, 20);
-        tesselationView.draw(ctx, colors[color_index++]);
+        let color = colors[color_index++];
+        if (color[0] != '!')
+            tesselationView.draw(ctx, color);
     });
+
+    /*
     let square = new Piece([
         new Point(0, 0),
         new Point(3, 0),
@@ -160,4 +164,5 @@ function test(ctx: CanvasRenderingContext2D) {
     square = square.fulfill();
     console.log(square.toString());
     square.searchForType((pt, ind) => console.log("FOUND!!!", pt.name, ind.join(",")));
+    */
 }
