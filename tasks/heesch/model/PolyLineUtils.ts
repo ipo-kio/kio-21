@@ -1,5 +1,5 @@
 import {EPS} from "./Piece";
-import {Transform} from "./Transform";
+import {G, Transform} from "./Transform";
 import {PolyLine} from "./PolyLine";
 
 export class PolyLineUtils {
@@ -68,25 +68,11 @@ export class PolyLineUtils {
             return false;
 
         let s1 = p1.point(0); //start 1
-        let s2 = p2.point(0); //start 2
         let e1 = p1.point(n - 1); //end 1
+        let s2 = p2.point(0); //start 2
         let e2 = p2.point(n - 1); //end 2
 
-        let v1 = e1.sub(s1);
-        let v2 = e2.sub(e1);
-
-        //bisector v1 and v2 is a reflexion line, angle = a
-        let aMul2 = v1.angle + v2.angle;
-        // transform matrix:
-        // p q
-        // q -p
-        // p = cos(2a)
-        // q = sin(2a)
-        let p = Math.cos(aMul2);
-        let q = Math.sin(aMul2);
-        let reflect = new Transform(p, q, 0, q, -p, 0);
-        let t = s2.sub(reflect.apply(s1))
-        let g = new Transform(p, q, t.x, q, -p, t.y);
+        let g = G(s1, e1, s2, e2);
 
         for (let i = 0; i < n; i++) {
             let point1 = p1.point(i);
