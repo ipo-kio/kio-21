@@ -4,6 +4,7 @@ import Stage = createjs.Stage;
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {PolyLineUtils} from "./model/PolyLineUtils";
+import {TesselationView} from "./view/TesselationView";
 
 export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -51,7 +52,7 @@ export class Heesch { //TODO название класса должно совп
         domNode.appendChild(this.canvas);
         domNode.classList.add('heesch-task-container');
 
-        test();
+        test(this.canvas.getContext('2d'));
     }
 
     static preloadManifest(): void { //KioResourceDescription[] {
@@ -78,7 +79,7 @@ export class Heesch { //TODO название класса должно совп
 interface Solution {
 }
 
-function test() {
+function test(ctx: CanvasRenderingContext2D) {
     let p = new Piece([
         new Point(0, -0),
         new Point(0, -2),
@@ -138,9 +139,17 @@ function test() {
         new Point(5, 3),
     ]);
 
+    let color_index = 0;
+    let colors = ['red', 'black', 'blue']
+
     tcctgg = tcctgg.fulfill();
     console.log(tcctgg.toString());
-    tcctgg.searchForType((pt, ind) => console.log("FOUND!!!", pt.name, ind.join(",")));
+    tcctgg.searchForType((pt, ind) => {
+        console.log("FOUND!!!", pt.name, ind.join(","));
+        let tesselation = pt.tessellate(tcctgg, ind);
+        let tesselationView = new TesselationView(tesselation, 300, 400, 20);
+        tesselationView.draw(ctx, colors[color_index++]);
+    });
     let square = new Piece([
         new Point(0, 0),
         new Point(3, 0),
