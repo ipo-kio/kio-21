@@ -8,6 +8,8 @@ export const EPS = 1e-10;
 
 export type int = number;
 
+const DEFAULT_ORIENTATION = new Point(1, 0);
+
 function gcd(a: int, b: int): int {
     if (a < 0) a = -a;
     if (b < 0) b = -b;
@@ -21,9 +23,11 @@ function gcd(a: int, b: int): int {
 
 export class Piece {
     readonly points: Point[] = [];
+    readonly orientation: Point;
 
-    constructor(points: Point[]) {
+    constructor(points: Point[], orientation: Point = DEFAULT_ORIENTATION) {
         this.points = points;
+        this.orientation = orientation;
     }
 
     get size(): int {
@@ -75,6 +79,17 @@ export class Piece {
 
     toString() {
         return this.points.join("~");
+    }
+
+    boundingBox(): {xmin: number, xmax: number, ymin: number, ymax: number} {
+        let xs = this.points.map(p => p.x);
+        let ys = this.points.map(p => p.y);
+        return {
+            xmin: Math.min(...xs),
+            xmax: Math.max(...xs),
+            ymin: Math.min(...ys),
+            ymax: Math.max(...ys)
+        };
     }
 
     searchForType(callback: (type: PieceType, indexes: int[]) => void) {

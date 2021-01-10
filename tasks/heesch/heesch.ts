@@ -140,14 +140,14 @@ function test(ctx: CanvasRenderingContext2D) {
     ]);
 
     let color_index = 0;
-    let colors = ['!red', 'black', 'blue']
+    let colors = ['!red', '!black', 'blue']
 
     tcctgg = tcctgg.fulfill();
     console.log(tcctgg.toString());
     tcctgg.searchForType((pt, ind) => {
         console.log("FOUND!!!", pt.name, ind.join(","));
         let tesselation = pt.tessellate(tcctgg, ind);
-        let tesselationView = new TesselationView(tesselation, 300, 400, 20);
+        let tesselationView = new TesselationView(tesselation, 300, 400, 10);
         let color = colors[color_index++];
         if (color[0] != '!')
             tesselationView.draw(ctx, color);

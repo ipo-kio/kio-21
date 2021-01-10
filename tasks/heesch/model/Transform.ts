@@ -1,6 +1,8 @@
 import {Point} from "./Point";
 import {int, Piece} from "./Piece";
 
+const ZERO = new Point(0, 0);
+
 export class Transform {
     private a: number;
     private b: number;
@@ -34,7 +36,11 @@ export class Transform {
         let new_points = new Array<Point>(p.size);
         for (let i = 0; i < p.size; i++)
             new_points[i] = this.apply(p.points[i], round);
-        return new Piece(new_points);
+
+        let p1 = this.apply(ZERO, round);
+        let p2 = this.apply(p.orientation, round);
+
+        return new Piece(new_points, p2.sub(p1));
     }
 }
 
