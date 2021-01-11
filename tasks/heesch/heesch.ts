@@ -1,16 +1,17 @@
 import './heesch.scss'; //TODO заменить имя файла со стилями
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
-import Stage = createjs.Stage;
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {PolyLineUtils} from "./model/PolyLineUtils";
 import {TesselationView} from "./view/TesselationView";
+import {PieceEditor} from "./view/PieceEditor";
 
 export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
     private kioapi: KioApi;
 
-    private canvas: HTMLCanvasElement;
+    private editor_canvas: HTMLCanvasElement;
+    private tesselation_canvas: HTMLCanvasElement;
 
     /**
      *
@@ -39,20 +40,42 @@ export class Heesch { //TODO название класса должно совп
     initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
         this.kioapi = kioapi;
 
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = 900;
-        this.canvas.height = 610;
+        this.editor_canvas = document.createElement('canvas');
+        this.tesselation_canvas = document.createElement('canvas');
 
-        // let stage: Stage = new Stage(this.canvas);
+        this.tesselation_canvas.width = 600;
+        this.tesselation_canvas.height = 600;
 
-        // stage.enableMouseOver();
+        let tesselation_ctx = this.tesselation_canvas.getContext('2d');
 
-        // createjs.Ticker.addEventListener('tick', stage);
-
-        domNode.appendChild(this.canvas);
         domNode.classList.add('heesch-task-container');
+        domNode.appendChild(this.editor_canvas);
+        domNode.appendChild(this.tesselation_canvas);
 
-        test(this.canvas.getContext('2d'));
+        let tcctgg = new Piece([
+            new Point(4, 3),
+            new Point(1, 4),
+            new Point(0, 2),
+            new Point(-2, 1),
+            new Point(-2, -1),
+            new Point(0, -2),
+            new Point(0, -4),
+            new Point(1, -2),
+            new Point(4, -3),
+            new Point(5, 0),
+            new Point(6, 0),
+            new Point(5, 3),
+        ]);
+
+        tcctgg.searchForType((pt, ind) => {
+            console.log("FOUND!!!", pt.name, ind.join(","));
+            let tesselation = pt.tessellate(tcctgg, ind);
+            let tesselationView = new TesselationView(tesselation, 300, 400, 10);
+            tesselationView.draw(tesselation_ctx, 'black');
+        });
+
+        let editor = new PieceEditor(this.editor_canvas);
+        editor.piece = tcctgg;
     }
 
     static preloadManifest(): void { //KioResourceDescription[] {
