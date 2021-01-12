@@ -13,9 +13,13 @@ const VERTEX_COLOR = 'red';
 const VERTEX_RADIUS = 8;
 const VERTEX_BORDER_WIDTH = 0.5;
 
-const BG_COLOR = '#5aff00';
-
 const HOVER_DIST = 10;
+
+const HIGHLIGHTED_VERTEX_COLOR = '#e7e302';
+const EDGE_HIGHLIGHT_COLOR = HIGHLIGHTED_VERTEX_COLOR; //'rgb(231,227,2, 0.4)';
+const EDGE_HIGHLIGHT_WIDTH = EDGE_LINE_WIDTH; // 2 * HOVER_DIST
+
+const BG_COLOR = '#5aff00';
 
 type Segment = [p1: Point, p2: Point];
 
@@ -90,14 +94,15 @@ export class PieceEditor {
     ctx: CanvasRenderingContext2D;
     points: Point[];
 
-
-
     X0: number;
     Y0: number;
 
     movingPoint: number = -1; // index of moving point or -1 if not
     movingClick: PixelPoint;
     movingPointClickPosition: PixelPoint;
+
+    highlightedPoint: number = -1; // highlighted point
+    highlightedEdge: number = -1; // highlighted point
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -124,10 +129,13 @@ export class PieceEditor {
         });
 
         canvas.addEventListener('mousemove', e => {
+            let mousePoint = this.getCursorPosition(e);
+
+            this.highlight(mousePoint);
+
             if (this.movingPoint == -1)
                 return;
 
-            let mousePoint = this.getCursorPosition(e);
             // mousePoint - movingClick + movingPointClickPosition
             let x = mousePoint[0] - this.movingClick[0] + this.movingPointClickPosition[0];
             let y = mousePoint[1] - this.movingClick[1] + this.movingPointClickPosition[1];
@@ -246,6 +254,19 @@ export class PieceEditor {
         c.fill();
         c.stroke();
 
+        if (this.highlightedEdge >= 0) {
+            c.beginPath();
+            c.strokeStyle = EDGE_HIGHLIGHT_COLOR;
+            c.lineWidth = EDGE_HIGHLIGHT_WIDTH;
+            let j = this.highlightedEdge - 1;
+            if (j < 0) j = this.points.length - 1;
+            let [x, y] = this.point2pixel(this.points[this.highlightedEdge]);
+            c.moveTo(x, y);
+            let [xx, yy] = this.point2pixel(this.points[j]);
+            c.lineTo(xx, yy);
+            c.stroke();
+        }
+
         c.restore();
     }
 
@@ -255,10 +276,11 @@ export class PieceEditor {
 
         c.strokeStyle = VERTEX_BORDER_COLOR;
         c.lineWidth = VERTEX_BORDER_WIDTH;
-        c.fillStyle = VERTEX_COLOR;
 
-        for (let p of this.points) {
+        for (let i = 0; i < this.points.length; i++){
+            let p = this.points[i];
             let [x, y] = this.point2pixel(p);
+            c.fillStyle = i == this.highlightedPoint ? HIGHLIGHTED_VERTEX_COLOR : VERTEX_COLOR;
             c.beginPath();
             c.arc(x, y, VERTEX_RADIUS, 0, Math.PI * 2);
             c.fill();
@@ -303,6 +325,65 @@ export class PieceEditor {
     set piece(p: Piece) {
         let n = p.size;
         this.points = p.points.slice();
+        this.redraw();
+    }
+
+    private highlight(mousePoint: PixelPoint) {
+        let ind = this.movingPoint;
+        if (ind == -1)
+            ind = this.findPoint(mousePoint);
+
+        if (ind >= 0) {
+            this.highlightedPoint = ind;
+            this.highlightedEdge = -1;
+            this.redraw();
+            return;
+        } else
+            this.highlightedPoint = -1;
+
+        // find a segment
+        this.highlightedEdge = -1;
+        for (let i = 0; i < this.points.length; i++) {
+            let p1 = i == 0 ? this.points[this.points.length - 1] : this.points[i - 1];
+            let p2 = this.points[i];
+            let [x, y] = mousePoint;
+            let [x1, y1] = this.point2pixel(p1);
+            let [x2, y2] = this.point2pixel(p2);
+
+            if (x1 == x2 && y1 == y2)
+                continue;
+
+            //test [x, y] is near the segment [x1, y1]-[x2, y2]
+            //   x - x1     y - y1
+            //  -------  = -------
+            //  x2 - x1    y2 - y1
+            //
+            // x(y2 - y1) + y(x1 - x2) + (x2 * y1 - x1 * y2) = 0
+            // |x(y2 - y1) + y(x1 - x2) + (x2 * y1 - x1 * y2)| < HOVER_DIST * sqrt(A^2 + B^2)
+            let a = y2 - y1;
+            let b = x1 - x2;
+            let c = x2 * y1 - x1 * y2;
+            let v = a * x + b * y + c;
+            // v < HOVER_DIST * sqrt(a^2 + b^2)
+            if (v * v > HOVER_DIST * HOVER_DIST * (a * a + b * b))
+                continue;
+
+            //test that the point is near the segment, not just the line
+            //perpendicular line through x1, x2
+            let ap = x1 - x2;
+            let bp = y1 - y2;
+            let c1 = -ap * x1 - bp * y1;
+            let c2 = -ap * x2 - bp * y2;
+
+            if ((x1 * ap + y1 * bp + c2) * (x * ap + y * bp + c2) <= 0)
+                continue;
+            if ((x2 * ap + y2 * bp + c1) * (x * ap + y * bp + c1) <= 0)
+                continue;
+
+            this.highlightedEdge = i;
+            break;
+        }
+
         this.redraw();
     }
 }
