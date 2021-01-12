@@ -15,6 +15,8 @@ const VERTEX_BORDER_WIDTH = 0.5;
 
 const BG_COLOR = '#5aff00';
 
+const HOVER_DIST = 10;
+
 type Segment = [p1: Point, p2: Point];
 
 type PixelPoint = [x: number, y: number];
@@ -37,31 +39,31 @@ function test_segments_intersect(s1: Segment, s2: Segment): boolean {
     let val10 = sub_to_line(line1, s2[0]);
     let val11 = sub_to_line(line1, s2[1]);
     let mul1 = val10 * val11;
-    if (mul1 > 0)
+    if (mul1 > EPS)
         return false;
     let line2 = line(s2);
     let val20 = sub_to_line(line2, s1[0]);
     let val21 = sub_to_line(line2, s1[1]);
     let mul2 = val20 * val21;
-    if (mul2 > 0)
+    if (mul2 > EPS)
         return false;
 
     // now mul1 <= 0 and mul2 <= 0
 
-    if (mul1 < 0 || mul2 < 0)
+    if (mul1 < -EPS || mul2 < -EPS)
         return true;
 
     // now mul1 == 0 and mul2 == 0
     let proj = [s1[0].x, s1[1].x, s2[0].x, s2[1].x];
-    if (Math.max(proj[0], proj[1]) < Math.min(proj[2], proj[3]))
+    if (Math.max(proj[0], proj[1]) + EPS < Math.min(proj[2], proj[3]))
         return false;
-    if (Math.min(proj[0], proj[1]) > Math.max(proj[2], proj[3]))
+    if (Math.min(proj[0], proj[1]) - EPS > Math.max(proj[2], proj[3]))
         return false;
 
     proj = [s1[0].y, s1[1].y, s2[0].y, s2[1].y];
-    if (Math.max(proj[0], proj[1]) < Math.min(proj[2], proj[3]))
+    if (Math.max(proj[0], proj[1]) + EPS < Math.min(proj[2], proj[3]))
         return false;
-    if (Math.min(proj[0], proj[1]) > Math.max(proj[2], proj[3]))
+    if (Math.min(proj[0], proj[1]) - EPS > Math.max(proj[2], proj[3]))
         return false;
 
     return true;
@@ -88,8 +90,14 @@ export class PieceEditor {
     ctx: CanvasRenderingContext2D;
     points: Point[];
 
+
+
     X0: number;
     Y0: number;
+
+    movingPoint: number = -1; // index of moving point or -1 if not
+    movingClick: PixelPoint;
+    movingPointClickPosition: PixelPoint;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -100,6 +108,61 @@ export class PieceEditor {
 
         this.X0 = WIDTH / 2;
         this.Y0 = HEIGHT / 2;
+
+        canvas.addEventListener('mousedown', e => {
+            let searchPoint = this.getCursorPosition(e);
+
+            let point_ind = this.findPoint(searchPoint);
+            if (point_ind == -1) {
+                this.movingPoint = -1;
+                return;
+            }
+
+            this.movingPoint = point_ind;
+            this.movingClick = searchPoint;
+            this.movingPointClickPosition = this.point2pixel(this.points[point_ind]);
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            if (this.movingPoint == -1)
+                return;
+
+            let mousePoint = this.getCursorPosition(e);
+            // mousePoint - movingClick + movingPointClickPosition
+            let x = mousePoint[0] - this.movingClick[0] + this.movingPointClickPosition[0];
+            let y = mousePoint[1] - this.movingClick[1] + this.movingPointClickPosition[1];
+
+            if (x < 0) x = 0;
+            if (x > this.canvas.width) x = this.canvas.width - 1;
+            if (y < 0) y = 0;
+            if (y > this.canvas.width) y = this.canvas.height - 1;
+
+            let thePoint = this.points[this.movingPoint];
+            this.pixel2point([x, y], thePoint);
+
+            this.redraw();
+        });
+
+        canvas.addEventListener('mouseup', e => {
+            if (this.movingPoint == -1)
+                return;
+
+            let p = this.points[this.movingPoint];
+            p.update(Math.round(p.x), Math.round(p.y));
+
+            this.movingPoint = -1;
+            this.redraw();
+        });
+    }
+
+    findPoint(searchPoint: PixelPoint) {
+        for (let i = 0; i < this.points.length; i++) {
+            let p = this.points[i];
+            let pp = this.point2pixel(p);
+            if (Math.abs(pp[0] - searchPoint[0]) + Math.abs(pp[1] - searchPoint[1]) < HOVER_DIST)
+                return i;
+        }
+        return -1;
     }
 
     redraw() {
@@ -131,7 +194,6 @@ export class PieceEditor {
         }
         for (let y = yMin; y <= yMax; y++) {
             let yy = this.Y0 - y * GRID_STEP;
-            console.log(y, yy);
             c.moveTo(0, yy + 0.5);
             c.lineTo(WIDTH, yy + 0.5);
         }
@@ -151,14 +213,27 @@ export class PieceEditor {
         c.beginPath()
         c.moveTo(xStart, yStart);
 
+        let xMin = 1e100;
+        let xMax = -1e100;
+        let yMin = 1e100;
+        let yMax = -1e100;
         for (let i = 1; i < this.points.length; i++) {
             let [x, y] = this.point2pixel(this.points[i]);
+            xMin = Math.min(xMin, x);
+            xMax = Math.max(xMax, x);
+            yMin = Math.min(yMin, y)
+            yMax = Math.max(yMin, y)
             c.lineTo(x, y);
         }
         c.closePath();
 
+        let grad = c.createLinearGradient(xMin, yMin, xMax, yMax);
+        grad.addColorStop(0, 'rgba(200, 200, 255, 0.4)'); // Make a constant
+        grad.addColorStop(1, 'rgba(0, 0, 255, 0.4)'); // Make a constant
+
+        c.lineJoin = "bevel";
         c.strokeStyle = EDGE_COLOR;
-        c.fillStyle = 'rgba(255, 255, 255, 0.5)'; //TODO make a constant
+        c.fillStyle = grad;
         c.lineWidth = EDGE_LINE_WIDTH;
         c.fill();
         c.stroke();
@@ -192,12 +267,18 @@ export class PieceEditor {
         return [x, y];
     }
 
-    pixel2point(p: PixelPoint): Point {
+    pixel2point(p: PixelPoint, changingPoint: Point = null): Point {
         let [x, y] = p;
-        return new Point(
-            (x - this.X0) / GRID_STEP,
-            -(y - this.Y0) / GRID_STEP
-        );
+
+        let xx = (x - this.X0) / GRID_STEP;
+        let yy = -(y - this.Y0) / GRID_STEP;
+
+        if (changingPoint == null)
+            return new Point(xx, yy);
+        else {
+            changingPoint.update(xx, yy);
+            return changingPoint;
+        }
     }
 
     point2pixel(p: Point): PixelPoint {
