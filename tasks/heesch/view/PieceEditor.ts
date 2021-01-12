@@ -139,6 +139,7 @@ export class PieceEditor {
 
             let thePoint = this.points[this.movingPoint];
             this.pixel2point([x, y], thePoint);
+            thePoint.update(Math.round(thePoint.x), Math.round(thePoint.y));
 
             this.redraw();
         });
@@ -149,6 +150,13 @@ export class PieceEditor {
 
             let p = this.points[this.movingPoint];
             p.update(Math.round(p.x), Math.round(p.y));
+
+            let prevInd = this.movingPoint == 0 ? this.points.length - 1 : this.movingPoint - 1;
+            let nextInd = this.movingPoint == this.points.length - 1 ? 0 : this.movingPoint + 1;
+
+            let isTheSameAsNeighbour = p.equals(this.points[prevInd]) || p.equals(this.points[nextInd]);
+            if (isTheSameAsNeighbour && this.points.length > 3)
+                this.points.splice(this.movingPoint, 1);
 
             this.movingPoint = -1;
             this.redraw();
