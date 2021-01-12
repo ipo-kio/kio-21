@@ -13,7 +13,7 @@ const VERTEX_COLOR = 'red';
 const VERTEX_RADIUS = 8;
 const VERTEX_BORDER_WIDTH = 0.5;
 
-const HOVER_DIST = 10;
+const HOVER_DIST = 2 * GRID_STEP / 3;
 
 const HIGHLIGHTED_VERTEX_COLOR = '#e7e302';
 const EDGE_HIGHLIGHT_COLOR = HIGHLIGHTED_VERTEX_COLOR; //'rgb(231,227,2, 0.4)';
@@ -118,14 +118,23 @@ export class PieceEditor {
             let searchPoint = this.getCursorPosition(e);
 
             let point_ind = this.findPoint(searchPoint);
-            if (point_ind == -1) {
-                this.movingPoint = -1;
+            if (point_ind != -1) {
+                this.movingPoint = point_ind;
+                this.movingClick = searchPoint;
+                this.movingPointClickPosition = this.point2pixel(this.points[point_ind]);
                 return;
             }
+            this.movingPoint = -1;
 
-            this.movingPoint = point_ind;
-            this.movingClick = searchPoint;
-            this.movingPointClickPosition = this.point2pixel(this.points[point_ind]);
+            let segment_ind = this.findEdge(searchPoint);
+            if (segment_ind != -1) {
+                let newPoint = this.pixel2point(searchPoint);
+                newPoint.update(Math.round(newPoint.x), Math.round(newPoint.y));
+                // let j = segment_ind - 2;
+                // if (j < 0) j += this.points.length;
+                this.points.splice(segment_ind, 0, newPoint);
+                this.redraw();
+            }
         });
 
         canvas.addEventListener('mousemove', e => {
@@ -167,18 +176,9 @@ export class PieceEditor {
                 this.points.splice(this.movingPoint, 1);
 
             this.movingPoint = -1;
+            this.highlight(this.getCursorPosition(e));
             this.redraw();
         });
-    }
-
-    findPoint(searchPoint: PixelPoint) {
-        for (let i = 0; i < this.points.length; i++) {
-            let p = this.points[i];
-            let pp = this.point2pixel(p);
-            if (Math.abs(pp[0] - searchPoint[0]) + Math.abs(pp[1] - searchPoint[1]) < HOVER_DIST)
-                return i;
-        }
-        return -1;
     }
 
     redraw() {
@@ -342,11 +342,26 @@ export class PieceEditor {
             this.highlightedPoint = -1;
 
         // find a segment
-        this.highlightedEdge = -1;
+        this.highlightedEdge = this.findEdge(mousePoint);
+
+        this.redraw();
+    }
+
+    findPoint(searchPoint: PixelPoint) {
+        for (let i = 0; i < this.points.length; i++) {
+            let p = this.points[i];
+            let pp = this.point2pixel(p);
+            if (Math.abs(pp[0] - searchPoint[0]) + Math.abs(pp[1] - searchPoint[1]) < HOVER_DIST)
+                return i;
+        }
+        return -1;
+    }
+
+    findEdge(searchPoint: PixelPoint): number {
         for (let i = 0; i < this.points.length; i++) {
             let p1 = i == 0 ? this.points[this.points.length - 1] : this.points[i - 1];
             let p2 = this.points[i];
-            let [x, y] = mousePoint;
+            let [x, y] = searchPoint;
             let [x1, y1] = this.point2pixel(p1);
             let [x2, y2] = this.point2pixel(p2);
 
@@ -380,10 +395,9 @@ export class PieceEditor {
             if ((x2 * ap + y2 * bp + c1) * (x * ap + y * bp + c1) <= 0)
                 continue;
 
-            this.highlightedEdge = i;
-            break;
+            return i;
         }
 
-        this.redraw();
+        return -1;
     }
 }
