@@ -133,6 +133,11 @@ export class PieceEditor {
                 // let j = segment_ind - 2;
                 // if (j < 0) j += this.points.length;
                 this.points.splice(segment_ind, 0, newPoint);
+
+                this.movingPoint = segment_ind;
+                this.movingClick = searchPoint;
+                this.movingPointClickPosition = this.point2pixel(newPoint);
+
                 this.redraw();
             }
         });
