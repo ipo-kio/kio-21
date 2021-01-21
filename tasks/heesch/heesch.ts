@@ -76,6 +76,15 @@ export class Heesch { //TODO название класса должно совп
 
         let editor = new PieceEditor(this.editor_canvas);
         editor.piece = tcctgg;
+        editor.pieceChangeListener = piece => {
+            piece = piece.fulfill();
+            piece.searchForType((pt, ind) => {
+                console.log("FOUND!!!", pt.name, ind.join(","));
+                let tesselation = pt.tessellate(piece, ind);
+                let tesselationView = new TesselationView(tesselation, 300, 400, 10);
+                tesselationView.draw(tesselation_ctx, 'black');
+            });
+        }
     }
 
     static preloadManifest(): void { //KioResourceDescription[] {

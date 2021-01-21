@@ -106,6 +106,8 @@ export class PieceEditor {
 
     errorEdges: Set<number> = new Set<number>();
 
+    private _pieceChangeListener: ((newPiece: Piece) => void) | undefined = undefined;
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -166,8 +168,12 @@ export class PieceEditor {
             if (y > this.canvas.width) y = this.canvas.height - 1;
 
             let thePoint = this.points[this.movingPoint];
+            let {x: prevX, y: prevY} = thePoint;
             this.pixel2point([x, y], thePoint);
             thePoint.update(Math.round(thePoint.x), Math.round(thePoint.y));
+            let pointChanged = prevX != thePoint.x || prevY != thePoint.y;
+            if (!pointChanged)
+                return;
 
             let prevInd = this.movingPoint == 0 ? this.points.length - 1 : this.movingPoint - 1;
             let nextInd = this.movingPoint == this.points.length - 1 ? 0 : this.movingPoint + 1;
@@ -192,17 +198,12 @@ export class PieceEditor {
                     measuredText.width + 4,
                     measuredText.actualBoundingBoxAscent + measuredText.actualBoundingBoxDescent + 4
                 );
-                console.log(
-                    tx - measuredText.actualBoundingBoxLeft - 2,
-                    ty - VERTEX_RADIUS - 2 - measuredText.actualBoundingBoxAscent - 2,
-                    measuredText.width + 4,
-                    measuredText.actualBoundingBoxAscent + measuredText.actualBoundingBoxDescent + 4,
-                    measuredText
-                );
                 this.ctx.fillStyle = "black";
                 this.ctx.fillText(removeVertexText, tx, ty - VERTEX_RADIUS - 2);
                 this.ctx.restore();
             }
+
+            this.firePieceChange();
         });
 
         canvas.addEventListener('mouseup', e => {
@@ -228,7 +229,6 @@ export class PieceEditor {
     }
 
     redraw() {
-        console.log("redrawing");
         this.drawGrid();
         this.drawEdges();
         this.drawVertices();
@@ -496,5 +496,19 @@ export class PieceEditor {
                 }
             }
         }
+    }
+
+    firePieceChange() {
+        if (this._pieceChangeListener) {
+            let newPoints: Point[] = [];
+            for (let point of this.points)
+                newPoints.push(new Point(point.x, point.y));
+
+            this._pieceChangeListener(new Piece(newPoints));
+        }
+    }
+
+    set pieceChangeListener(value: (newPiece: Piece) => void) {
+        this._pieceChangeListener = value;
     }
 }
