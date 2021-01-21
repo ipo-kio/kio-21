@@ -148,10 +148,13 @@ export class PieceEditor {
         canvas.addEventListener('mousemove', e => {
             let mousePoint = this.getCursorPosition(e);
 
-            this.highlight(mousePoint);
+            let highlightingChanged = this.highlight(mousePoint);
 
-            if (this.movingPoint == -1)
+            if (this.movingPoint == -1) {
+                if (highlightingChanged)
+                    this.redraw();
                 return;
+            }
 
             // mousePoint - movingClick + movingPointClickPosition
             let x = mousePoint[0] - this.movingClick[0] + this.movingPointClickPosition[0];
@@ -166,7 +169,40 @@ export class PieceEditor {
             this.pixel2point([x, y], thePoint);
             thePoint.update(Math.round(thePoint.x), Math.round(thePoint.y));
 
+            let prevInd = this.movingPoint == 0 ? this.points.length - 1 : this.movingPoint - 1;
+            let nextInd = this.movingPoint == this.points.length - 1 ? 0 : this.movingPoint + 1;
+            let isTheSameAsNeighbour = thePoint.equals(this.points[prevInd]) || thePoint.equals(this.points[nextInd]);
+
+            this.updateErrorEdges();
             this.redraw();
+
+            // draw info about deleting a point
+            if (isTheSameAsNeighbour) {
+                this.ctx.save();
+                this.ctx.font = "18px sans-serif";
+                this.ctx.textAlign = "center";
+                this.ctx.textBaseline = "bottom";
+                let [tx, ty] = this.point2pixel(thePoint);
+                let removeVertexText = "Удалить вершину";
+                let measuredText = this.ctx.measureText(removeVertexText);
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                this.ctx.fillRect(
+                    tx - measuredText.actualBoundingBoxLeft - 2,
+                    ty - VERTEX_RADIUS - 2 - measuredText.actualBoundingBoxAscent - 2,
+                    measuredText.width + 4,
+                    measuredText.actualBoundingBoxAscent + measuredText.actualBoundingBoxDescent + 4
+                );
+                console.log(
+                    tx - measuredText.actualBoundingBoxLeft - 2,
+                    ty - VERTEX_RADIUS - 2 - measuredText.actualBoundingBoxAscent - 2,
+                    measuredText.width + 4,
+                    measuredText.actualBoundingBoxAscent + measuredText.actualBoundingBoxDescent + 4,
+                    measuredText
+                );
+                this.ctx.fillStyle = "black";
+                this.ctx.fillText(removeVertexText, tx, ty - VERTEX_RADIUS - 2);
+                this.ctx.restore();
+            }
         });
 
         canvas.addEventListener('mouseup', e => {
@@ -174,7 +210,7 @@ export class PieceEditor {
                 return;
 
             let p = this.points[this.movingPoint];
-            p.update(Math.round(p.x), Math.round(p.y));
+            p.update(Math.round(p.x), Math.round(p.y)); // no need by the way
 
             let prevInd = this.movingPoint == 0 ? this.points.length - 1 : this.movingPoint - 1;
             let nextInd = this.movingPoint == this.points.length - 1 ? 0 : this.movingPoint + 1;
@@ -185,13 +221,14 @@ export class PieceEditor {
 
             this.movingPoint = -1;
             this.highlight(this.getCursorPosition(e));
+            this.updateErrorEdges();
+
             this.redraw();
         });
     }
 
     redraw() {
-        this.updateErrorEdges();
-
+        console.log("redrawing");
         this.drawGrid();
         this.drawEdges();
         this.drawVertices();
@@ -346,10 +383,14 @@ export class PieceEditor {
     set piece(p: Piece) {
         let n = p.size;
         this.points = p.points.slice();
+        this.updateErrorEdges();
         this.redraw();
     }
 
-    private highlight(mousePoint: PixelPoint) {
+    private highlight(mousePoint: PixelPoint): boolean {
+        let previousHighlightedPoint = this.highlightedPoint;
+        let previousHighlightedEdge = this.highlightedEdge;
+
         let ind = this.movingPoint;
         if (ind == -1)
             ind = this.findPoint(mousePoint);
@@ -357,15 +398,12 @@ export class PieceEditor {
         if (ind >= 0) {
             this.highlightedPoint = ind;
             this.highlightedEdge = -1;
-            this.redraw();
-            return;
-        } else
+        } else {
             this.highlightedPoint = -1;
+            this.highlightedEdge = this.findEdge(mousePoint);
+        }
 
-        // find a segment
-        this.highlightedEdge = this.findEdge(mousePoint);
-
-        this.redraw();
+        return previousHighlightedEdge != this.highlightedEdge || previousHighlightedPoint != this.highlightedPoint;
     }
 
     findPoint(searchPoint: PixelPoint) {
