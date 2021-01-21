@@ -6,18 +6,19 @@ const WIDTH = 400;
 const HEIGHT = 400;
 
 const EDGE_COLOR = 'blue';
-const EDGE_LINE_WIDTH = 4;
+const ERROR_EDGE_COLOR = 'red';
+const EDGE_LINE_WIDTH = 3;
 
 const VERTEX_BORDER_COLOR = 'black';
 const VERTEX_COLOR = 'red';
-const VERTEX_RADIUS = 8;
+const VERTEX_RADIUS = 6;
 const VERTEX_BORDER_WIDTH = 0.5;
 
 const HOVER_DIST = 2 * GRID_STEP / 3;
 
 const HIGHLIGHTED_VERTEX_COLOR = '#e7e302';
 const EDGE_HIGHLIGHT_COLOR = HIGHLIGHTED_VERTEX_COLOR; //'rgb(231,227,2, 0.4)';
-const EDGE_HIGHLIGHT_WIDTH = EDGE_LINE_WIDTH; // 2 * HOVER_DIST
+const EDGE_HIGHLIGHT_WIDTH = 2 * EDGE_LINE_WIDTH; // 2 * HOVER_DIST
 
 const BG_COLOR = '#5aff00';
 
@@ -87,7 +88,6 @@ function test_segments_have_only_1_intersection(p1: Point, p2: Point, p3: Point)
     return v1.dot(v2) < 0;
 }
 
-
 export class PieceEditor {
 
     canvas: HTMLCanvasElement;
@@ -103,6 +103,8 @@ export class PieceEditor {
 
     highlightedPoint: number = -1; // highlighted point
     highlightedEdge: number = -1; // highlighted point
+
+    errorEdges: Set<number> = new Set<number>();
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -142,6 +144,7 @@ export class PieceEditor {
             }
         });
 
+        // TODO optimize redraws, don't redraw if nothing changed
         canvas.addEventListener('mousemove', e => {
             let mousePoint = this.getCursorPosition(e);
 
@@ -187,6 +190,8 @@ export class PieceEditor {
     }
 
     redraw() {
+        this.updateErrorEdges();
+
         this.drawGrid();
         this.drawEdges();
         this.drawVertices();
@@ -230,15 +235,34 @@ export class PieceEditor {
 
         c.save();
 
+        let drawEdge = (e: number, color: string, width: number, is_dashed: boolean) => {
+            c.save();
+            if (is_dashed)
+                c.setLineDash([GRID_STEP / 2, GRID_STEP / 3]);
+            c.strokeStyle = color;
+            c.lineWidth = width;
+            let j = e - 1;
+            if (j < 0) j = n - 1;
+            let [x, y] = this.point2pixel(this.points[e]);
+            let [xx, yy] = this.point2pixel(this.points[j]);
+            c.beginPath();
+            c.moveTo(x, y);
+            c.lineTo(xx, yy);
+            c.stroke();
+            c.restore();
+        };
+
         let [xStart, yStart] = this.point2pixel(this.points[0]);
         c.beginPath()
         c.moveTo(xStart, yStart);
-
         let xMin = 1e100;
         let xMax = -1e100;
         let yMin = 1e100;
         let yMax = -1e100;
-        for (let i = 1; i < this.points.length; i++) {
+
+        let n = this.points.length;
+
+        for (let i = 1; i < n; i++) {
             let [x, y] = this.point2pixel(this.points[i]);
             xMin = Math.min(xMin, x);
             xMax = Math.max(xMax, x);
@@ -252,25 +276,17 @@ export class PieceEditor {
         grad.addColorStop(0, 'rgba(200, 200, 255, 0.4)'); // Make a constant
         grad.addColorStop(1, 'rgba(0, 0, 255, 0.4)'); // Make a constant
 
-        c.lineJoin = "bevel";
-        c.strokeStyle = EDGE_COLOR;
         c.fillStyle = grad;
-        c.lineWidth = EDGE_LINE_WIDTH;
         c.fill();
-        c.stroke();
 
-        if (this.highlightedEdge >= 0) {
-            c.beginPath();
-            c.strokeStyle = EDGE_HIGHLIGHT_COLOR;
-            c.lineWidth = EDGE_HIGHLIGHT_WIDTH;
-            let j = this.highlightedEdge - 1;
-            if (j < 0) j = this.points.length - 1;
-            let [x, y] = this.point2pixel(this.points[this.highlightedEdge]);
-            c.moveTo(x, y);
-            let [xx, yy] = this.point2pixel(this.points[j]);
-            c.lineTo(xx, yy);
-            c.stroke();
-        }
+        for (let i = 0; i < n; i++)
+            if (this.errorEdges.has(i))
+                drawEdge(i, ERROR_EDGE_COLOR, EDGE_LINE_WIDTH, true);
+            else
+                drawEdge(i, EDGE_COLOR, EDGE_LINE_WIDTH, false);
+
+        if (this.highlightedEdge >= 0)
+            drawEdge(this.highlightedEdge, EDGE_HIGHLIGHT_COLOR, EDGE_HIGHLIGHT_WIDTH, false);
 
         c.restore();
     }
@@ -282,7 +298,7 @@ export class PieceEditor {
         c.strokeStyle = VERTEX_BORDER_COLOR;
         c.lineWidth = VERTEX_BORDER_WIDTH;
 
-        for (let i = 0; i < this.points.length; i++){
+        for (let i = 0; i < this.points.length; i++) {
             let p = this.points[i];
             let [x, y] = this.point2pixel(p);
             c.fillStyle = i == this.highlightedPoint ? HIGHLIGHTED_VERTEX_COLOR : VERTEX_COLOR;
@@ -404,5 +420,43 @@ export class PieceEditor {
         }
 
         return -1;
+    }
+
+    updateErrorEdges() {
+        this.errorEdges.clear();
+        let n = this.points.length;
+        for (let i = 0; i < n; i++) {
+            let i1 = i == 0 ? n - 1 : i - 1;
+            let i2 = i;
+            let p1 = this.points[i1];
+            let p2 = this.points[i2];
+
+            if (p1.equals(p2)) {
+                this.errorEdges.add(i2);
+                continue;
+            }
+
+            for (let j = i + 1; j < i + n; j++) {
+
+                let j1 = (j - 1) % n;
+                let j2 = j % n;
+
+                let p3 = this.points[j1];
+                let p4 = this.points[j2];
+
+                if (p3.equals(p4)) // just for any case: don't intersect empty edge
+                    continue;
+
+                if (
+                    j == i + 1 && !test_segments_have_only_1_intersection(p1, p2, p4) ||
+                    j == i + n - 1 && !test_segments_have_only_1_intersection(p3, p1, p2) ||
+                    j > i + 1 && j < i + n - 1 && test_segments_intersect([p1, p2], [p3, p4])
+                ) {
+                    // console.log("here", i1, i2, j1, j2, test_segments_have_only_1_intersection(p1, p2, p4), test_segments_have_only_1_intersection(p3, p1, p2), test_segments_intersect([p1, p2], [p3, p4]))
+                    this.errorEdges.add(i2);
+                    this.errorEdges.add(j2);
+                }
+            }
+        }
     }
 }
