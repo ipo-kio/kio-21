@@ -1,14 +1,14 @@
-import {Tesselation} from "../model/Tesselation";
+import {Tessellation} from "../model/Tessellation";
 import {Point} from "../model/Point";
 
-export class TesselationView {
+export class TessellationView {
 
-    private tesselation: Tesselation;
+    private tesselation: Tessellation;
     private x0: number;
     private y0: number;
     private one: number;
 
-    constructor(tesselation: Tesselation, x0: number, y0: number, one: number) {
+    constructor(tesselation: Tessellation, x0: number, y0: number, one: number) {
         this.tesselation = tesselation;
         this.x0 = x0;
         this.y0 = y0;

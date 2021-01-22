@@ -1,5 +1,5 @@
 import {int, Piece} from "./Piece";
-import {Tesselation} from "./Tesselation";
+import {Tessellation} from "./Tessellation";
 import {G, R2, R4} from "./Transform";
 
 // www.eschertile.com/tile28.htm
@@ -10,9 +10,9 @@ export class PieceType {
     readonly name: string;
     readonly number: int;
     readonly type: TypeElement[];
-    readonly tessellate: (piece: Piece, indexes: int[]) => Tesselation;
+    readonly tessellate: (piece: Piece, indexes: int[]) => Tessellation;
 
-    constructor(name: string, number: int, type: TypeElement[], tessellate: (piece: Piece, indexes: int[]) => Tesselation) {
+    constructor(name: string, number: int, type: TypeElement[], tessellate: (piece: Piece, indexes: int[]) => Tessellation) {
         this.name = name;
         this.number = number;
         this.type = type;

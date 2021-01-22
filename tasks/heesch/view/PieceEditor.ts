@@ -225,6 +225,7 @@ export class PieceEditor {
             this.updateErrorEdges();
 
             this.redraw();
+            this.firePieceChange();
         });
     }
 

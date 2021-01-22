@@ -3,8 +3,9 @@ import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {PolyLineUtils} from "./model/PolyLineUtils";
-import {TesselationView} from "./view/TesselationView";
+import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
+import {Tessellation} from "./model/Tessellation";
 
 export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -70,7 +71,7 @@ export class Heesch { //TODO название класса должно совп
         tcctgg.searchForType((pt, ind) => {
             console.log("FOUND!!!", pt.name, ind.join(","));
             let tesselation = pt.tessellate(tcctgg, ind);
-            let tesselationView = new TesselationView(tesselation, 300, 400, 10);
+            let tesselationView = new TessellationView(tesselation, 300, 400, 10);
             tesselationView.draw(tesselation_ctx, 'black');
         });
 
@@ -78,12 +79,18 @@ export class Heesch { //TODO название класса должно совп
         editor.piece = tcctgg;
         editor.pieceChangeListener = piece => {
             piece = piece.fulfill();
+            let tessellations: Tessellation[] = [];
             piece.searchForType((pt, ind) => {
                 console.log("FOUND!!!", pt.name, ind.join(","));
-                let tesselation = pt.tessellate(piece, ind);
-                let tesselationView = new TesselationView(tesselation, 300, 400, 10);
-                tesselationView.draw(tesselation_ctx, 'black');
+                let tessellation = pt.tessellate(piece, ind);
+                tessellations.push(tessellation);
             });
+
+            tesselation_ctx.clearRect(0, 0, this.tesselation_canvas.width, this.tesselation_canvas.height);
+            if (tessellations.length > 0) {
+                let tessellationView = new TessellationView(tessellations[0], 300, 400, 10);
+                tessellationView.draw(tesselation_ctx, 'black');
+            }
         }
     }
 
@@ -178,11 +185,11 @@ function test(ctx: CanvasRenderingContext2D) {
     console.log(tcctgg.toString());
     tcctgg.searchForType((pt, ind) => {
         console.log("FOUND!!!", pt.name, ind.join(","));
-        let tesselation = pt.tessellate(tcctgg, ind);
-        let tesselationView = new TesselationView(tesselation, 300, 400, 10);
+        let tessellation = pt.tessellate(tcctgg, ind);
+        let tessellationView = new TessellationView(tessellation, 300, 400, 10);
         let color = colors[color_index++];
         if (color[0] != '!')
-            tesselationView.draw(ctx, color);
+            tessellationView.draw(ctx, color);
     });
 
     /*
