@@ -231,6 +231,7 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
         let A = piece.point(indexes[3]);
         let B = piece.point(indexes[4]);
         let C = piece.point(indexes[5]);
+        console.log("tessellating " + this.name, D.toString(), F.toString(), E.toString(), A.toString(), B.toString(), C.toString());
 
         let M1 = D.middle(F);
 

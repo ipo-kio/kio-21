@@ -23,9 +23,9 @@ export class TessellationView {
         ctx.lineJoin = "round";
 
         // for (let t1 = 0; t1 <= 1; t1++)
-        for (let t1 = -10; t1 <= 10; t1++)
+        for (let t1 = -1; t1 <= 1; t1++)
             // for (let t2 = 0; t2 <= 0; t2++) {
-            for (let t2 = -10; t2 <= 10; t2++) {
+            for (let t2 = -1; t2 <= 1; t2++) {
                 let cords = ({x, y}: {x: number, y: number}) : [x: number, y: number] => {
                     return [
                         this.x0 + this.one * (x + t1 * this.tesselation.T1.x + t2 * this.tesselation.T2.x),
@@ -59,11 +59,13 @@ export class TessellationView {
                     ctx.fillStyle = gradient1;
                     ctx.fill();
                     // ctx.globalCompositeOperation = "lighter";
-                    ctx.globalAlpha = 0.5;
-                    ctx.fillStyle = gradient2;
-                    ctx.fill();
-                    // ctx.globalCompositeOperation = "source-over";
-                    ctx.globalAlpha = 1;
+                    if (t1 == 0 && t2 == 0) {
+                        ctx.globalAlpha = 0.5;
+                        ctx.fillStyle = gradient2;
+                        ctx.fill();
+                        // ctx.globalCompositeOperation = "source-over";
+                        ctx.globalAlpha = 1;
+                    }
 
                     ctx.stroke();
                 }
