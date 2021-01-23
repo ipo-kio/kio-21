@@ -13,6 +13,11 @@ export class Heesch { //TODO название класса должно совп
 
     private editor_canvas: HTMLCanvasElement;
     private tesselation_canvas: HTMLCanvasElement;
+    private tessellation_ctx: CanvasRenderingContext2D;
+
+    private editor: PieceEditor;
+    private tessellations: Tessellation[] = [];
+    private tesselationSelect: HTMLSelectElement;
 
     /**
      *
@@ -47,20 +52,16 @@ export class Heesch { //TODO название класса должно совп
         this.tesselation_canvas.width = 600;
         this.tesselation_canvas.height = 600;
 
-        let tesselation_ctx = this.tesselation_canvas.getContext('2d');
+        this.tessellation_ctx = this.tesselation_canvas.getContext('2d');
 
-        let tessellations: Tessellation[] = [];
-        let selectTesselation = document.createElement("select");
-        selectTesselation.size = 10;
-        selectTesselation.addEventListener("input", e => {
-            let selectedIndex: number = +selectTesselation.value;
-            let tessellationView = new TessellationView(tessellations[selectedIndex], 300, 400, 10);
-            tessellationView.draw(tesselation_ctx, 'black');
-        });
+        this.tessellations = [];
+        this.tesselationSelect = document.createElement("select");
+        this.tesselationSelect.size = 10;
+        this.tesselationSelect.addEventListener("input", e => this.updateTessellationView());
 
         domNode.classList.add('heesch-task-container');
         domNode.appendChild(this.editor_canvas);
-        domNode.append(selectTesselation);
+        domNode.append(this.tesselationSelect);
         domNode.appendChild(this.tesselation_canvas);
 
         let tcctgg = new Piece([
@@ -78,29 +79,12 @@ export class Heesch { //TODO название класса должно совп
             new Point(5, 3),
         ]);
 
-        let editor = new PieceEditor(this.editor_canvas);
-        editor.piece = tcctgg;
-        editor.pieceChangeListener = piece => {
-            piece = piece.fulfill();
-            tessellations = [];
-            selectTesselation.length = 0;
+        this.editor = new PieceEditor(this.editor_canvas);
+        this.editor.piece = tcctgg;
 
-            piece.searchForType((pt, ind) => {
-                console.log("FOUND!!!", pt.name, ind.join(","));
-                let tessellation = pt.tessellate(piece, ind);
-                let new_index = -1 + tessellations.push(tessellation);
-                let option = document.createElement("option");
-                option.value = "" + new_index;
-                option.innerText = pt.name;
-                selectTesselation.add(option);
-            });
+        this.updateTessellationPiece(tcctgg);
 
-            tesselation_ctx.clearRect(0, 0, this.tesselation_canvas.width, this.tesselation_canvas.height);
-            if (tessellations.length > 0) {
-                let tessellationView = new TessellationView(tessellations[0], 300, 400, 10);
-                tessellationView.draw(tesselation_ctx, 'black');
-            }
-        }
+        this.editor.pieceChangeListener = piece => this.updateTessellationPiece(piece);
     }
 
     static preloadManifest(): void { //KioResourceDescription[] {
@@ -122,6 +106,40 @@ export class Heesch { //TODO название класса должно совп
         return {};
     }
 
+    private updateTessellationView() {
+        this.tessellation_ctx.clearRect(0, 0, this.tesselation_canvas.width, this.tesselation_canvas.height);
+
+        if (this.tesselationSelect.length == 0) {
+            // draw only one piece in the center
+
+            return;
+        }
+
+        if (!this.tesselationSelect.value)
+            this.tesselationSelect.value = "0";
+
+        let selectedIndex: number = +this.tesselationSelect.value;
+
+        let tessellationView = new TessellationView(this.tessellations[selectedIndex], 300, 400, 10);
+        tessellationView.draw(this.tessellation_ctx, 'black');
+    }
+
+    private updateTessellationPiece(piece: Piece) {
+        piece = piece.fulfill();
+        this.tessellations = [];
+        this.tesselationSelect.length = 0;
+
+        piece.searchForType((pt, ind) => {
+            let tessellation = pt.tessellate(piece, ind);
+            let new_index = -1 + this.tessellations.push(tessellation);
+            let option = document.createElement("option");
+            option.value = "" + new_index;
+            option.innerText = pt.name;
+            this.tesselationSelect.add(option);
+        });
+
+        this.updateTessellationView();
+    }
 }
 
 interface Solution {
