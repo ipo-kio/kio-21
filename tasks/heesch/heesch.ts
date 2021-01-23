@@ -49,8 +49,18 @@ export class Heesch { //TODO название класса должно совп
 
         let tesselation_ctx = this.tesselation_canvas.getContext('2d');
 
+        let tessellations: Tessellation[] = [];
+        let selectTesselation = document.createElement("select");
+        selectTesselation.size = 10;
+        selectTesselation.addEventListener("input", e => {
+            let selectedIndex: number = +selectTesselation.value;
+            let tessellationView = new TessellationView(tessellations[selectedIndex], 300, 400, 10);
+            tessellationView.draw(tesselation_ctx, 'black');
+        });
+
         domNode.classList.add('heesch-task-container');
         domNode.appendChild(this.editor_canvas);
+        domNode.append(selectTesselation);
         domNode.appendChild(this.tesselation_canvas);
 
         let tcctgg = new Piece([
@@ -68,22 +78,21 @@ export class Heesch { //TODO название класса должно совп
             new Point(5, 3),
         ]);
 
-        tcctgg.searchForType((pt, ind) => {
-            console.log("FOUND!!!", pt.name, ind.join(","));
-            let tesselation = pt.tessellate(tcctgg, ind);
-            let tesselationView = new TessellationView(tesselation, 300, 400, 10);
-            tesselationView.draw(tesselation_ctx, 'black');
-        });
-
         let editor = new PieceEditor(this.editor_canvas);
         editor.piece = tcctgg;
         editor.pieceChangeListener = piece => {
             piece = piece.fulfill();
-            let tessellations: Tessellation[] = [];
+            tessellations = [];
+            selectTesselation.length = 0;
+
             piece.searchForType((pt, ind) => {
                 console.log("FOUND!!!", pt.name, ind.join(","));
                 let tessellation = pt.tessellate(piece, ind);
-                tessellations.push(tessellation);
+                let new_index = -1 + tessellations.push(tessellation);
+                let option = document.createElement("option");
+                option.value = "" + new_index;
+                option.innerText = pt.name;
+                selectTesselation.add(option);
             });
 
             tesselation_ctx.clearRect(0, 0, this.tesselation_canvas.width, this.tesselation_canvas.height);
