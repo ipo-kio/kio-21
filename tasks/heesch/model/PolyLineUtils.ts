@@ -72,6 +72,9 @@ export class PolyLineUtils {
         let s2 = p2.point(0); //start 2
         let e2 = p2.point(n - 1); //end 2
 
+        if (s1.equals(e1) && s2.equals(e2))
+            return true;
+
         let g = G(s1, e1, s2, e2);
 
         for (let i = 0; i < n; i++) {

@@ -23,9 +23,9 @@ export class TessellationView {
         ctx.lineJoin = "round";
 
         // for (let t1 = 0; t1 <= 1; t1++)
-        for (let t1 = -1; t1 <= 1; t1++)
+        for (let t1 = -10; t1 <= 10; t1++)
             // for (let t2 = 0; t2 <= 0; t2++) {
-            for (let t2 = -1; t2 <= 1; t2++) {
+            for (let t2 = -10; t2 <= 10; t2++) {
                 let cords = ({x, y}: {x: number, y: number}) : [x: number, y: number] => {
                     return [
                         this.x0 + this.one * (x + t1 * this.tesselation.T1.x + t2 * this.tesselation.T2.x),
@@ -68,6 +68,20 @@ export class TessellationView {
                     }
 
                     ctx.stroke();
+
+                    // draw orientation
+                    let pc = piece.center();
+                    let pc1 = pc.add(piece.orientation[0].mul(2));
+                    let pc2 = pc.add(piece.orientation[1]);
+                    let [x0, y0] = cords(pc);
+                    let [x1, y1] = cords(pc1);
+                    let [x2, y2] = cords(pc2);
+                    ctx.beginPath();
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.fillStyle = "black";
+                    ctx.fill();
                 }
             }
 

@@ -24,6 +24,8 @@ export class PieceType {
     }
 }
 
+// letters '.' means any polyline, '-' means any nonempty polyline
+// 'C', 'G', 'T' are certain types of polyline, 'G' and 'T' require an index of the corresponding polyline
 type TypeElement = [letter: string, index?: int];
 
 export const TYPE_TTTTTT = new PieceType(
@@ -141,11 +143,11 @@ export const TYPE_TG1G1TG2G2 = new PieceType(
 );
 
 export const TYPE_TG1G2TG2G1 = new PieceType(
-    "TG1G2TG2G1",
+    "TG1G2TG2G1",  // disallow empty G1. This is the same as empty G2 starting from TG2G1 TG1G2
     20,
     [
         ['.'],
-        ['.'],
+        ['-'],
         ['.'],
         ['T', 0],
         ['G', 2],
@@ -214,11 +216,11 @@ export const TYPE_TCCTGG = new PieceType(
 );
 
 export const TYPE_CG1CG2G1G2 = new PieceType(
-    "CG1CG2G1G2",
+    "CG1CG2G1G2", // disallow empty G1 (CCGG), let it be the other type TCCTGG with emtpy T)
     28,
     [
         ['C'],
-        ['.'],
+        ['-'],
         ['C'],
         ['.'],
         ['G', 1],
@@ -231,7 +233,6 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
         let A = piece.point(indexes[3]);
         let B = piece.point(indexes[4]);
         let C = piece.point(indexes[5]);
-        console.log("tessellating " + this.name, D.toString(), F.toString(), E.toString(), A.toString(), B.toString(), C.toString());
 
         let M1 = D.middle(F);
 

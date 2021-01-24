@@ -8,7 +8,7 @@ export const EPS = 1e-10;
 
 export type int = number;
 
-const DEFAULT_ORIENTATION = new Point(1, 0);
+const DEFAULT_ORIENTATION: [Point, Point] = [new Point(1, 0), new Point(0, 1)];
 
 function gcd(a: int, b: int): int {
     if (a < 0) a = -a;
@@ -23,9 +23,9 @@ function gcd(a: int, b: int): int {
 
 export class Piece {
     readonly points: Point[] = [];
-    readonly orientation: Point;
+    readonly orientation: [Point, Point];
 
-    constructor(points: Point[], orientation: Point = DEFAULT_ORIENTATION) {
+    constructor(points: Point[], orientation: [Point, Point] = DEFAULT_ORIENTATION) {
         this.points = points;
         this.orientation = orientation;
     }
@@ -111,9 +111,11 @@ export class Piece {
             let ind_min;
             let ind_max;
             let circle_index = point_indexes[0] + n;
-            if (letter == '.' || letter == 'C') {
+            if (letter == '.' || letter == '-' || letter == 'C') {
                 ind_min = point_indexes[ind];
                 ind_max = circle_index;
+                if (letter == '-')
+                    ind_min += 1;
             } else {
                 let len = point_indexes[corresponding_index + 1] - point_indexes[corresponding_index];
                 ind_min = point_indexes[ind] + len;
@@ -131,7 +133,7 @@ export class Piece {
 
             for (let i = ind_min; i <= ind_max; i++) {
 
-                if (letter != '.') {
+                if (letter != '.' && letter != '-') {
                     let current_polyline = piece.part(point_indexes[ind], i);
                     if (letter == 'C') {
                         if (!PolyLineUtils.isC(current_polyline))
@@ -173,5 +175,13 @@ export class Piece {
         }
 
         //TODO TG1G1TG2G2 will always be found two times
+    }
+
+    center(): Point {
+        let p = new Point(0, 0);
+        for (let pp of this.points)
+            p.update(p.x + pp.x, p.y + pp.y);
+        p.update(p.x / this.size, p.y / this.size);
+        return p;
     }
 }

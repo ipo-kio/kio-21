@@ -37,10 +37,11 @@ export class Transform {
         for (let i = 0; i < p.size; i++)
             new_points[i] = this.apply(p.points[i], round);
 
-        let p1 = this.apply(ZERO, round);
-        let p2 = this.apply(p.orientation, round);
+        let p0 = this.apply(ZERO, round);
+        let p1 = this.apply(p.orientation[0], round);
+        let p2 = this.apply(p.orientation[1], round);
 
-        return new Piece(new_points, p2.sub(p1));
+        return new Piece(new_points, [p1.sub(p0), p2.sub(p0)]);
     }
 }
 
