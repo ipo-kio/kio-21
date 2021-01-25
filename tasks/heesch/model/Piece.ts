@@ -1,7 +1,7 @@
 import {PolyLine} from "./PolyLine";
 import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
-import {ALL_PIECE_TYPES, PieceType, TYPE_TCCTGG} from "./PieceType";
+import {ALL_PIECE_TYPES, PieceType, TYPE_CG1CG2G1G2, TYPE_TCCTGG} from "./PieceType";
 import {PolyLineUtils} from "./PolyLineUtils";
 
 export const EPS = 1e-10;
@@ -96,12 +96,18 @@ export class Piece {
         let piece = this;
         let n = this.size;
 
+        let searchesCount = 0;
+        console.time('search for type');
+
         function search(type: PieceType, point_indexes: int[], ind: int) {
+            searchesCount++;
             //next polyline: type[ind]
             //next index to be put into point_indexes[ind + 1]
             let k = type.size;
 
             if (ind == k) {
+                if (type.number == 28)
+                    console.log("hmm, found. ", point_indexes);
                 callback(type, point_indexes);
                 return;
             }
@@ -146,7 +152,7 @@ export class Piece {
                         switch (letter) {
                             case 'G':
                                 if (!PolyLineUtils.isG(previous_polyline, current_polyline))
-                                    continue;
+                                    continue; //2,3-2,4  1,4-1,3
                                 break;
                             case 'T':
                                 if (!PolyLineUtils.isT(previous_polyline.revert(), current_polyline))
@@ -167,14 +173,18 @@ export class Piece {
         }
 
         for (let type of ALL_PIECE_TYPES) {
+            console.time("search " + type.name);
             let point_indexes: int[] = new Array<int>(type.size);
             for (let i = 0; i < n; i++) {
                 point_indexes[0] = i;
                 search(type, point_indexes, 0);
             }
+            console.timeEnd("search " + type.name);
+            console.log('count', type.name, type.number, searchesCount);
         }
 
         //TODO TG1G1TG2G2 will always be found two times
+        console.timeEnd('search for type');
     }
 
     center(): Point {

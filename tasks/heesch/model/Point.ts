@@ -13,6 +13,10 @@ export class Point {
         return new Point(this.x + that.x, this.y + that.y);
     }
 
+    addWithCoef(that: Point, k: number) {
+        return new Point(this.x + k * that.x, this.y + k * that.y);
+    }
+
     middle(that: Point) {
         return new Point((this.x + that.x) / 2, (this.y + that.y) / 2);
     }

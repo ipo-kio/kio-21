@@ -62,7 +62,7 @@ export function R4(center: Point) {
 //s1-e1 transforms by slide symmetry to s2-e2. s1 goes to s2, direction s1-e1 goes to s2-e2
 export function G(s1: Point, e1: Point, s2: Point, e2: Point) {
     let v1 = e1.sub(s1);
-    let v2 = e2.sub(e1);
+    let v2 = e2.sub(s2);
 
     //bisector v1 and v2 is a reflexion line, angle = a
     let aMul2 = v1.angle + v2.angle;

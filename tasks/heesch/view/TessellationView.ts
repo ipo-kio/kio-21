@@ -71,17 +71,24 @@ export class TessellationView {
 
                     // draw orientation
                     let pc = piece.center();
-                    let pc1 = pc.add(piece.orientation[0].mul(2));
-                    let pc2 = pc.add(piece.orientation[1]);
-                    let [x0, y0] = cords(pc);
+                    let kx = 1;
+                    let ky = 2;
+                    let o1 = piece.orientation[0];
+                    let o2 = piece.orientation[1];
+                    let pc1 = pc.addWithCoef(o1, -kx/2).addWithCoef(o2, -ky/2);
+                    let pc2 = pc1.addWithCoef(o1, kx);
+                    let pc3 = pc1.addWithCoef(o2, ky);
                     let [x1, y1] = cords(pc1);
                     let [x2, y2] = cords(pc2);
+                    let [x3, y3] = cords(pc3);
+                    ctx.save();
                     ctx.beginPath();
-                    ctx.moveTo(x0, y0);
-                    ctx.lineTo(x1, y1);
+                    ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
+                    ctx.lineTo(x3, y3);
                     ctx.fillStyle = "black";
                     ctx.fill();
+                    ctx.restore();
                 }
             }
 
