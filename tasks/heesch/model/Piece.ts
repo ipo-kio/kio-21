@@ -1,7 +1,7 @@
 import {PolyLine} from "./PolyLine";
 import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
-import {ALL_PIECE_TYPES, PieceType, TYPE_CG1CG2G1G2, TYPE_TCCTGG} from "./PieceType";
+import {ALL_PIECE_TYPES, PieceType} from "./PieceType";
 import {PolyLineUtils} from "./PolyLineUtils";
 
 export const EPS = 1e-10;
@@ -21,13 +21,23 @@ function gcd(a: int, b: int): int {
     return a;
 }
 
+type Invariants = [dot: number, vec: number, sq_dist: number];
+
 export class Piece {
     readonly points: Point[] = [];
     readonly orientation: [Point, Point];
+    private invariants_matrix: Invariants[][];
 
     constructor(points: Point[], orientation: [Point, Point] = DEFAULT_ORIENTATION) {
         this.points = points;
         this.orientation = orientation;
+
+        let [o1, o2] = orientation;
+        let d = o1.dot(o2);
+        if (Math.abs(d) > EPS)
+            console.log('ERROR', o1.toString(), o2.toString());
+
+        this.evaluate_invariants();
     }
 
     get size(): int {
@@ -81,7 +91,7 @@ export class Piece {
         return this.points.join("~");
     }
 
-    boundingBox(): {xmin: number, xmax: number, ymin: number, ymax: number} {
+    boundingBox(): { xmin: number, xmax: number, ymin: number, ymax: number } {
         let xs = this.points.map(p => p.x);
         let ys = this.points.map(p => p.y);
         return {
@@ -106,8 +116,6 @@ export class Piece {
             let k = type.size;
 
             if (ind == k) {
-                if (type.number == 28)
-                    console.log("hmm, found. ", point_indexes);
                 callback(type, point_indexes);
                 return;
             }
@@ -117,13 +125,15 @@ export class Piece {
             let ind_min;
             let ind_max;
             let circle_index = point_indexes[0] + n;
+            let prev_polyline_start = point_indexes[corresponding_index];
+            let prev_polyline_end = point_indexes[corresponding_index + 1];
             if (letter == '.' || letter == '-' || letter == 'C') {
                 ind_min = point_indexes[ind];
                 ind_max = circle_index;
                 if (letter == '-')
                     ind_min += 1;
             } else {
-                let len = point_indexes[corresponding_index + 1] - point_indexes[corresponding_index];
+                let len = prev_polyline_end - prev_polyline_start;
                 ind_min = point_indexes[ind] + len;
                 ind_max = ind_min;
             }
@@ -145,10 +155,14 @@ export class Piece {
                         if (!PolyLineUtils.isC(current_polyline))
                             continue;
                     } else {
-                        let previous_polyline = piece.part(
-                            point_indexes[corresponding_index],
-                            point_indexes[corresponding_index + 1]
-                        );
+                        // this is a plane movement, so test invariants
+                        let i1 = piece.invariants_matrix[prev_polyline_start % n][prev_polyline_end % n];
+                        let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];
+                        // if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
+                        //     continue;
+
+                        let previous_polyline = piece.part(prev_polyline_start, prev_polyline_end);
+
                         switch (letter) {
                             case 'G':
                                 if (!PolyLineUtils.isG(previous_polyline, current_polyline))
@@ -163,6 +177,9 @@ export class Piece {
                                     continue;
                                 break;
                         }
+
+                        if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
+                            console.log("HMM", i1, i2, letter, previous_polyline.toString(), current_polyline.toString());
                     }
                 }
 
@@ -193,5 +210,33 @@ export class Piece {
             p.update(p.x + pp.x, p.y + pp.y);
         p.update(p.x / this.size, p.y / this.size);
         return p;
+    }
+
+    private evaluate_invariants() {
+        let n = this.size;
+        this.invariants_matrix = new Array<Invariants[]>(n);
+        for (let i = 0; i < n; i++) {
+            let dot = 0;
+            let vec = 0;
+            let sq_dist = 0;
+            this.invariants_matrix[i] = new Array<Invariants>(n);
+            // this.invariants_matrix[i][i] = [dot, Math.abs(vec), sq_dist];
+            for (let j = i + 1; j <= i + n; j++) {
+                let jj = j % n;
+                let prev_point = this.point(j - 1);
+                let point = this.point(j);
+                let edge = point.sub(prev_point);
+                sq_dist += edge.length2;
+                if (j > i + 1) {
+                    let prev_prev_point = this.point(j - 2);
+                    let prev_edge = prev_point.sub(prev_prev_point);
+
+                    dot += prev_edge.dot(edge);
+                    vec += prev_edge.vec(edge);
+                }
+
+                this.invariants_matrix[i][jj] = [dot, Math.abs(vec), sq_dist];
+            }
+        }
     }
 }

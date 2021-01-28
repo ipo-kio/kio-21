@@ -218,21 +218,36 @@ export const TYPE_TCCTGG = new PieceType(
 export const TYPE_CG1CG2G1G2 = new PieceType(
     "CG1CG2G1G2", // disallow empty G1 (CCGG), let it be the other type TCCTGG with emtpy T)
     28,
-    [
+    /*[
         ['C'],
         ['-'],
         ['C'],
         ['.'],
         ['G', 1],
         ['G', 3]
+    ],*/
+    [  // 010|212.010212
+        ['.'],
+        ['-'],
+        ['G', 0],
+        ['C'],
+        ['G', 1],
+        ['C']
     ],
     function tessellate(piece, indexes) {
-        let D = piece.point(indexes[0]);
+        /*let D = piece.point(indexes[0]);
         let F = piece.point(indexes[1]);
         let E = piece.point(indexes[2]);
         let A = piece.point(indexes[3]);
         let B = piece.point(indexes[4]);
-        let C = piece.point(indexes[5]);
+        let C = piece.point(indexes[5]);*/
+
+        let D = piece.point(indexes[3]);
+        let F = piece.point(indexes[4]);
+        let E = piece.point(indexes[5]);
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
 
         let M1 = D.middle(F);
 

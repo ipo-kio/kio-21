@@ -491,7 +491,6 @@ export class PieceEditor {
                     j == i + n - 1 && !test_segments_have_only_1_intersection(p3, p1, p2) ||
                     j > i + 1 && j < i + n - 1 && test_segments_intersect([p1, p2], [p3, p4])
                 ) {
-                    // console.log("here", i1, i2, j1, j2, test_segments_have_only_1_intersection(p1, p2, p4), test_segments_have_only_1_intersection(p3, p1, p2), test_segments_intersect([p1, p2], [p3, p4]))
                     this.errorEdges.add(i2);
                     this.errorEdges.add(j2);
                 }

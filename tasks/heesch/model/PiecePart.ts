@@ -28,4 +28,11 @@ export class PiecePart implements PolyLine {
         else
             return new PiecePart(this.piece, this.ind1 - this.size + 1, this.ind1, true);
     }
+
+    toString(): string {
+        let s = [];
+        for (let i = 0; i < this.size; i++)
+            s.push(this.point(i).toString());
+        return s.join("--");
+    }
 }

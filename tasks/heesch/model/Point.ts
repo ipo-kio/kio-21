@@ -57,6 +57,16 @@ export class Point {
         return Math.atan2(this.y, this.x);
     }
 
+    dist2(p: Point): number {
+        let dx = this.x - p.x;
+        let dy = this.y - p.y;
+        return dx * dx + dy * dy;
+    }
+
+    dist(p: Point): number {
+        return Math.sqrt(this.dist2(p));
+    }
+
     toString(): string {
         return "(" + this.x + ", " + this.y + ")";
     }
