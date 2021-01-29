@@ -127,7 +127,7 @@ export class Piece {
             let ind_min;
             let ind_max;
             let circle_index = point_indexes[0] + n;
-            let prev_polyline_start = point_indexes[corresponding_index];
+            let prev_polyline_start = point_indexes[corresponding_index]; // FIXME corresponding_index might be undefined, although, the variable is not used in this case
             let prev_polyline_end = point_indexes[corresponding_index + 1];
             if (letter == '.' || letter == '-' || letter == 'C') {
                 ind_min = point_indexes[ind];
@@ -151,15 +151,16 @@ export class Piece {
 
             for (let i = ind_min; i <= ind_max; i++) {
 
+                let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];
+
                 if (letter != '.' && letter != '-') {
                     let current_polyline = piece.part(point_indexes[ind], i);
                     if (letter == 'C') {
-                        if (!PolyLineUtils.isC(current_polyline))
+                        if (i2[1] != 0 || !PolyLineUtils.isC(current_polyline))
                             continue;
                     } else {
                         // this is a plane movement, so test invariants
                         let i1 = piece.invariants_matrix[prev_polyline_start % n][prev_polyline_end % n];
-                        let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];
                         if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
                             continue;
 
