@@ -107,6 +107,7 @@ export class Piece {
         let n = this.size;
 
         let searchesCount = 0;
+        let foundCount = 0;
         console.time('search for type');
 
         function search(type: PieceType, point_indexes: int[], ind: int) {
@@ -116,6 +117,7 @@ export class Piece {
             let k = type.size;
 
             if (ind == k) {
+                foundCount++;
                 callback(type, point_indexes);
                 return;
             }
@@ -158,8 +160,8 @@ export class Piece {
                         // this is a plane movement, so test invariants
                         let i1 = piece.invariants_matrix[prev_polyline_start % n][prev_polyline_end % n];
                         let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];
-                        // if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
-                        //     continue;
+                        if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
+                            continue;
 
                         let previous_polyline = piece.part(prev_polyline_start, prev_polyline_end);
 
@@ -178,8 +180,11 @@ export class Piece {
                                 break;
                         }
 
-                        if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
-                            console.log("HMM", i1, i2, letter, previous_polyline.toString(), current_polyline.toString());
+                        /*if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
+                            console.log("HMM", i1, i2, letter, previous_polyline.toString(), current_polyline.toString(),
+                                prev_polyline_start % n, prev_polyline_end % n,
+                                point_indexes[ind] % n, i % n
+                            );*/
                     }
                 }
 
@@ -197,7 +202,7 @@ export class Piece {
                 search(type, point_indexes, 0);
             }
             console.timeEnd("search " + type.name);
-            console.log('count', type.name, type.number, searchesCount);
+            console.log('count', type.name, type.number, foundCount + " of " + searchesCount);
         }
 
         //TODO TG1G1TG2G2 will always be found two times
@@ -220,8 +225,8 @@ export class Piece {
             let vec = 0;
             let sq_dist = 0;
             this.invariants_matrix[i] = new Array<Invariants>(n);
-            // this.invariants_matrix[i][i] = [dot, Math.abs(vec), sq_dist];
-            for (let j = i + 1; j <= i + n; j++) {
+            this.invariants_matrix[i][i] = [dot, Math.abs(vec), sq_dist];
+            for (let j = i + 1; j < i + n; j++) {
                 let jj = j % n;
                 let prev_point = this.point(j - 1);
                 let point = this.point(j);

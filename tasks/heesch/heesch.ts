@@ -44,6 +44,17 @@ export class Heesch { //TODO название класса должно совп
      * @param preferred_width
      */
     initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
+        // test
+        let square = new Piece([
+            new Point(0, 0),
+            new Point(0, 18),
+            new Point(18, 18),
+            new Point(18, 0)
+        ]);
+        square = square.fulfill();
+        square.searchForType((t, i) => {});
+        console.log("=====================================")
+
         this.kioapi = kioapi;
 
         this.editor_canvas = document.createElement('canvas');
