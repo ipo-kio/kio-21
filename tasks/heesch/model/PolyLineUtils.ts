@@ -93,4 +93,11 @@ export class PolyLineUtils {
             points.push(p.point(i).toString());
         return points.join('~');
     }
+
+    static isPerpendicular(g1: Transform, g2: Transform) {
+        return Math.abs(g1.a + g2.a) < EPS &&
+            Math.abs(g1.b + g2.b) < EPS &&
+            Math.abs(g1.d + g2.d) < EPS &&
+            Math.abs(g1.e + g2.e) < EPS;
+    }
 }

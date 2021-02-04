@@ -22,18 +22,20 @@ export class TessellationView {
         ctx.strokeStyle = color;
         ctx.lineJoin = "round";
 
-        // for (let t1 = 0; t1 <= 1; t1++)
-        for (let t1 = -10; t1 <= 10; t1++)
+        // for (let t1 = 0; t1 <= 0; t1++)
+            for (let t1 = -10; t1 <= 10; t1++)
             // for (let t2 = 0; t2 <= 0; t2++) {
-            for (let t2 = -10; t2 <= 10; t2++) {
-                let cords = ({x, y}: {x: number, y: number}) : [x: number, y: number] => {
+                for (let t2 = -10; t2 <= 10; t2++) {
+                let cords = ({x, y}: { x: number, y: number }): [x: number, y: number] => {
                     return [
                         this.x0 + this.one * (x + t1 * this.tesselation.T1.x + t2 * this.tesselation.T2.x),
                         this.y0 - this.one * (y + t1 * this.tesselation.T1.y + t2 * this.tesselation.T2.y)
                     ];
                 }
 
+                let ind = 0;
                 for (let piece of this.tesselation.pieces) {
+                    ind++;
                     ctx.beginPath();
                     let startPoint = piece.point(0)
                     ctx.moveTo(...cords(startPoint));
@@ -75,23 +77,39 @@ export class TessellationView {
                     let ky = 2;
                     let o1 = piece.orientation[0];
                     let o2 = piece.orientation[1];
-                    let pc1 = pc.addWithCoef(o1, -kx/2).addWithCoef(o2, -ky/2);
+                    let pc1 = pc.addWithCoef(o1, -kx / 2).addWithCoef(o2, -ky / 2);
                     let pc2 = pc1.addWithCoef(o1, kx);
                     let pc3 = pc1.addWithCoef(o2, ky);
                     let [x1, y1] = cords(pc1);
                     let [x2, y2] = cords(pc2);
                     let [x3, y3] = cords(pc3);
                     ctx.save();
+
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
                     ctx.lineTo(x3, y3);
                     ctx.fillStyle = "black";
+
                     ctx.fill();
+                    // ctx.font = "21px Arial";
+                    // ctx.textBaseline = "middle";
+                    // ctx.textAlign = "center";
+                    // let [pcx, pcy] = cords(pc);
+                    // ctx.fillText('' + ind, pcx, pcy);
                     ctx.restore();
                 }
             }
 
-        ctx.restore();
+        let p = this.tesselation.pieces[0];
+        let inds = this.tesselation.indexes;
+        console.log("NEW TESSELLATION", inds.toString());
+        for (let i = 0; i < inds.length; i++) {
+            let j = i + 1;
+            if (j == inds.length)
+                j = 0;
+            let line = p.part(inds[i], inds[j]);
+            console.log("POLYLINE", line.toString());
+        }
     }
 }

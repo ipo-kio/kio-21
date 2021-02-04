@@ -4,12 +4,12 @@ import {int, Piece} from "./Piece";
 const ZERO = new Point(0, 0);
 
 export class Transform {
-    private a: number;
-    private b: number;
-    private c: number;
-    private d: number;
-    private e: number;
-    private f: number;
+    readonly a: number;
+    readonly b: number;
+    readonly c: number;
+    readonly d: number;
+    readonly e: number;
+    readonly f: number;
 
     constructor(a: number, b: number, c: number, d: number, e: number, f: number) {
         this.a = a;

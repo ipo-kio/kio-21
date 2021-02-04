@@ -1,6 +1,7 @@
 import {int, Piece} from "./Piece";
 import {Tessellation} from "./Tessellation";
 import {G, R2, R4} from "./Transform";
+import {PolyLineUtils} from "./PolyLineUtils";
 
 // www.eschertile.com/tile28.htm
 // www.eschertile.com
@@ -10,7 +11,7 @@ export class PieceType {
     readonly name: string;
     readonly number: int;
     readonly type: TypeElement[];
-    readonly tessellate: (piece: Piece, indexes: int[]) => Tessellation;
+    readonly tessellate: (piece: Piece, indexes: int[]) => Tessellation | null;
 
     constructor(name: string, number: int, type: TypeElement[], tessellate: (piece: Piece, indexes: int[]) => Tessellation) {
         this.name = name;
@@ -43,7 +44,7 @@ export const TYPE_TTTTTT = new PieceType(
         let T1 = piece.point(indexes[5]).sub(piece.point(indexes[1]));
         let T2 = piece.point(indexes[3]).sub(piece.point(indexes[1]));
         let pieces: Piece[] = [piece];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -72,7 +73,7 @@ export const TYPE_TCCTCC = new PieceType(
 
         let T2 = F_M3.sub(D);
         let pieces: Piece[] = [piece, M3_sym.applyToPiece(piece, true)];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -108,7 +109,7 @@ export const TYPE_CC4C4C4C4 = new PieceType(
             pieces.push(rotated_piece);
         }
 
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -138,7 +139,7 @@ export const TYPE_TG1G1TG2G2 = new PieceType(
         let T2 = E.sub(A_g);
 
         let pieces: Piece[] = [piece, g.applyToPiece(piece, true)];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -168,7 +169,7 @@ export const TYPE_TG1G2TG2G1 = new PieceType(
 
         let T2 = D_g.sub(E);
         let pieces: Piece[] = [piece, g.applyToPiece(piece, true)];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -211,7 +212,7 @@ export const TYPE_TCCTGG = new PieceType(
             g.applyToPiece(piece, true),
             g.applyToPiece(left_piece, true)
         ];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -227,12 +228,12 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
         ['G', 3]
     ],*/
     [  // 010|212.010212
-        ['.'],
-        ['-'],
-        ['G', 0],
-        ['C'],
-        ['G', 1],
-        ['C']
+        ['-'],    // G2
+        ['-'],    // G1
+        ['G', 0], // G2
+        ['C'],    // C
+        ['G', 1], // G1
+        ['C']     // C
     ],
     function tessellate(piece, indexes) {
         /*let D = piece.point(indexes[0]);
@@ -253,6 +254,9 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
 
         let M1_rot = R2(M1);
         let g1 = G(B, C, F, E);
+        let g2 = G(C, D, A, B);
+        if (!PolyLineUtils.isPerpendicular(g1, g2))
+            return null;
 
         let T1 = E.sub(M1_rot.apply(A, true));
         let T2 = C.sub(g1.apply(E, true));
@@ -264,7 +268,7 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
             piece_left,
             M1_rot.applyToPiece(piece_left, true)
         ];
-        return {T1, T2, pieces};
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 

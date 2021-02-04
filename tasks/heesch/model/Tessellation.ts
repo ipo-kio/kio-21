@@ -5,4 +5,5 @@ export interface Tessellation {
     T1: Point;
     T2: Point;
     pieces: Piece[];
+    indexes: number[];
 }

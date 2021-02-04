@@ -142,6 +142,9 @@ export class Heesch { //TODO название класса должно совп
 
         piece.searchForType((pt, ind) => {
             let tessellation = pt.tessellate(piece, ind);
+            if (tessellation == null)
+                return;
+            console.log("adding indexes", ind);
             let new_index = -1 + this.tessellations.push(tessellation);
             let option = document.createElement("option");
             option.value = "" + new_index;
