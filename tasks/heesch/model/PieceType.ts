@@ -273,11 +273,11 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
 );
 
 export const ALL_PIECE_TYPES = [
-    TYPE_TTTTTT,      // 2        t1 t2
-    TYPE_TCCTCC,      // 7        t1 r/2
+    TYPE_TTTTTT,      // 2        t1 t2      // !
+    TYPE_TCCTCC,      // 7        t1 r/2     // !
     TYPE_CC4C4C4C4,   // 16       t1 r/4
-    TYPE_TG1G1TG2G2,  // 18       t1 s
-    TYPE_TG1G2TG2G1,  // 20       t1 g
-    TYPE_TCCTGG,      // 24       t1 r/2 g
-    TYPE_CG1CG2G1G2   // 28       t1 r/2 g
+    TYPE_TG1G1TG2G2,  // 18       t1 s       // !
+    TYPE_TG1G2TG2G1,  // 20       t1 g       // !
+    TYPE_TCCTGG,      // 24       t1 r/2 g   // !
+    TYPE_CG1CG2G1G2   // 28       t1 r/2 g   // !
 ];

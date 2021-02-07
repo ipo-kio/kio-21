@@ -1,0 +1,72 @@
+== hexagons:
+
+IH-4: ! TCCTCC
+IH-5: ! TCCTGG
+IH-6: ! CG1CG2G1G2
+IH-1: ! TTTTTT
+IH-2: ! TG1G1TG2G2
+IH-3: ! TG1G2TG2G1
+
+== pentagons:
+
+IH-28: ! CC4C4C4C4
+IH-27: CG1G2G1G2  (IH-6)
+IH-22: LTGGT (L)
+IH-23: TCCTC (IH-4)
+IH-24: LTCCT (L)
+IH-25: TCTGG (IH-5)
+
+== quadrilaterals:
+
+squares:
+
+IH-55: C4C4C4C4 (IH-28)
+IH-56: LLC4C4 (L)
+
+rectangles:
+
+IH-52: G1G2G1G2 (IH-6)
+IH-48: LLLL (L)
+
+parallelograms:
+
+IH-41: TTTT (IH-1)
+IH-42: LTLT (L)
+IH-43: TGTG (IH-3)
+IH-47: TCTC (IH-4)
+IH-50: LTCT (L)
+
+trapeziums:
+
+IH-49: LCLC (L)
+IH-45: LGLG (L)
+IH-54: LLLC (L)
+
+kites:
+
+IH-44: G1G1G2G2 (IH-6)
+
+arbitrary:
+
+IH-51: CGCG (IH-6)
+IH-53: CCGG (IH-6)
+IH-46: CCCC (IH-4)
+
+== triangles:
+
+right-angled:
+
+IH-79: CC4C4 (IH-28)
+IH-81: LC4C4 (L)
+IH-80: LLL (L)
+IH-78: LLC (L)
+
+isosceles:
+
+IH-86: CGG (IH-6)
+IH-83: LGG (L)
+
+arbitrary:
+
+IH-84: CCC (IH-4)
+IH-85: LCC (L)

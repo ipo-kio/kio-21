@@ -1,9 +1,41 @@
 import {Point} from "./Point";
-import {int, Piece} from "./Piece";
+import {Piece} from "./Piece";
 
 const ZERO = new Point(0, 0);
 
 export class Transform {
+    static byPoints(A: Point, B: Point, C: Point, D: Point, changeOrientation: boolean): Transform | null {
+        if (A.dist2(B) != C.dist2(D))
+            return null;
+
+        if (changeOrientation) {
+            A = new Point(A.x, -A.y); // 1  0 0
+            B = new Point(B.x, -B.y); // 0 -1 0
+        }
+
+        let v1 = B.sub(A);
+        let v2 = D.sub(C);
+        let a = v2.angle - v1.angle;
+        let T1 = Transform.rotation(a);
+        let A1 = T1.apply(A);
+        let B1 = T1.apply(B);
+
+        let vA = A.sub(A1);
+        let orientationMul = changeOrientation ? -1 : 1;
+
+        return new Transform(
+            T1.a, orientationMul * T1.b, vA.x,
+            T1.d, orientationMul * T1.e, vA.y
+        );
+    }
+
+    static rotation(angle: number): Transform {
+        return new Transform(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0
+        );
+    }
+
     readonly a: number;
     readonly b: number;
     readonly c: number;
@@ -24,10 +56,10 @@ export class Transform {
         let x = this.a * p.x + this.b * p.y + this.c;
         let y = this.d * p.x + this.e * p.y + this.f;
 
-        if (round) {
-            x = Math.round(x);
-            y = Math.round(y);
-        }
+        // if (round) {
+        //     x = Math.round(x);
+        //     y = Math.round(y);
+        // }
 
         return new Point(x, y);
     }

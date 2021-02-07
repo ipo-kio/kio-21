@@ -3,6 +3,7 @@ import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
 import {ALL_PIECE_TYPES, PieceType} from "./PieceType";
 import {PolyLineUtils} from "./PolyLineUtils";
+import {Tessellation} from "./Tessellation";
 
 export const EPS = 1e-10;
 
@@ -243,6 +244,13 @@ export class Piece {
 
                 this.invariants_matrix[i][jj] = [dot, Math.abs(vec), sq_dist];
             }
+        }
+    }
+
+    public searchForTessellations(callback: (t: Tessellation) => void): void {
+        let points = [0, 0, 0, 0, 0, 0]; //order 6 is the maximal order
+        function search(order: number, order_index: number) {
+            
         }
     }
 }
