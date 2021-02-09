@@ -119,7 +119,7 @@ export class Brilliant
 		if (solutionJson !== undefined )
 		{
 			//log('sol1')
-			let sol = JSON.parse(solutionJson)
+			let sol = c
 			//log('sol2')
 			//log(sol)
 			//log('sol3')
