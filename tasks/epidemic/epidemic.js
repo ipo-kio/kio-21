@@ -1,11 +1,12 @@
-
 import './epidemic.scss'
 import './slider.scss'
 import { Start } from './Classes/Start.js';
 import { Global } from './Classes/Global.js';
 import { Processor } from './Classes/Processor.js';
-import { Solution } from './Classes/Solution.js';
+import { SolutionHelper } from './Classes/SolutionHelper.js';
+import { Solution} from './Classes/Solution.js';
 import { Controller } from './Classes/Controller.js';
+import { Config } from './Classes/Config';
 
 var _thisProblem = null
 
@@ -29,6 +30,10 @@ export class Epidemic
 	{
 		Epidemic.kioapi = kioapi
 		log('initialize()')
+
+		Config.init(this.settings.level);
+
+
 		this.initInterface(domNode, preferred_width)
 	}
 
@@ -60,7 +65,7 @@ export class Epidemic
 
 		let solution = Global.getCurrentSolution();
 
-		log(solution)
+		//log(solution)
 
 		return JSON.stringify(solution)
 	}
@@ -76,12 +81,13 @@ export class Epidemic
 			solutionObject = JSON.parse(solutionJson)
 		}
 		else{
-			solutionObject = Global.createSolutionFromInterface();
+			solutionObject = SolutionHelper.createSolutionFromInterface();
 		}
 
-		Processor.calcSolution(solutionObject);
-
-		Global.setSolutionOnInteface(solutionObject);
+		Processor.calcSolution('loadSolution', solutionObject);
+		
+		Controller.go2End();
+		
 	}
 
 	static saveCurrentSolution (src)
@@ -89,7 +95,7 @@ export class Epidemic
 		log('saveCurrentSolution() src=' + src)
 		let solution = Global.getCurrentSolution()
 
-		log(solution)
+		//log(solution)
 
 		Epidemic.kioapi.submitResult({
 			_totalProfit: solution._totalProfit

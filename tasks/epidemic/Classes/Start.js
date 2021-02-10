@@ -30,10 +30,13 @@ export class Start
 		div.id = 'div1';
 		superDiv.appendChild(div);
 
+		Global._canvas1W = 400;
+		Global._canvas1H = 200;
+
 		let canvas1 = document.createElement('canvas');
 		canvas1.id = 'canvas1';
-		canvas1.width = 400;
-		canvas1.height = 200;
+		canvas1.width = Global._canvas1W;
+		canvas1.height = Global._canvas1H;
 		canvas1.className = 'canvas1'
 		div.appendChild(canvas1);
 
@@ -45,22 +48,57 @@ export class Start
 		superDiv.appendChild(div);
 
 		btn = document.createElement('button')
-		btn.innerHTML = 'bbbbbbbb';
+		btn.innerHTML = '&#8810;'; // <<
 		btn.className = 'btn';
+		btn.setAttribute('title', 'В начало');
+		div.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.go2Start();
+		})
+
+		btn = document.createElement('button')
+		btn.innerHTML = '&#8918;'; // <
+		btn.className = 'btn';
+		btn.setAttribute('title', 'Шаг назад');
+		div.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.go2Next();
+		})
+
+		btn = document.createElement('button')
+		btn.innerHTML = '&#8919;'; // >
+		btn.className = 'btn';
+		btn.setAttribute('title', 'Шаг вперед');
+		div.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.go2Next();
+		})
+
+		btn = document.createElement('button')
+		btn.innerHTML = '&#8811;'; // >>
+		btn.className = 'btn';
+		btn.setAttribute('title', 'В конец');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
 		{
 			Controller.go2End();
 		})
-	
-		//--------------------
-		/*
-		let btn = document.getElementById('start_btn');
+
+		btn = document.createElement('button');
+		btn.id = 'btn_play';
+		btn.innerHTML = '&#9658;'; // play
+		btn.className = 'btn btn_play';
+		btn.setAttribute('title', 'Play');
+		div.appendChild(btn);
 		btn.addEventListener('click', function()
 		{
-			Global.start();
+			Controller.playStartStop(); //-- TODO PETER  Кнопка Плей не нажимается 
 		})
-		*/
+	
+		//--------------------
 
 		div = document.createElement('div')
 		div.innerHTML = '';
@@ -73,34 +111,20 @@ export class Start
 		,img
 		, 0, 100
 		);
+
+		Global._slider.onvaluechangeManual = function () {
+			// -- тащим руками
+			Controller.go2Day(Global._slider.getValue());
+		}
+
+		Global._slider.onvaluechangeExternal = function () {
+			// -- изменяем программно
+			//log('22222 = '+ _slider.getValue());
+		
+		}
 	}
 
-	/*
-	static getHtml()
-	{
-		var html = ''
 
-		html += '<DIV id="top_div" class="top_div">';
-		html += '<div id="top_left_div" class="top_left_div">';
-		html += '<canvas id="canvas_top" class="canvas_top"></canvas>';
-
-		html += '</div>';
-		html += '<div id="top_right_div" class="top_right_div">';
-
-		html += '</div>';
-		html += '</DIV>';
-		html += '<DIV id="bottom_div" class="bottom_div">';
-		html += '<button id="start_btn" return false;" class="start_btn">Старт</button>';
-		html += '</DIV>';
-
-		return html;
-	}
-
-	static start()
-	{
-		log('start')
-	}
-	*/
 }
 
 function log(s){
