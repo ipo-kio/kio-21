@@ -22,6 +22,82 @@ export class Start
 		//superDiv.style.height = (H) + 'px'
 		domNode.appendChild(superDiv);
 
+		//------strategy--patternDiv------------
+
+		let s = '<div> \
+		<span style="float: right;">\
+			<button id="str_del_" onclick="" class="str_del_btn" >\
+				&#9932;\
+			</button>\
+		</span>\
+	</div>\
+	<div>\
+		<table>\
+			<tr>\
+				<td class="param_cap">дней С</td>\
+				<td style="white-space: nowrap;">\
+					<input type="text" id="str_from_" value="1" size="2">\
+					<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
+					<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
+				</td>\
+			</tr>\
+			<tr>\
+				<td class="param_cap">По</td>\
+				<td>\
+					<input type="text" id="str_to_" value="1" size="2">\
+					<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
+					<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
+				</td>\
+			</tr>\
+			<tr>\
+				<td><label for="str_mask_">Маски</label></td>\
+				<td>\
+					<input type="checkbox" id="str_mask_">\
+				</td>\
+			</tr>\
+			<tr>\
+				<td><label for="str_kar_">Карантин</label></td>\
+				<td>\
+					<input type="checkbox" id="str_kar_">\
+				</td>\
+			</tr>\
+		</table>\
+	</div>\
+';
+
+		let divSSPattern = document.createElement('div')
+		divSSPattern.innerHTML = s;
+		divSSPattern.id = 'strategy_';
+		divSSPattern.className = 'str_div';
+		superDiv.appendChild(divSSPattern);
+
+		//-------------------
+
+		let divSS = document.createElement('div')
+		divSS.innerHTML = '';
+		divSS.id = 'div_str_super';
+		superDiv.appendChild(divSS);
+
+		let divSControls = document.createElement('div')
+		divSControls.innerHTML = '';
+		divSControls.id = 'div_str_controlls';
+		divSS.appendChild(divSControls);
+
+		btn = document.createElement('button')
+		btn.innerHTML = '+'; // <<
+		btn.className = 'btn_str_control';
+		btn.setAttribute('title', 'Добавить стратегию');
+		divSControls.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.addStrategy();
+		})
+
+		//-- конейнер для стратегий
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'strategy_cont';
+		divSS.appendChild(div);
 
 		//--------------------
 
@@ -66,7 +142,7 @@ export class Start
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
 		{
-			Controller.go2Next();
+			Controller.go2Prev();
 		})
 
 		btn = document.createElement('button')

@@ -2,7 +2,8 @@ import { Epidemic } from "../epidemic";
 import { Solution } from "./Solution";
 import { InterfaceHelper } from "./InterfaceHelper";
 import { Controller } from "./Controller";
-
+import { SolutionHelper } from "./SolutionHelper";
+import { Processor } from "./Processor";
 
 export class Global
 {
@@ -79,6 +80,20 @@ export class Global
 	static getCurrentSolution()
 	{
 		return Global._currentSolution;
+	}
+
+	static recalcFromInterface(src)
+	{
+		log('recalcFromInterface() src=' + src);
+
+		let solutionObject = SolutionHelper.createSolutionFromInterface();
+
+		if(solutionObject != null)
+		{
+			Processor.calcSolution('recalcFromInterface', solutionObject);
+			
+			Controller.go2End();			
+		}
 	}
 
 }

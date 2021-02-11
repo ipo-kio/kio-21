@@ -19,7 +19,7 @@ export class Epidemic
 		log('constructor==============================')
 		this.settings = settings
 		log(settings)
-
+	
 	}
 
 	id () {
@@ -80,14 +80,16 @@ export class Epidemic
 		if (solutionJson !== undefined )
 		{
 			solutionObject = JSON.parse(solutionJson)
+			
+			Processor.calcSolution('loadSolution', solutionObject);
+			
+			Controller.go2End();
 		}
 		else{
-			solutionObject = SolutionHelper.createSolutionFromInterface();
+
+			Global.recalcFromInterface('loadSolution');
 		}
 
-		Processor.calcSolution('loadSolution', solutionObject);
-		
-		Controller.go2End();
 		
 	}
 
@@ -109,7 +111,12 @@ export class Epidemic
 		_thisProblem = this
 
 		Start.createGlobalInterface(domNode);
+	
+	}
 
+	str_del(btn)
+	{
+		alert(333)
 	}
 }
 

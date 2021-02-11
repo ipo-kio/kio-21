@@ -29,3 +29,30 @@ height1: 600px;
 .btn_play{
 	margin-left: 50px;
 }
+
+.btn_str_control
+{
+	background-color: antiquewhite;
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.str_div
+{
+	background-color: bisque;
+	border: solid black 1px;
+	display: none;
+}
+
+.str_del_btn
+{
+	float: right; 
+	cursor: pointer;
+}
+
+.str_day_plusminus
+{
+	font-size: 12px;
+	width: 24;
+}
