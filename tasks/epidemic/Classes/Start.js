@@ -40,6 +40,8 @@ export class Start
 		canvas1.className = 'canvas1'
 		div.appendChild(canvas1);
 
+		Global._ctx = canvas1.getContext('2d');
+
 		//--------------------
 
 		div = document.createElement('div')
@@ -95,7 +97,7 @@ export class Start
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
 		{
-			Controller.playStartStop(); //-- TODO PETER  Кнопка Плей не нажимается 
+			Controller.playStartStop(); 
 		})
 	
 		//--------------------

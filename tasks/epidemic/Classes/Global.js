@@ -3,6 +3,7 @@ import { Solution } from "./Solution";
 import { InterfaceHelper } from "./InterfaceHelper";
 import { Controller } from "./Controller";
 
+
 export class Global
 {
 	static _canvasTop;
@@ -14,6 +15,7 @@ export class Global
 	static _dayArr = [];
 	static _isPlay = false;
 	static _tikCounter = 0;
+	static _ctx;
 
     static getStrategyForDay(dayNumber, solutionObject)
     {
@@ -31,21 +33,25 @@ export class Global
 	{
 		Global._isPlay = false;
 		document.getElementById('btn_play').innerHTML = '&#9658;'; //-- start play
+		document.getElementById('btn_play').setAttribute('title', 'Play');
 	}
 
 	static playStart()
 	{
 		Global._isPlay = true;
 		Global.playTik();
-		document.getElementById('btn_play').innerHTML = '&#10074;';  //--- stop play
+		document.getElementById('btn_play').innerHTML = '||';  //--- stop play
+		document.getElementById('btn_play').setAttribute('title', 'Stop');
 	}
 
 	static playTik()
 	{
 		if(Global._isPlay)
 		{
-			Controller.go2Next();
-			setTimeout(Global.playTik, 100);		
+			Global.go2NextDay('tik');
+			setTimeout(Global.playTik, 100);	
+			
+			
 		}
 	}
 

@@ -41,6 +41,7 @@ export class Epidemic
 	{
 		return [
 			{ id: 'slider_p', src: 'epidemic-resources/tasks/epidemic/res/slider_p.png' },
+			{ id: 'kucha', src: 'epidemic-resources/tasks/epidemic/res/kucha.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 
 	}

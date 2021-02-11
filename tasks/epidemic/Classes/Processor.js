@@ -9,7 +9,7 @@ export class Processor
     {
         log('Processor.calcSolution() - src=' + src);
 
-        let i, man, n, day;
+        let i, man, n, n1, day;
         let dayNumber;
         let greenCount = 0;
         let yellowCount = 0;
@@ -149,56 +149,56 @@ export class Processor
                     }
                 }
 
-                //-- процесс заражения для этого дня
-                {
-                    if(dayNumber == 1) //-- первый день обрабатываем особо. В нем никто не заражается
-                    {
-                        ySum = 0;
-                        kY = 0;
-                    }
-                    else{
-        
-                        kY = Processor.getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy); //-- кол. заразившихся в этот день
-                        //--Накапливаем, т.к. количество может быть меньше единицы
-                        ySum = ySum + kY;
-        
-                    }
+            }
 
-                    if(ySum >= 1)
+            //-- процесс заражения для этого дня
+            {
+                if(dayNumber == 1) //-- первый день обрабатываем особо. В нем никто не заражается
+                {
+                    ySum = 0;
+                    kY = 0;
+                }
+                else{
+    
+                    kY = Processor.getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy); //-- кол. заразившихся в этот день
+                    //--Накапливаем, т.к. количество может быть меньше единицы
+                    ySum = ySum + kY;
+                            
+                }
+
+
+                if(ySum >= 1)
+                {
+                    n = Math.trunc(ySum); //-- если накопилось целое, то конвертируем его цвета (заражаем)
+                    n1 = n;
+    
+                    for(let j=0; j < Global._manArr.length; j++)
                     {
-                        n = Math.trunc(ySum); //-- если накопилось целое, то конвертируем его цвета (заражаем)
-                        n1 = n;
-        
-                        for(let j=0; j < Global._manArr.length; j++)
+                        man = Global._manArr[j];
+    
+                        if(man._color == 'green')
                         {
-                            man = Global._manArr[j];
-        
-                            if(man._color == 'green')
-                            {
-                                man._color = 'yellow';
-                                man._firstYellowDay = dayNumber;
-                                n--;
-                                greenCount--;
-                                yellowCount++;
-                            }
-        
-                            if(n == 0)
-                            {
-                                break;
-                            }
+                            man._color = 'yellow';
+                            man._firstYellowDay = dayNumber;
+                            n--;
+                            greenCount--;
+                            yellowCount++;
                         }
-        
-                        ySum = ySum - n1;
+    
+                        if(n == 0)
+                        {
+                            break;
+                        }
                     }
+    
+                    ySum = ySum - n1;
                 }
+            }            
 
-                for(let j=0; j < Global._manArr.length; j++)
-                {
-                    man = Global._manArr[j];        
-                    man._dayColorArr.push(man._color);
-                }
-
-
+            for(let j=0; j < Global._manArr.length; j++)
+            {
+                man = Global._manArr[j];        
+                man._dayColorArr.push(man._color);
             }
 
             //-- делаем текущий day
@@ -297,9 +297,10 @@ export class Processor
         {
             res = 0;
         }
-        else{
+        else
+        {
 
-            var kKarantin =0;
+            let kKarantin =0;
 
             if(strategy && strategy._isKarantin)
             {
@@ -307,15 +308,15 @@ export class Processor
             }
 
 
-            var R = Z * Config._stukByDayCount;
+            let R = Z * Config._stukByDayCount;
 
             if(strategy && strategy._isMaski)
             {
                 R = R * Config._maskZ;
             }
 
-
- 
+            //log(R)
+            res = R;
         }
 
 
