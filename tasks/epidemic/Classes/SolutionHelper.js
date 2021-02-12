@@ -69,8 +69,7 @@ export class SolutionHelper
 					}
 				}
 
-				str = StrategyHelper.createEmptyStarategy();
-				str._id = strId;
+				str = StrategyHelper.createEmptyStarategy(parseInt(strId, 10));
 				str._dayStart = d1;
 				str._dayFinish = d2;
 				str._isMaski = document.getElementById('str_mask_' + strId).checked;
@@ -80,7 +79,7 @@ export class SolutionHelper
 
 				solution._strategyArr.push(str);
 
-				log('errMess=' + errMess)
+				//log('errMess=' + errMess)
 
 				t = document.getElementById('strategy_' + str._id);
 				t.setAttribute('title', errMess);
@@ -112,6 +111,7 @@ export class SolutionHelper
 				}
 
 				t = document.getElementById('strategy_' + str._id);
+				t.setAttribute('title', errMess);
 
 				if(str._isActive)
 				{	
@@ -119,7 +119,7 @@ export class SolutionHelper
 				}
 				else{
 					bgColor = 'red';
-					t.setAttribute('title', errMess);
+					
 				}
 
 				

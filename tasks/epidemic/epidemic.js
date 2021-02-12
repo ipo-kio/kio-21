@@ -138,11 +138,6 @@ export class Epidemic
 		Start.createGlobalInterface(domNode);
 	
 	}
-
-	str_del(btn)
-	{
-		alert(333)
-	}
 }
 
 function log(s){

@@ -15,7 +15,7 @@ export class Controller
     static go2End()
     {     
         Global.playStop();
-        InterfaceHelper.setDay('go2End', (Config._dayCount-1) );
+        InterfaceHelper.setDay('go2End', (Config._dayCount) );
     }
 
     static go2Next()

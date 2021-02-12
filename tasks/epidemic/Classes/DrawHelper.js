@@ -6,7 +6,7 @@ export class DrawHelper
 {
     static drawTik(dayNumber)
     {
-        let radius = 3; //-- ширина/2 человечка
+        
         let ctx = Global._ctx;
         let W = Global._canvas1W;
         let H = Global._canvas1H;
@@ -19,15 +19,16 @@ export class DrawHelper
 
         let day = Global._dayArr[dayNumber-1];
 
-        DrawHelper.drawVariant1(ctx, day, radius);  //-- все стоят
+        DrawHelper.drawVariant1(ctx, day);  //-- все стоят
 
-        //DrawHelper.drawVariant2(ctx, day, radius);  //-- все бегают
+        //DrawHelper.drawVariant2(ctx, day);  //-- все бегают
 
 
     }
 
-    static drawVariant2(ctx, day, radius)
+    static drawVariant2(ctx, day)
     {
+        let radius = 3; //-- ширина/2 человечка
         let man, man2;
         let W = Global._canvas1W;
         let H = Global._canvas1H;
@@ -119,7 +120,7 @@ export class DrawHelper
         ctx.drawImage(img, 0, 0, n, n);
     }
 
-    static drawVariant1(ctx, day, radius)
+    static drawVariant1(ctx, day)
     {
         let man;
         let lastx = 50;

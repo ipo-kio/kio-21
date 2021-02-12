@@ -19,10 +19,14 @@ export class InterfaceHelper
         {
             strategy = solution._strategyArr[i];
 
+            strategy._id = strategy._id * 1;
+
             if(strategy._id >= StrategyHelper._newDivId)
             {
-                StrategyHelper._divId = strategy._id + 1;
+                StrategyHelper._newDivId = strategy._id + 1;
             }
+
+            log('StrategyHelper._newDivId=' + StrategyHelper._newDivId + ' id=' + strategy._id)
 
             InterfaceHelper.createStrategyDiv(strategy);
         }
@@ -33,7 +37,7 @@ export class InterfaceHelper
     {
         log('setDay('+dayNumber+') src=' + src);
 
-        if(dayNumber < 1 || dayNumber >= Config._dayCount)
+        if(dayNumber < 1 || dayNumber > Config._dayCount)
         {
             dayNumber = Config._dayCount;
             log('setDay('+dayNumber+') src=' + src + '  dayNumber ERROR!');
@@ -91,6 +95,9 @@ export class InterfaceHelper
 
         //-- events
         {
+            newDiv.addEventListener('click', function(){
+                InterfaceHelper.strategyDivClick(newDiv.id, newId);
+            });
             
             t = document.getElementById('str_del_' + newId);
             t.addEventListener('click', function(){
@@ -148,6 +155,28 @@ export class InterfaceHelper
         document.getElementById('str_kar_' + newId).checked = (strategy._isKarantin);
         //document.getElementById('str_lok_' + newId).checked = (strategy._isLok);
        // document.getElementById('str_active_' + newId).checked = (strategy._isActive);
+    }
+
+    static strategyDivClick(strDivId, strategyId)
+    {
+        let div;
+        let arr = document.getElementsByClassName('str_div');
+
+        for(let i=0; i < arr.length; i++)
+        {
+            div = arr[i];
+            //div.className = 'str_div';
+            div.style.borderColor = 'black';
+            //div.style.borderWidth = '1px';
+
+            if(div.id == strDivId)
+            {
+                div.style.borderColor = 'blue';
+                //div.style.borderWidth = '3px';
+            }
+        }
+
+        Global.setSelectedStrategy(strategyId);
     }
 }
 

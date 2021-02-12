@@ -1,4 +1,5 @@
-
+import { Global } from './Global.js'
+import { Config } from './Config.js'
 
 export class Slider
 {
@@ -169,8 +170,7 @@ function slider_setValue(value, fireChangeEvent)
 		value = this.min_value;
 	if (value > this.max_value)
 		value = this.max_value;
-	if (this._value === value)
-		return;
+	//if (this._value === value) return;
 	this._value = value;
 	this.redraw();
 
@@ -241,79 +241,134 @@ function slider_redraw()
 
 
 
-	// bar
-	ctx.lineWidth = 4;
-	ctx.lineCap = 'round';
-	ctx.beginPath();
-	ctx.moveTo(0, this._canvas.height / 2);
-	ctx.lineTo(this._canvas.width, this._canvas.height / 2);
-	ctx.strokeStyle = '#085e7d'; //--#f7f700
-	ctx.stroke();
+	// центральная полоска
+	{
+		ctx.lineWidth = 4;
+		ctx.lineCap = 'round';
+		ctx.beginPath();
+		ctx.moveTo(0, this._canvas.height / 2);
+		ctx.lineTo(this._canvas.width, this._canvas.height / 2);
+		ctx.strokeStyle = '#085e7d'; //--#f7f700
+		ctx.stroke();		
+	}
 
+
+	//-- засечки
 	{
         var prevVal = -1;
         var val;
+		var y, x;
         var tikPos = 0;
-        var imgW2 = this._img.width / 2;
+        var imgW2 = this._img.width / 2 ;
 
         ctx.beginPath();
         ctx.lineWidth = 1;
 
-        for (var i = 0; i < this._canvas.width; i++)
-        {
-            val = Math.round(this.position_2_value(i));
+		y = this._canvas.height / 2 ;
 
-            if(val != prevVal)
-            {
-                if(val % 10 == 0)
-                {
-                    ctx.moveTo(i + imgW2, this._canvas.height / 3 - 5);
-                }
-                else{
-                    ctx.moveTo(i + imgW2, this._canvas.height / 3);
-                }
+		for (var i = 0; i <= this._max_value ; i++)
+		{
+			x = (this.value_2_pos(i));
 
-                ctx.lineTo(i + imgW2, this._canvas.height / 2);
+			if(i % 10 == 0 || i == this._max_value )
+			{
+				ctx.moveTo(x , y - 20);
+			}
+			else{
+				ctx.moveTo(x , y - 15);
+			}
 
-                if(val == this._tik)
-                {
-                    tikPos = i;
-                }
-            }
+			ctx.lineTo(x, y);
+		}
 
-            prevVal = val;
-        }
 
         ctx.stroke();
 	}
 
+	//-- Стратегии
+	{
+		let solution = Global.getCurrentSolution();
 
-	var tr = this.humb_rect();
+		if(solution)
+		{
+			var str;
+			y = 5 ;
+			var selectedId = Global._selectedStrategyId;
 
-	ctx.globalAlpha = 1;
-	ctx.drawImage(this._img, tr.x, tr.y);
-	ctx.globalAlpha = 1;
+			for (var i = 0; i < solution._strategyArr.length ; i++)
+			{
+				str = solution._strategyArr[i];
+
+				if(str._isActive)
+				{
+					ctx.beginPath();
+					ctx.lineWidth = 5;
+
+					if(str._id == selectedId)
+					{
+						ctx.strokeStyle = 'blue';
+					}
+					else{
+						ctx.strokeStyle = 'gray';
+					}
+
+					x = this.value_2_pos(str._dayStart);
+					ctx.moveTo(x , y);
+
+					x = this.value_2_pos(str._dayFinish);
+					ctx.lineTo(x , y);					
+
+					ctx.stroke();
+
+					/*
+					ctx.beginPath();
+					ctx.lineWidth = 1;
+					ctx.moveTo(x , y);
+					ctx.lineTo(x , y + 5);					
+					ctx.stroke();
+					*/
+
+				}
+			}			
+		}
+
+	}
+
+
+	//-- Указатель
+	{
+		var tr = this.humb_rect();
+
+		ctx.globalAlpha = 1;
+		ctx.drawImage(this._img, tr.x, tr.y);
+		ctx.globalAlpha = 1;		
+	}
+
 }
 
 function  slider_position_2_value(x) {
 	x -= this._img.width / 2;
-	let w = this._canvas.width - this._img.width;
+	let w = this._canvas.width - this._img.width/1;
 	return x * (this._max_value - this._min_value) / w + this._min_value;
+}
+
+function slider_value_2_pos(value)
+{
+	var w = this._canvas.width - this._img.width/1 ;//- this._img.width*2;
+	return w * (value - this._min_value) / (this._max_value - this._min_value) + this._img.width/2;
 }
 
 function slider_humb_rect()
 {
 	let xx = this.value_2_pos(this._value);
 	return {
-		x: xx,
+		x: xx - this._img.width/2,
 		y: this._canvas.height / 2 - this._img.height / 2,
 		w: this._img.width,
 		h: this._img.height
 	};
 }
 
-function slider_value_2_pos(value)
-{
-	var w = this._canvas.width - this._img.width;
-	return w * (value - this._min_value) / (this._max_value - this._min_value);
+function log(s){
+	console.log(s);
 }

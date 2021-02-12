@@ -17,6 +17,7 @@ export class Global
 	static _isPlay = false;
 	static _tikCounter = 0;
 	static _ctx;
+	static _selectedStrategyId = -1;
 
     static getStrategyForDay(dayNumber, solutionObject)
     {
@@ -107,6 +108,12 @@ export class Global
 			
 			Controller.go2End();			
 		}
+	}
+
+	static setSelectedStrategy(strategyId)
+	{
+		Global._selectedStrategyId = strategyId;
+		Global._slider.redraw();
 	}
 
 }

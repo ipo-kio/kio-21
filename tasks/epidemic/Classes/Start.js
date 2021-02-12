@@ -25,6 +25,8 @@ export class Start
 
 		//------strategy--patternDiv------------
 
+		//-- TODO PETER - блок стратегии подработать
+
 		let s = '<div> \
 		<span style="float: right;">\
 			<button id="str_del_" onclick="" class="str_del_btn" >\
@@ -86,7 +88,7 @@ export class Start
 		divSS.appendChild(divSControls);
 
 		btn = document.createElement('button')
-		btn.innerHTML = '+'; // <<
+		btn.innerHTML = 'Добавить стратегию'; // <<
 		btn.className = 'btn_str_control';
 		btn.setAttribute('title', 'Добавить стратегию');
 		divSControls.appendChild(btn);
@@ -187,9 +189,9 @@ export class Start
 
 		let img = Epidemic.kioapi.getResource('slider_p');
 
-		Global._slider = Slider.Create(div, 500, 100, 'canvas_slider'
+		Global._slider = Slider.Create(div, 800, 50, 'canvas_slider'
 		,img
-		, 0, 100
+		, 0, Config._dayCount
 		);
 
 		Global._slider.onvaluechangeManual = function () {

@@ -9,7 +9,11 @@ export class StrategyHelper
 
     static addNewManually()
     {
-        let str = StrategyHelper.createEmptyStarategy();
+        
+
+        let str = StrategyHelper.createEmptyStarategy(StrategyHelper._newDivId);
+
+        StrategyHelper._newDivId++;
 
         str._dayStart = StrategyHelper.getNextNewDay();
         str._dayFinish = str._dayStart + 1;
@@ -18,10 +22,12 @@ export class StrategyHelper
         InterfaceHelper.createStrategyDiv(str);
     }
 
-    static createEmptyStarategy()
+    static createEmptyStarategy(strId)
     {
+        
         let str = new Object();
-        str._id = StrategyHelper._newDivId++;
+        str._id = strId;
+        
         str._dayStart = 1;
         str._dayFinish = 2;
         str._isMaski = false;
