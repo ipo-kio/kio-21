@@ -1,0 +1,59 @@
+.super_div{
+background-color1: white;
+position1: relative;
+width1: 800px;
+height1: 600px;
+}
+
+
+
+.canvas1
+{
+	top1: 0px;
+	left1: 0px;
+	border: black solid 1px;
+	width1: 200px;
+	height1: 200px;
+	position1: absolute;
+	background-color: lightgoldenrodyellow;
+}
+
+.btn{
+	color: black;
+	font-size: 30px;
+	font-weight: bold;
+	width: 50px;
+	text-align: center;
+}
+
+.btn_play{
+	margin-left: 50px;
+}
+
+.btn_str_control
+{
+	background-color: antiquewhite;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	margin: 4px;
+}
+
+.str_div
+{
+	background-color: bisque;
+	border: solid black 2px;
+	display: none;
+}
+
+.str_del_btn
+{
+	float: right; 
+	cursor: pointer;
+}
+
+.str_day_plusminus
+{
+	font-size: 12px;
+	width: 24;
+}
