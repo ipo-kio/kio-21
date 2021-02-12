@@ -22,7 +22,7 @@ function gcd(a: int, b: int): int {
     return a;
 }
 
-type Invariants = [dot: number, vec: number, sq_dist: number];
+type Invariants = [dot: number, vec: number, sq_dist: number, is_line: boolean];
 
 export class Piece {
     readonly points: Point[] = [];
@@ -130,10 +130,10 @@ export class Piece {
             let circle_index = point_indexes[0] + n;
             let prev_polyline_start = point_indexes[corresponding_index]; // FIXME corresponding_index might be undefined, although, the variable is not used in this case
             let prev_polyline_end = point_indexes[corresponding_index + 1];
-            if (letter == '.' || letter == '-' || letter == 'C') {
+            if (letter == '.' || letter == '-' || letter == 'C' || letter == 'L') {
                 ind_min = point_indexes[ind];
                 ind_max = circle_index;
-                if (letter == '-')
+                if (letter == '-' || letter == 'L')
                     ind_min += 1;
             } else {
                 let len = prev_polyline_end - prev_polyline_start;
@@ -159,6 +159,9 @@ export class Piece {
                     if (letter == 'C') {
                         if (i2[1] != 0 || !PolyLineUtils.isC(current_polyline))
                             continue;
+                    } else if (letter == 'L') {
+                        if (!i2[3])
+                            return;
                     } else {
                         // this is a plane movement, so test invariants
                         let i1 = piece.invariants_matrix[prev_polyline_start % n][prev_polyline_end % n];
@@ -226,8 +229,9 @@ export class Piece {
             let dot = 0;
             let vec = 0;
             let sq_dist = 0;
+            let is_line = true;
             this.invariants_matrix[i] = new Array<Invariants>(n);
-            this.invariants_matrix[i][i] = [dot, Math.abs(vec), sq_dist];
+            this.invariants_matrix[i][i] = [dot, Math.abs(vec), sq_dist, is_line];
             for (let j = i + 1; j < i + n; j++) {
                 let jj = j % n;
                 let prev_point = this.point(j - 1);
@@ -240,17 +244,11 @@ export class Piece {
 
                     dot += prev_edge.dot(edge);
                     vec += prev_edge.vec(edge);
+                    is_line = is_line && Math.abs(prev_edge.vec(edge)) < EPS;
                 }
 
-                this.invariants_matrix[i][jj] = [dot, Math.abs(vec), sq_dist];
+                this.invariants_matrix[i][jj] = [dot, Math.abs(vec), sq_dist, is_line];
             }
-        }
-    }
-
-    public searchForTessellations(callback: (t: Tessellation) => void): void {
-        let points = [0, 0, 0, 0, 0, 0]; //order 6 is the maximal order
-        function search(order: number, order_index: number) {
-            
         }
     }
 }

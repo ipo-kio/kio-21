@@ -53,7 +53,6 @@ export class Heesch { //TODO название класса должно совп
         ]);
         square = square.fulfill();
         square.searchForType((t, i) => {});
-        console.log("=====================================")
 
         this.kioapi = kioapi;
 
@@ -144,7 +143,6 @@ export class Heesch { //TODO название класса должно совп
             let tessellation = pt.tessellate(piece, ind);
             if (tessellation == null)
                 return;
-            console.log("adding indexes", ind);
             let new_index = -1 + this.tessellations.push(tessellation);
             let option = document.createElement("option");
             option.value = "" + new_index;

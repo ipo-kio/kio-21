@@ -87,6 +87,10 @@ export class PolyLineUtils {
         return true;
     }
 
+    static isL(p: PolyLine) {
+        //TODO implement
+    }
+
     static toString(p: PolyLine) {
         let points = [];
         for (let i = 0; i < p.size; i++)

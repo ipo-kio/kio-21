@@ -34,7 +34,7 @@ IH-41: TTTT (IH-1)
 IH-42: LTLT (L)
 IH-43: TGTG (IH-3)
 IH-47: TCTC (IH-4)
-IH-50: LTCT (L)
+IH-50: LTCT (L IH-24)
 
 trapeziums:
 
@@ -57,16 +57,41 @@ IH-46: CCCC (IH-4)
 right-angled:
 
 IH-79: CC4C4 (IH-28)
-IH-81: LC4C4 (L)
-IH-80: LLL (L)
-IH-78: LLC (L)
+IH-81: LC4C4 (L) not IH-56
+IH-80: LLL (L IH-54)
+IH-78: LLC (L IH-49)
 
 isosceles:
 
 IH-86: CGG (IH-6)
-IH-83: LGG (L)
+IH-83: LGG (L IH-22)
 
 arbitrary:
 
 IH-84: CCC (IH-4)
-IH-85: LCC (L)
+IH-85: LCC (L IH-49)
+
+===================
+
+implement additional types:
+
+pentagons:
+IH-22: LTGGT (L)
+IH-24: LTCCT (L)
+
+squares:
+IH-56: LLC4C4 (L)
+
+rectangles:
+IH-48: LLLL (L)
+
+parallelograms:
+IH-42: LTLT (L)
+
+trapeziums:
+IH-49: LCLC (L)
+IH-45: LGLG (L)
+IH-54: LLLC (L)
+
+right-angled:
+IH-81: LC4C4 (L) not IH-56

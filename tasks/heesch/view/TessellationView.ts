@@ -103,13 +103,11 @@ export class TessellationView {
 
         let p = this.tesselation.pieces[0];
         let inds = this.tesselation.indexes;
-        console.log("NEW TESSELLATION", inds.toString());
         for (let i = 0; i < inds.length; i++) {
             let j = i + 1;
             if (j == inds.length)
                 j = 0;
             let line = p.part(inds[i], inds[j]);
-            console.log("POLYLINE", line.toString());
         }
     }
 }

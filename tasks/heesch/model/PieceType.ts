@@ -9,11 +9,11 @@ import {PolyLineUtils} from "./PolyLineUtils";
 export class PieceType {
 
     readonly name: string;
-    readonly number: int;
+    readonly number: string;
     readonly type: TypeElement[];
     readonly tessellate: (piece: Piece, indexes: int[]) => Tessellation | null;
 
-    constructor(name: string, number: int, type: TypeElement[], tessellate: (piece: Piece, indexes: int[]) => Tessellation) {
+    constructor(name: string, number: string, type: TypeElement[], tessellate: (piece: Piece, indexes: int[]) => Tessellation) {
         this.name = name;
         this.number = number;
         this.type = type;
@@ -31,7 +31,7 @@ type TypeElement = [letter: string, index?: int];
 
 export const TYPE_TTTTTT = new PieceType(
     "TTTTTT",
-    2,
+    'Heesch-2',
     [
         ['.'],
         ['.'],
@@ -50,7 +50,7 @@ export const TYPE_TTTTTT = new PieceType(
 
 export const TYPE_TCCTCC = new PieceType(
     "TCCTCC",
-    7,
+    'Heesch-7',
     [
         ['.'],
         ['C'],
@@ -79,7 +79,7 @@ export const TYPE_TCCTCC = new PieceType(
 
 export const TYPE_CC4C4C4C4 = new PieceType(
     "CC4C4C4C4",
-    16,
+    'Heesch-16',
     [
         ['C'],
         ['.'],
@@ -115,7 +115,7 @@ export const TYPE_CC4C4C4C4 = new PieceType(
 
 export const TYPE_TG1G1TG2G2 = new PieceType(
     "TG1G1TG2G2",
-    18,
+    'Heesch-18',
     [
         ['.'],
         ['.'],
@@ -145,7 +145,7 @@ export const TYPE_TG1G1TG2G2 = new PieceType(
 
 export const TYPE_TG1G2TG2G1 = new PieceType(
     "TG1G2TG2G1",  // disallow empty G1. This is the same as empty G2 starting from TG2G1 TG1G2
-    20,
+    'Heesch-20',
     [
         ['.'],
         ['-'],
@@ -175,7 +175,7 @@ export const TYPE_TG1G2TG2G1 = new PieceType(
 
 export const TYPE_TCCTGG = new PieceType(
     "TCCTGG",
-    24,
+    'Heesch-24',
     [
         ['.'],
         ['C'],
@@ -218,7 +218,8 @@ export const TYPE_TCCTGG = new PieceType(
 
 export const TYPE_CG1CG2G1G2 = new PieceType(
     "CG1CG2G1G2", // disallow empty G1 (CCGG), let it be the other type TCCTGG with emtpy T)
-    28,
+    // disallow empty G2, this is CGCG. Should be tested as a separate type
+    'Heesch-28',
     /*[
         ['C'],
         ['-'],
@@ -228,7 +229,7 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
         ['G', 3]
     ],*/
     [  // 010|212.010212
-        ['-'],    // G2
+        ['.'],    // G2
         ['-'],    // G1
         ['G', 0], // G2
         ['C'],    // C
@@ -254,9 +255,11 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
 
         let M1_rot = R2(M1);
         let g1 = G(B, C, F, E);
-        let g2 = G(C, D, A, B);
-        if (!PolyLineUtils.isPerpendicular(g1, g2))
-            return null;
+        if (!A.equals(B)) {
+            let g2 = G(C, D, A, B);
+            if (!PolyLineUtils.isPerpendicular(g1, g2))
+                return null;
+        }
 
         let T1 = E.sub(M1_rot.apply(A, true));
         let T2 = C.sub(g1.apply(E, true));
@@ -272,6 +275,151 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
     }
 );
 
+export const TYPE_LTGGT = new PieceType(
+    'LTGGT',
+    'IH-22',
+    [
+        ['L'],
+        ['.'],
+        ['-'],
+        ['G', 2],
+        ['T', 1]
+    ],
+    function tessellate(piece, indexes) {
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+        let E = piece.point(indexes[4]);
+
+        let g = G(C, D, D, E);
+        let B1 = g.apply(B);
+
+        let T1 = A.sub(B);
+        let T2 = B1.sub(B);
+
+        return {T1, T2,
+            pieces: [
+                piece,
+                g.applyToPiece(piece)
+            ],
+            indexes: indexes.slice()
+        };
+    }
+);
+
+export const TYPE_LTCCT = new PieceType(
+    'LTCCT',
+    'IH-24',
+    [
+        ['L'],
+        ['.'],
+        ['C'],
+        ['C'],
+        ['T', 1]
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LLC4C4 = new PieceType(
+    'LLC4C4',
+    'IH-56',
+    [ //must be a square
+        ['L'],
+        ['L'],
+        ['.'],
+        ['C4', 2]
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LLLL = new PieceType(
+    'LLLL',
+    'IH-48',
+    [ // must be a rectangle
+        ['L'],
+        ['L'],
+        ['L'],
+        ['L']
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LTLT = new PieceType(
+    'LTLT',
+    'IH-42',
+    [ // must be a parallelogram
+        ['L'],
+        ['.'],
+        ['L'],
+        ['T', 1]
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LCLC = new PieceType(
+    'LCLC',
+    'IH-49',
+    [ // must be a trapezium, L || L
+        ['L'],
+        ['C'],
+        ['L'],
+        ['C']
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LGLG = new PieceType(
+    'LGLG',
+    'IH-45',
+    [ // must be a trapezium, L || L
+        ['L'],
+        ['.'],
+        ['L'],
+        ['G', 1]
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LLLC = new PieceType(
+    'LLLC',
+    'IH-54',
+    [ // must be a trapezium, L0 || L2
+        ['L'],
+        ['L'],
+        ['L'],
+        ['C']
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
+export const TYPE_LC4C4 = new PieceType(
+    'LC4C4',
+    'IH-81',
+    [  // must be a right isosceles triangle
+        ['L'],
+        ['.'],
+        ['C4', 1]
+    ],
+    function tessellate(piece, indexes) {
+        return null;
+    }
+);
+
 export const ALL_PIECE_TYPES = [
     TYPE_TTTTTT,      // 2        t1 t2      // !
     TYPE_TCCTCC,      // 7        t1 r/2     // !
@@ -279,5 +427,15 @@ export const ALL_PIECE_TYPES = [
     TYPE_TG1G1TG2G2,  // 18       t1 s       // !
     TYPE_TG1G2TG2G1,  // 20       t1 g       // !
     TYPE_TCCTGG,      // 24       t1 r/2 g   // !
-    TYPE_CG1CG2G1G2   // 28       t1 r/2 g   // !
+    TYPE_CG1CG2G1G2,   // 28       t1 r/2 g   // !
+
+    TYPE_LTGGT,
+    TYPE_LTCCT,
+    TYPE_LLC4C4,
+    TYPE_LLLL,
+    TYPE_LTLT,
+    TYPE_LCLC,
+    TYPE_LGLG,
+    TYPE_LLLC,
+    TYPE_LC4C4
 ];
