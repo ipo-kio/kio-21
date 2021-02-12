@@ -2,6 +2,7 @@ import { Epidemic } from '../epidemic.js'
 import { Global } from './Global.js'
 import { Controller } from './Controller.js'
 import { Slider } from './slider.js'
+import { Config } from './Config.js'
 
 export class Start
 {
@@ -52,13 +53,13 @@ export class Start
 			<tr>\
 				<td><label for="str_mask_">Маски</label></td>\
 				<td>\
-					<input type="checkbox" id="str_mask_">\
+					<input type="checkbox" onclick="" id="str_mask_">\
 				</td>\
 			</tr>\
 			<tr>\
 				<td><label for="str_kar_">Карантин</label></td>\
 				<td>\
-					<input type="checkbox" id="str_kar_">\
+					<input type="checkbox" onclick="" id="str_kar_">\
 				</td>\
 			</tr>\
 		</table>\
@@ -69,6 +70,7 @@ export class Start
 		divSSPattern.innerHTML = s;
 		divSSPattern.id = 'strategy_';
 		divSSPattern.className = 'str_div';
+		divSSPattern.setAttribute('title', '')
 		superDiv.appendChild(divSSPattern);
 
 		//-------------------
@@ -192,7 +194,19 @@ export class Start
 
 		Global._slider.onvaluechangeManual = function () {
 			// -- тащим руками
-			Controller.go2Day(Global._slider.getValue());
+
+			let dayNumber = Global._slider.getValue();
+
+			if(dayNumber < 1 )
+			{
+				dayNumber = 1;
+			}
+			else  if( dayNumber >= Config._dayCount)
+			{
+				dayNumber = Config._dayCount;
+			}
+
+			Controller.go2Day(dayNumber);
 		}
 
 		Global._slider.onvaluechangeExternal = function () {

@@ -1,18 +1,48 @@
 import { Global } from "./Global";
 import { DrawHelper } from "./DrawHelper";
 import { Controller } from "./Controller";
+import { SolutionHelper } from "./SolutionHelper";
+import { StrategyHelper } from "./StrategyHelper";
+import { Config } from "./Config";
 
 export class InterfaceHelper
 {
-    static setSolutionOnInteface(src, dayNumber)
+    static setSolutionOnInteface(src, solution)
     {
-        log('InterfaceHelper.setSolutionOnInteface('+dayNumber+') src=' + src)
+        log('InterfaceHelper.setSolutionOnInteface src=' + src)
+
+		let strategy;
+		let conteinerDiv = document.getElementById('strategy_cont');
+		conteinerDiv.innerHTML = '';
+
+        for(let i=0; i < solution._strategyArr.length; i++)
+        {
+            strategy = solution._strategyArr[i];
+
+            if(strategy._id >= StrategyHelper._newDivId)
+            {
+                StrategyHelper._divId = strategy._id + 1;
+            }
+
+            InterfaceHelper.createStrategyDiv(strategy);
+        }
+
+    }
+
+    static setDay(src, dayNumber)
+    {
+        log('setDay('+dayNumber+') src=' + src);
+
+        if(dayNumber < 1 || dayNumber >= Config._dayCount)
+        {
+            dayNumber = Config._dayCount;
+            log('setDay('+dayNumber+') src=' + src + '  dayNumber ERROR!');
+        }
 
         DrawHelper.drawTik(dayNumber);
 
         Global.setTikCounter(dayNumber);
         Global._slider.setValue(dayNumber);
-
     }
 
     static createStrategyDiv(strategy)
@@ -88,6 +118,26 @@ export class InterfaceHelper
             });            
 
             //return str_day_plusminus(this, \'str_from_\');
+
+            t = document.getElementById('str_mask_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_kar_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_from_' + newId);
+            t.addEventListener('input', function(){
+                Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_to_' + newId);
+            t.addEventListener('input', function(){
+                Controller.strCheck(newId);
+            }); 
             
         }
 

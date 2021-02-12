@@ -9,13 +9,13 @@ export class Controller
     static go2Start()
     {     
         Global.playStop();
-        InterfaceHelper.setSolutionOnInteface('go2Start', 1);
+        InterfaceHelper.setDay('go2Start', 1);
     }
 
     static go2End()
     {     
         Global.playStop();
-        InterfaceHelper.setSolutionOnInteface('go2End', (Config._dayCount-1) );
+        InterfaceHelper.setDay('go2End', (Config._dayCount-1) );
     }
 
     static go2Next()
@@ -32,14 +32,14 @@ export class Controller
         {
             Global.playStop();
             let day = Global._dayArr[dayIdx - 1];
-            InterfaceHelper.setSolutionOnInteface('go2Prev', day._number);  
+            InterfaceHelper.setDay('go2Prev', day._number);  
         }
     }
 
     static go2Day(dayNumber)
     {
         Global.playStop();
-        InterfaceHelper.setSolutionOnInteface('go2Day', dayNumber );
+        InterfaceHelper.setDay('go2Day', dayNumber );
     }
 
     static playStartStop()
@@ -57,13 +57,20 @@ export class Controller
     static addStrategy()
     {
         StrategyHelper.addNewManually();
+        Global.recalcFromInterface('addStrategy');
     }
 
     static strDelete(strId)
     {
         let strDiv = document.getElementById('strategy_' + strId);
         strDiv.parentNode.removeChild(strDiv);
+        Global.recalcFromInterface('strDelete');
         return false;
+    }
+
+    static strCheck(strId)
+    {
+        Global.recalcFromInterface('strCheck strId=' + strId);
     }
 
     static strDayPlusMinus(targetInputId, strId, pm)

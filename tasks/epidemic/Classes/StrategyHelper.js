@@ -5,7 +5,7 @@ import { InterfaceHelper } from "./InterfaceHelper";
 
 export class StrategyHelper
 {
-    static _divId = 1;
+    static _newDivId = 1;
 
     static addNewManually()
     {
@@ -21,12 +21,12 @@ export class StrategyHelper
     static createEmptyStarategy()
     {
         let str = new Object();
-        str._id = StrategyHelper._divId++;
+        str._id = StrategyHelper._newDivId++;
         str._dayStart = 1;
         str._dayFinish = 2;
         str._isMaski = false;
         str._isKarantin = false;
-        str._isLok = false;
+        //str._isLok = false;
         str._isActive = true;
 
         return str;

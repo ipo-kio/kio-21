@@ -7,12 +7,14 @@ import { SolutionHelper } from './Classes/SolutionHelper.js';
 import { Solution} from './Classes/Solution.js';
 import { Controller } from './Classes/Controller.js';
 import { Config } from './Classes/Config';
+import { InterfaceHelper } from './Classes/InterfaceHelper';
 
 var _thisProblem = null
 
 export class Epidemic
 {
 	static kioapi = null;
+
 
 	constructor (settings)
 	{
@@ -42,6 +44,10 @@ export class Epidemic
 		return [
 			{ id: 'slider_p', src: 'epidemic-resources/tasks/epidemic/res/slider_p.png' },
 			{ id: 'kucha', src: 'epidemic-resources/tasks/epidemic/res/kucha.png' },
+			{ id: 'm_red', src: 'epidemic-resources/tasks/epidemic/res/m_red.png' },
+			{ id: 'm_green', src: 'epidemic-resources/tasks/epidemic/res/m_green.png' },
+			{ id: 'm_yellow', src: 'epidemic-resources/tasks/epidemic/res/m_yellow.png' },
+			{ id: 'm_blue', src: 'epidemic-resources/tasks/epidemic/res/m_blue.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 
 	}
@@ -56,9 +62,13 @@ export class Epidemic
 			ordering: 'maximize'
 		}
 
+		let _strCount = {
+			name: '_strCount',
+			title: 'Количество стратегий:',
+			ordering: 'minimize'
+		}
 
-
-		return[_totalProfit];
+		return[_totalProfit, _strCount];
 	}
 
 	solution (){
@@ -68,29 +78,33 @@ export class Epidemic
 
 		//log(solution)
 
+		if (solution === undefined )
+		{
+			solution = SolutionHelper.creteEmptySolution();
+		}
+
 		return JSON.stringify(solution)
 	}
 
-	loadSolution (solutionJson)
+	loadSolution (solution)
 	{
-		log('loadSolution() - ' + solutionJson)
+		log('loadSolution() - ' + solution)
 
 		let solutionObject;
 
-		if (solutionJson !== undefined )
+		if (solution !== undefined )
 		{
-			solutionObject = JSON.parse(solutionJson)
-			
-			Processor.calcSolution('loadSolution', solutionObject);
-			
-			Controller.go2End();
+			solutionObject = JSON.parse(solution)
 		}
-		else{
-
-			Global.recalcFromInterface('loadSolution');
+		else
+		{
+			solutionObject = SolutionHelper.creteEmptySolution();
 		}
 
-		
+		InterfaceHelper.setSolutionOnInteface('loadSolution', solutionObject);
+
+		Global.recalcFromInterface('loadSolution');
+
 	}
 
 	static saveCurrentSolution (src)
@@ -100,8 +114,19 @@ export class Epidemic
 
 		//log(solution)
 
+		let strCount = 0;
+
+		for(let i=0; i < solution._strategyArr.length; i++)
+		{
+			if(solution._strategyArr[i]._isActive)
+			{
+				strCount++;
+			}
+		}
+
 		Epidemic.kioapi.submitResult({
-			_totalProfit: solution._totalProfit
+			_totalProfit: solution._totalProfit,
+			_strCount: strCount
 		})
 	}
 

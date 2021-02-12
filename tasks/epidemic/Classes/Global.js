@@ -21,8 +21,21 @@ export class Global
     static getStrategyForDay(dayNumber, solutionObject)
     {
 		let strategy = null;
+		
+		for(let i=0; i < solutionObject._strategyArr.length; i++)
+		{
+			strategy = solutionObject._strategyArr[i];
 
-		return strategy;
+			if(!strategy._isActive) continue;
+
+
+			if(dayNumber >= strategy._dayStart  && dayNumber <= strategy._dayFinish)
+			{
+				return strategy;
+			}
+		}
+
+		return null;
     }
 
     static getCurrentDayIndex()
@@ -63,7 +76,7 @@ export class Global
         if(dayIdx < Global._dayArr.length-1)
         {
             let day = Global._dayArr[dayIdx + 1];
-            InterfaceHelper.setSolutionOnInteface('Global.go2NextDay + ' + src, day._number);            
+            InterfaceHelper.setDay('Global.go2NextDay + ' + src, day._number);            
         }
         else{
             Global._isPlay = false;

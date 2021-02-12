@@ -19,9 +19,9 @@ export class DrawHelper
 
         let day = Global._dayArr[dayNumber-1];
 
-        //DrawHelper.drawVariant1(ctx, day, radius);  //-- все стоят
+        DrawHelper.drawVariant1(ctx, day, radius);  //-- все стоят
 
-        DrawHelper.drawVariant2(ctx, day, radius);  //-- все бегают
+        //DrawHelper.drawVariant2(ctx, day, radius);  //-- все бегают
 
 
     }
@@ -122,37 +122,68 @@ export class DrawHelper
     static drawVariant1(ctx, day, radius)
     {
         let man;
-        let lastx = 10;
-		let y = 10;
+        let lastx = 50;
+		let y = 100;
         let x;
 		let manCountInLine = 25;
 		let inLineCount = 0;
+        let img;
+        let color;
+
+        let imgRed = Epidemic.kioapi.getResource('m_red');
+        let imgGreen = Epidemic.kioapi.getResource('m_green');
+        let imgYellow = Epidemic.kioapi.getResource('m_yellow');
+        let imgBlue = Epidemic.kioapi.getResource('m_blue');
 
         for(let i=0; i < Global._manArr.length; i++)
         {
             man = Global._manArr[i];
 
 			inLineCount++;
-			x = lastx + (radius*2) + radius;
+			//x = lastx + (radius*2) + radius;
+            x = lastx + 2 + 10;
 
+            color = DrawHelper.getColorForDay(man, day._dayIndex);
+
+            if(color == 'green')
+            {
+                img = imgGreen;
+            }
+            else if(color == 'yellow')
+            {
+                img = imgYellow;
+            }
+            else if(color == 'red')
+            {
+                img = imgRed;
+            }
+            else if(color == 'blue')
+            {
+                img = imgBlue;
+            }                        
+
+            ctx.drawImage(img, x, y, 20, 20);
+
+            /*
 			ctx.beginPath();
 			ctx.arc(x, y, radius, 0, 2*Math.PI, false);
 			ctx.fillStyle = DrawHelper.getColorForDay(man, day._dayIndex);
 			ctx.fill();
+            */
 
 			lastx = x;
 			
 
 			if( inLineCount == manCountInLine)
 			{
-				y = y + 10;
-				lastx = 10;
+				y = y + 22;
+				lastx = 50;
 				inLineCount = 0;
 			}            
         }
 
         //-- куча
-        let img = Epidemic.kioapi.getResource('kucha');
+        img = Epidemic.kioapi.getResource('kucha');
         let n = day._eeTotal / 100;
         ctx.drawImage(img, 0, 0, n, n);
     }
