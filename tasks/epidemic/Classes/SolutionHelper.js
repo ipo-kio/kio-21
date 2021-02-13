@@ -123,8 +123,7 @@ export class SolutionHelper
 				}
 
 				
-				t.style.backgroundColor = bgColor;
-				
+				t.style.backgroundColor = bgColor;			
 
 			}
 		}

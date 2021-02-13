@@ -41,6 +41,7 @@ height1: 600px;
 
 .str_div
 {
+	padding: 2px;
 	background-color: bisque;
 	border: solid black 2px;
 	display: none;
@@ -48,12 +49,53 @@ height1: 600px;
 
 .str_del_btn
 {
+	font-weight: bold;
+	font-size: 12px;
 	float: right; 
 	cursor: pointer;
+	padding-left: 2px;
+	padding-right: 2px;
+	margin-left1: 4px;
 }
 
 .str_day_plusminus
 {
 	font-size: 12px;
-	width: 24;
+	width: 21px;
+	padding: 0px;
+}
+
+table.str_t1 {
+	border-collapse: collapse;
+}	
+table.str_t1 td{
+	text-align: left;
+}
+.str_day{
+	width: 38px;
+}
+
+.str_cap{
+	font-size: 14px;
+	margin-right: 4px;
+	margin-left: 4px;
+}
+
+.str_num{
+
+	font-size: 16px;
+	font-weight: bold;
+	margin-left: 4px;
+}
+
+.str_day_to
+{
+	border1: black solid 1px;
+	border-radius1: 2px;
+	font-weight1: bold;
+	font-size: 14px;
+	background-color1: burlywood;
+	cursor: pointer;
+	padding-left: 4px;
+	padding-right: 4px;;
 }

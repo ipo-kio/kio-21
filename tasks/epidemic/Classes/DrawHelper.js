@@ -19,9 +19,9 @@ export class DrawHelper
 
         let day = Global._dayArr[dayNumber-1];
 
-        DrawHelper.drawVariant1(ctx, day);  //-- все стоят
+        //DrawHelper.drawVariant1(ctx, day);  //-- все стоят
 
-        //DrawHelper.drawVariant2(ctx, day);  //-- все бегают
+        DrawHelper.drawVariant2(ctx, day);  //-- все бегают
 
 
     }
@@ -187,6 +187,11 @@ export class DrawHelper
         img = Epidemic.kioapi.getResource('kucha');
         let n = day._eeTotal / 100;
         ctx.drawImage(img, 0, 0, n, n);
+
+
+
+        let n1 = day._ee / 5;
+        ctx.drawImage(img, n, n, n1, n1);
     }
 
     static getColorForDay(man, dayIndex)

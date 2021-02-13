@@ -140,6 +140,8 @@ export class Epidemic
 	}
 }
 
+
+
 function log(s){
 	console.log(s);
 }

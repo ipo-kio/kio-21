@@ -312,10 +312,10 @@ function slider_redraw()
 						ctx.strokeStyle = 'gray';
 					}
 
-					x = this.value_2_pos(str._dayStart);
+					x = this.value_2_pos(str._dayStart) - 3;
 					ctx.moveTo(x , y);
 
-					x = this.value_2_pos(str._dayFinish);
+					x = this.value_2_pos(str._dayFinish) - 2;
 					ctx.lineTo(x , y);					
 
 					ctx.stroke();

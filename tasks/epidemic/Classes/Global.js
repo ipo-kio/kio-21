@@ -4,6 +4,7 @@ import { InterfaceHelper } from "./InterfaceHelper";
 import { Controller } from "./Controller";
 import { SolutionHelper } from "./SolutionHelper";
 import { Processor } from "./Processor";
+import { Config } from "./Config";
 
 export class Global
 {
@@ -53,6 +54,13 @@ export class Global
 
 	static playStart()
 	{
+		let dayIdx = Global.getCurrentDayIndex();
+
+		if(dayIdx >= Config._dayCount-1)
+		{
+			Controller.go2Start();
+		}
+
 		Global._isPlay = true;
 		Global.playTik();
 		document.getElementById('btn_play').innerHTML = '||';  //--- stop play
@@ -64,9 +72,10 @@ export class Global
 		if(Global._isPlay)
 		{
 			Global.go2NextDay('tik');
-			setTimeout(Global.playTik, 100);	
-			
-			
+			setTimeout(Global.playTik, 100);						
+		}
+		else{
+			Global.playStop();
 		}
 	}
 

@@ -145,6 +145,16 @@ export class InterfaceHelper
             t.addEventListener('input', function(){
                 Controller.strCheck(newId);
             }); 
+
+            t = document.getElementById('str_day_toleft_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDaysMove(newId, 'left');
+            }); 
+
+            t = document.getElementById('str_day_toright_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDaysMove(newId, 'right');
+            }); 
             
         }
 
