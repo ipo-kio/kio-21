@@ -1,6 +1,6 @@
 import {int, Piece} from "./Piece";
 import {Tessellation} from "./Tessellation";
-import {G, R2, R4} from "./Transform";
+import {G, R2, R4, S} from "./Transform";
 import {PolyLineUtils} from "./PolyLineUtils";
 
 // www.eschertile.com/tile28.htm
@@ -319,7 +319,27 @@ export const TYPE_LTCCT = new PieceType(
         ['T', 1]
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+        let E = piece.point(indexes[4]);
+
+        let M = D.middle(E);
+        let rot = R2(M);
+        let piece1 = rot.applyToPiece(piece);
+
+        let mirror = S(A, B);
+
+        let pieces = [piece, piece1, mirror.applyToPiece(piece), mirror.applyToPiece(piece1)];
+        let T1 = E.sub(C);
+
+        let A1 = rot.apply(A);
+        let A2 = mirror.apply(A1);
+
+        let T2 = A2.sub(A1);
+
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
