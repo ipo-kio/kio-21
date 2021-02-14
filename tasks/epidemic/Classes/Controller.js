@@ -64,7 +64,7 @@ export class Controller
     static strDelete(strId)
     {
         let strDiv = document.getElementById('strategy_' + strId);
-        $('#strategy_' + strId).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).promise().done(function(){
+        $('#strategy_' + strId).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).promise().done(function(){
             strDiv.parentNode.removeChild(strDiv);
             Global.recalcFromInterface('strDelete ');
         });

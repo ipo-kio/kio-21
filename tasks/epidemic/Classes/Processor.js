@@ -226,8 +226,8 @@ export class Processor
         {
             let totalEEAvr = totalEE/Config._dayCount;
 
-            solutionObject._totalProfit = totalEE;
-            solutionObject._totalProfitAvr = totalEEAvr;
+            solutionObject._totalProfit = Math.round(totalEE);
+            solutionObject._totalProfitAvr = Math.round(totalEEAvr);
         }
 
         Global._currentSolution = solutionObject;
@@ -331,11 +331,13 @@ export class Processor
 
         h = Processor.getPlusminus();  
         man.vx = (Math.random() * h);
+
+        man.vx = man.vx + 2* h;
     
         h = Processor.getPlusminus();    
         man.vy = (Math.random() * h);
     
-        man.vx = man.vx + 2* h;
+        
         man.vy = man.vy + 2* h;
     }
 

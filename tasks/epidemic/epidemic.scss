@@ -18,6 +18,11 @@ height1: 600px;
 	background-color: lightgoldenrodyellow;
 }
 
+.canvas2{
+	border: black solid 1px;
+	background-color: lightgoldenrodyellow;
+}
+
 .btn{
 	color: black;
 	font-size: 30px;
@@ -98,4 +103,14 @@ table.str_t1 td{
 	cursor: pointer;
 	padding-left: 4px;
 	padding-right: 4px;;
+}
+
+.div_canvas
+{
+	display: inline-block;
+}
+
+.div_day_info
+{
+	display: inline-block;
 }

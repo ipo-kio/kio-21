@@ -21,7 +21,7 @@ export class StrategyHelper
 
         InterfaceHelper.createStrategyDiv(str);
 
-        $('#strategy_' + str._id).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        $('#strategy_' + str._id).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
     }
 
     static createEmptyStarategy(strId)

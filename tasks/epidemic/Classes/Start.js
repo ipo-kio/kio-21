@@ -101,7 +101,8 @@ export class Start
 
 		div = document.createElement('div')
 		div.innerHTML = '';
-		div.id = 'div1';
+		div.className = 'div_canvas'
+		div.id = 'div_canvas';
 		superDiv.appendChild(div);
 
 		Global._canvas1W = 400;
@@ -115,6 +116,24 @@ export class Start
 		div.appendChild(canvas1);
 
 		Global._ctx = canvas1.getContext('2d');
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_day_info'
+		div.id = 'div_day_info';
+		superDiv.appendChild(div);
+
+		Global._canvas2W = 100;
+		Global._canvas2H = 200;
+
+		let canvas2 = document.createElement('canvas');
+		canvas2.id = 'canvas2';
+		canvas2.width = Global._canvas2W;
+		canvas2.height = Global._canvas2H;
+		canvas2.className = 'canvas2'
+		div.appendChild(canvas2);
+
+		Global._ctx2 = canvas2.getContext('2d');
 
 		//--------------------
 

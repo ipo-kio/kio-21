@@ -35,17 +35,22 @@ export class InterfaceHelper
 
     static setDay(src, dayNumber)
     {
-        log('setDay('+dayNumber+') src=' + src);
+        //log('setDay('+dayNumber+') src=' + src);
 
         if(dayNumber < 1 || dayNumber > Config._dayCount)
         {
             dayNumber = Config._dayCount;
             log('setDay('+dayNumber+') src=' + src + '  dayNumber ERROR!');
+            Global.playStop();
         }
 
         DrawHelper.drawTik(dayNumber);
 
-        Global.setTikCounter(dayNumber);
+        if(!Global._isPlay)
+        {
+            Global.setTikCounter(dayNumber);
+        }
+        
         Global._slider.setValue(dayNumber);
     }
 

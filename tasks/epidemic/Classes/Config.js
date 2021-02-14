@@ -1,5 +1,6 @@
 export class Config
 {
+    static _level;
     static _dayCount;
     static _manCount;
     static _startYCount;
@@ -13,6 +14,8 @@ export class Config
 
     static init(level)
     {
+        Config._level = level;
+
         if(level == 0)
         {
             Config._dayCount = 100;
@@ -21,14 +24,14 @@ export class Config
         }
         else if(level == 1)
         {
-            Config._dayCount = 200;
+            Config._dayCount = 100;
             Config._manCount = 100;
             Config._startYCount = 1;
         }
         else if(level == 2)
         {
-            Config._dayCount = 300;
-            Config._manCount = 100;
+            Config._dayCount = 50;
+            Config._manCount = 50;
             Config._startYCount = 1;
         }
     
