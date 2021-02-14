@@ -1,7 +1,8 @@
-import {int, Piece} from "./Piece";
+import {EPS, int, Piece} from "./Piece";
 import {Tessellation} from "./Tessellation";
 import {G, R2, R4, S} from "./Transform";
 import {PolyLineUtils} from "./PolyLineUtils";
+import {Point} from "./Point";
 
 // www.eschertile.com/tile28.htm
 // www.eschertile.com
@@ -353,7 +354,38 @@ export const TYPE_LLC4C4 = new PieceType(
         ['C4', 2]
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        let type = is_parallelogram_type(A, B, C, D);
+        console.log("TESSELATING LLC4C4", type, A.toString(), B.toString(), C.toString(), D.toString());
+        if (type !== "square")
+            return null;
+
+        let rot = R4(D);
+        let mirror_left = S(A, B);
+
+        let piece1 = rot.applyToPiece(piece);
+
+        let mirror_top = S(B, C);
+
+        let piece2 = mirror_top.applyToPiece(piece);
+        let piece3 = mirror_top.applyToPiece(piece1);
+
+        let pieces = [
+            piece, piece1, piece2, piece3,
+            mirror_left.applyToPiece(piece),
+            mirror_left.applyToPiece(piece1),
+            mirror_left.applyToPiece(piece2),
+            mirror_left.applyToPiece(piece3)
+        ];
+
+        let T1 = D.sub(A).mul(4);
+        let T2 = C.sub(A).mul(2);
+
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -459,3 +491,24 @@ export const ALL_PIECE_TYPES = [
     TYPE_LLLC,
     TYPE_LC4C4
 ];
+
+type parallelogram_type = "no" | "parallelogram" | "rectangle" | "square";
+
+function is_parallelogram_type(A: Point, B: Point, C: Point, D: Point): parallelogram_type {
+    let s1 = B.sub(A);
+    let s2 = C.sub(D);
+    if (!s1.equals(s2))
+        return "no";
+    let s3 = C.sub(B);
+    let s4 = D.sub(A);
+    if (!s3.equals(s4))
+        return "no";
+
+    if (Math.abs(s1.dot(s3)) > EPS) //not perpendicular
+        return "parallelogram";
+
+    if (Math.abs(s1.length2 - s2.length2) > EPS)
+        return "rectangle";
+
+    return "square";
+}
