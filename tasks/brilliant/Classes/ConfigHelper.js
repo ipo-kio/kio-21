@@ -2,10 +2,32 @@
 import { Kvadr } from './Kvadr.js'
 import { Block } from './Block.js'
 import { StartData } from './StartData.js'
+import { Global } from './Global.js';
 
 export class ConfigHelper
 {
-	static getStartData(blocksStr)
+	static getStartStr()
+	{
+		let blocksStr;
+
+		if(Global._level == 0)
+		{
+			
+			blocksStr = '3:5-2:5;5:5-4:5;7:5-6:5;9:5-8:5;8:6-9:6;6:6-7:6;4:6-5:6;2:6-3:6;4:4-3:4;6:4-5:4;8:4-7:4;6:3-7:3;4:3-5:3;6:2-5:2;4:7-3:7;6:7-5:7;8:7-7:7;6:8-7:8;4:8-5:8;6:9-5:9;';
+		}
+		else  if(Global._level == 1)
+		{
+			blocksStr = '2:4-1:4;2:5-1:5;4:4-3:4;4:5-3:5;6:5-5:5;5:4-6:4;8:4-7:4;7:5-8:5;3:3-2:3;5:3-4:3;7:3-6:3;4:2-3:2;6:2-5:2;5:1-4:1;3:6-2:6;5:6-4:6;7:6-6:6;4:7-3:7;6:7-5:7;5:8-4:8;';
+		}
+		else if(Global._level == 2)
+		{
+			blocksStr = '2:4-1:4;2:5-1:5;4:4-3:4;4:5-3:5;6:5-5:5;5:4-6:4;8:4-7:4;7:5-8:5;3:3-2:3;5:3-4:3;7:3-6:3;4:2-3:2;6:2-5:2;5:1-4:1;3:6-2:6;5:6-4:6;7:6-6:6;4:7-3:7;6:7-5:7;5:8-4:8;';
+		}
+
+		return blocksStr;
+	}
+
+	static getStartData(src, blocksStr)
 	{
 		let err = false;
 
@@ -16,6 +38,13 @@ export class ConfigHelper
 		let kvadr, block;
 		let kvadrId = 0;
 		let VH;
+
+
+		if(blocksStr == '')
+		{
+			blocksStr = ConfigHelper.getStartStr();
+		}
+		
 
 		let ss = blocksStr.split(';');
 

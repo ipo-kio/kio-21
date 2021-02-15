@@ -82,6 +82,8 @@ export class DrawHelper
 		{
 			block = selBlocks[i];
 			DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona);
+
+			log(block)
 		}
 
 		Brilliant._stageTop.update();
@@ -370,7 +372,7 @@ export class DrawHelper
 		let step = StepHelper.getStep(stepIndex);
 		let block,i;
 
-		let startData = ConfigHelper.getStartData(step._str);
+		let startData = ConfigHelper.getStartData('drawStepPrev', step._str);
 
 
 

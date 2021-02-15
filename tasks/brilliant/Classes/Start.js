@@ -11,7 +11,7 @@ export class Start
 {
 	static _blocksStr;
 
-	static start(domNode, startData)
+	static start(domNode)
 	{
 
 		log('start()')
@@ -31,6 +31,8 @@ export class Start
 
 		let startData = ConfigHelper.getStartData(Start._blocksStr);
 		*/
+
+		let startData = ConfigHelper.getStartData('start', Start._blocksStr);
 
 		let w = (startData._maxX + 2) * Global._storona + Global._storona + 4;
 		let h = (startData._maxY + 2) * Global._storona + Global._storona + 4;
@@ -175,15 +177,28 @@ export class Start
 		Brilliant._stageSuperTop.nextStage = Brilliant._stageTop;
 
 		//StepHelper.addNewStep(Start._blocksStr, 0, 'start');
-		Start.createNewFromString(Start._blocksStr);
+		Start.createNewFromString('start', Start._blocksStr);
 
 		//Global.drawStepPrev(0);
 
+		//-- сохраняем начальное заполнение для последующего сравнения с текущим.
+		let kvadr;
+
+		for(i=0; i < startData._kvadrArr.length; i++)
+		{
+			kvadr = startData._kvadrArr[i];
+
+			Global._startKvadrDic[kvadr._posX + '-' + kvadr._posY] = 1;
+		}
+
+		log(Global._startKvadrDic)
+
 	}
 
-	static createNewFromString(bloksStr)
+	static createNewFromString(src, bloksStr)
 	{
-		let startData = ConfigHelper.getStartData(bloksStr);
+		log('Start.createNewFromString ' + src)
+		let startData = ConfigHelper.getStartData('createNewFromString',bloksStr);
 
 		Global._blockStr = bloksStr;
 		Global._blockArr = startData._blockArr;
@@ -196,7 +211,7 @@ export class Start
 		else
 		{
 
-			DrawHelper.drawAll('createNewFromString');
+			DrawHelper.drawAll('Start.createNewFromString');
 
 		}
 

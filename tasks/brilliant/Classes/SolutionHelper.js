@@ -3,6 +3,7 @@ import { StepResult } from './StepResult.js';
 import { Global } from './Global.js'
 import { Solution } from './Solution.js'
 import { StepHelper } from './StepHelper.js'
+import { Config } from '../../epidemic/Classes/Config.js';
 
 export class SolutionHelper
 {
@@ -300,7 +301,8 @@ export class SolutionHelper
 		let solution = new Solution();
 		solution._moveCount = 0;
 		solution._rotateCount = -1;
-		let step;
+		solution._complit = 0;
+		let step, block, s;
 
 		let i;
 
@@ -318,6 +320,48 @@ export class SolutionHelper
 
 			solution._stepArr.push(step);
 		}
+
+		solution._complit = 1;
+
+		if(Global._level == 0)
+		{
+			for(i = 0; i < Global._blockArr.length; i++)
+			{
+				block = Global._blockArr[i];
+	
+				if(block._VH == 'H')
+				{
+					solution._complit = 0;
+					break;
+				}
+			}
+
+			if(solution._complit == 1)
+			{
+				for(i = 0; i < Global._blockArr.length; i++)
+				{
+					block = Global._blockArr[i];
+
+					s = block._kvadr1._posX + '-' + block._kvadr1._posY;
+
+					if(!Global._startKvadrDic.hasOwnProperty(s))
+					{
+						solution._complit = 0;
+						break;
+					}
+
+					s = block._kvadr2._posX + '-' + block._kvadr2._posY;
+
+					if(!Global._startKvadrDic.hasOwnProperty(s))
+					{
+						solution._complit = 0;
+						break;
+					}
+				}
+			}
+		}
+
+
 
 		return solution;
 

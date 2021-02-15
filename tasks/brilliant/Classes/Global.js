@@ -11,6 +11,7 @@ import { ConfigHelper } from "./ConfigHelper.js";
 
 export class Global
 {
+	static _level;
 	static _storona = 40;
 	static _storonaPrev = 20;
 	static _blockArr = [];
@@ -29,6 +30,7 @@ export class Global
 	static _appStarted = false;
 	static _movedBlockFake = null;
 	static _canClick = true;
+	static _startKvadrDic = []; //-- это для проверки на законченность решения. Начальное заполнение квадратиками
 
 	static isSelected(blockId)
 	{
@@ -341,12 +343,13 @@ export class Global
 
 		let stepResult = SolutionHelper.getModifedString();
 
-		//log(stepResult);
+		log(oldStr);
+		log(stepResult._string);
 
 		if(stepResult._string != oldStr)
 		{
 			StepHelper.addNewStep(stepResult._string, stepResult._stepType, 'modifySolution-' + src);
-			Start.createNewFromString(stepResult._string);
+			Start.createNewFromString('modifySolution', stepResult._string);
 		}
 
 		Global._canClick = true;
@@ -370,7 +373,7 @@ export class Global
 
 		let step = StepHelper.getStep(stepIdx);
 		StepHelper.setCurentStepIndex(stepIdx);
-		Start.createNewFromString(step._str);
+		Start.createNewFromString('gotoStep', step._str);
 
 	}
 
@@ -393,7 +396,7 @@ export class Global
 
 				let lastStep = solution._stepArr[solution._stepArr.length - 1];
 
-				let startData = ConfigHelper.getStartData(lastStep._str);
+				let startData = ConfigHelper.getStartData('applaySolution1',lastStep._str);
 
 				//log('startData')
 				//log(startData)
@@ -407,7 +410,7 @@ export class Global
 			}
 			else{
 
-				let startData = ConfigHelper.getStartData(Start._blocksStr);
+				let startData = ConfigHelper.getStartData('applaySolution2',Start._blocksStr);
 
 				Global._blockDic = startData._blockDic;
 				Global._blockArr = startData._blockArr;

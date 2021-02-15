@@ -23,6 +23,7 @@ export class Brilliant
 		log('constructor==============================')
 		this.settings = settings
 		log(settings)
+		Global._level = settings.level;
 
 	}
 	/**
@@ -58,8 +59,14 @@ export class Brilliant
 			ordering: 'minimize'
 		}
 
+		let _complit = {
+			name: '_complit',
+			title: 'Решено:',
+			ordering: 'maximize'
+		}
 
-		return[_moveCount, _rotateCount];
+
+		return[_complit, _moveCount, _rotateCount];
 
 	}
 
@@ -69,6 +76,7 @@ export class Brilliant
 		let solution = SolutionHelper.getCurrentSolution()
 
 		Brilliant.kioapi.submitResult({
+			_complit: solution._complit,
 			_rotateCount: solution._rotateCount,
 			_moveCount: solution._moveCount
 		})
@@ -93,50 +101,38 @@ export class Brilliant
 
 
 		log('loadSolution()')
-		//log(solutionJson)
+		log(solutionJson)
 
+		
 		if(!Global._appStarted)
 		{
-			let url = new URL(window.location.href);
-			Start._blocksStr = url.searchParams.get("bloksstr");
+			log('startData')
 
-			if(Start._blocksStr == null)
-			{
-				Start._blocksStr = '1:2-1:1;2:2-2:1;2:3-1:3;2:4-1:4;4:1-3:1;4:2-3:2;4:4-4:3;4:5-3:5;1:5-2:5;5:4-5:5;5:2-5:3;6:1-5:1;6:3-6:2;6:5-6:4;';
-			}
 
-			let startData = ConfigHelper.getStartData(Start._blocksStr);
 
-			//log('startData')
+			//let startData = ConfigHelper.getStartData();
+
+			
 			//log(startData)
-			Start.start(this._domNode , startData)
+			//Start.start(this._domNode , startData)
 
 			Global._appStarted = true;
 		}
-
-
+		
 
 		if (solutionJson !== undefined )
 		{
-			//log('sol1')
-			let sol = c
-			//log('sol2')
-			//log(sol)
-			//log('sol3')
 
-			if(sol._stepArr.length > 0)
-			{
 
-			}
-			else{
-
-			}
+			let sol = JSON.parse(solutionJson);
 
 			Global.applaySolution(sol)
 			 //log('sol4')
 		}
-		else{
+		else
+		{
 			//log('sssssssssol 1')
+			//log(Start._blocksStr)
 			StepHelper.addNewStep(Start._blocksStr, 0, 'start');
 			//log('sssssssssol 2')
 			Global.drawStepPrev(0);
@@ -150,7 +146,8 @@ export class Brilliant
 		log('initInterface()')
 		_thisProblem = this
 		this._domNode = domNode;
-		//Start.start(domNode)
+		Start._blocksStr = ConfigHelper.getStartStr();
+		Start.start(domNode)
 	}
 
 
