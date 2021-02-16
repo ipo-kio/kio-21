@@ -83,7 +83,7 @@ export class DrawHelper
 			block = selBlocks[i];
 			DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona);
 
-			log(block)
+			//log(block)
 		}
 
 		Brilliant._stageTop.update();

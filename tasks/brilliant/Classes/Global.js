@@ -349,7 +349,9 @@ export class Global
 		if(stepResult._string != oldStr)
 		{
 			StepHelper.addNewStep(stepResult._string, stepResult._stepType, 'modifySolution-' + src);
-			Start.createNewFromString('modifySolution', stepResult._string);
+			Start.createNewFromString('Global.modifySolution', stepResult._string);
+
+			SolutionHelper.getCurrentSolution();
 		}
 
 		Global._canClick = true;
