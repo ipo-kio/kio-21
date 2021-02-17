@@ -3,6 +3,7 @@ export class Solution
 	_rotateCount;
 	_moveCount;
 	_stepArr = [];
-	_complit;
+	_isComplit;
+	_orientalCount;
 
 }

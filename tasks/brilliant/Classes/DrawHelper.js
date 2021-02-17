@@ -2,6 +2,7 @@
 import { Brilliant } from '../brilliant.js'
 import { ConfigHelper } from './ConfigHelper.js';
 import { Global } from './Global.js'
+import { SolutionHelper } from './SolutionHelper.js';
 import { StepHelper } from './StepHelper.js'
 
 export class DrawHelper
@@ -12,7 +13,7 @@ export class DrawHelper
 
 	static drawAll(src)
 	{
-		let i, block;
+		let i, block, x, y;
 		log('drawAll - '  + src)
 
 		Brilliant._stageTop.removeAllEventListeners();
@@ -20,8 +21,6 @@ export class DrawHelper
 
 
 
-
-		//if(!DrawHelper._firstDraw)
 		{
 			Brilliant._stageTop.on("stagemousemove", function(evt)
 			{
@@ -62,6 +61,117 @@ export class DrawHelper
 
 		}
 
+		//-- отрисовка клеточек
+		{
+			let kvShape;
+			let storona = Global._storona;
+
+
+			let kondurDic = {};
+
+			if(Global._level == 1)
+			{
+				kondurDic['5-3'] = 1;
+				kondurDic['6-3'] = 1;
+				kondurDic['4-4'] = 1;
+				kondurDic['5-4'] = 1;
+				kondurDic['6-4'] = 1;
+				kondurDic['7-4'] = 1;
+				kondurDic['3-5'] = 1;
+				kondurDic['4-5'] = 1;
+				kondurDic['5-5'] = 1;
+				kondurDic['6-5'] = 1;
+				kondurDic['7-5'] = 1;
+				kondurDic['8-5'] = 1;
+				kondurDic['2-6'] = 1;
+				kondurDic['3-6'] = 1;
+				kondurDic['4-6'] = 1;
+				kondurDic['5-6'] = 1;
+				kondurDic['6-6'] = 1;
+				kondurDic['7-6'] = 1;
+				kondurDic['8-6'] = 1;
+				kondurDic['9-6'] = 1;
+				kondurDic['2-7'] = 1;
+				kondurDic['3-7'] = 1;
+				kondurDic['4-7'] = 1;
+				kondurDic['5-7'] = 1;
+				kondurDic['6-7'] = 1;
+				kondurDic['7-7'] = 1;
+				kondurDic['8-7'] = 1;
+				kondurDic['9-7'] = 1;
+				kondurDic['3-8'] = 1;
+				kondurDic['4-8'] = 1;
+				kondurDic['5-8'] = 1;
+				kondurDic['6-8'] = 1;
+				kondurDic['7-8'] = 1;
+				kondurDic['8-8'] = 1;
+				kondurDic['4-9'] = 1;
+				kondurDic['5-9'] = 1;
+				kondurDic['6-9'] = 1;
+				kondurDic['7-9'] = 1;
+				kondurDic['5-10'] = 1;
+				kondurDic['6-10'] = 1;				
+			}
+			else if(Global._level == 2)
+			{
+				kondurDic = ConfigHelper._konturDic;
+
+			}
+
+
+			kvShape = new createjs.Shape()
+			kvShape.id = 'kletki';
+			kvShape.x = 0;
+			kvShape.y = 0;
+
+			Brilliant._stageTop.addChild(kvShape);
+			
+			//kvShape.graphics.beginFill('lightpinck');
+			//kvShape.graphics.drawRect(0, 0, Global._canvasSuperTop.width, Global._canvasSuperTop.height);
+			//kvShape.graphics.endFill();
+			
+
+			kvShape.graphics.setStrokeStyle(1);
+			kvShape.graphics.beginStroke("red");
+			kvShape.graphics.beginFill('lightblue');
+		
+
+			for(i = 0; i < Global._klentkiCountX; i++)
+			{
+				for(let j=0; j < Global._klentkiCountY; j++)
+				{
+					if(Global._level == 1 || Global._level == 2)
+					{
+						if(kondurDic.hasOwnProperty(i + '-' + j))
+						{
+							x = storona * i;
+							y = storona * j;
+							kvShape.graphics.moveTo(x, y);
+							kvShape.graphics.lineTo(x + storona, y);
+							kvShape.graphics.lineTo(x + storona, y - storona );
+							kvShape.graphics.lineTo(x , y - storona );
+							kvShape.graphics.lineTo(x, y );	
+
+						}
+					}
+					/*
+					x = storona * i;
+					y = storona * j;
+					kvShape.graphics.moveTo(x, y);
+					kvShape.graphics.lineTo(x + storona, y);
+					kvShape.graphics.lineTo(x + storona, y - storona );
+					kvShape.graphics.lineTo(x , y - storona );
+					kvShape.graphics.lineTo(x, y );			
+					*/		
+				}
+			}
+
+			kvShape.graphics.endStroke();
+			
+
+
+		}
+
 		let selBlocks = [];
 
 		for(i = 0; i < Global._blockArr.length; i++)
@@ -93,6 +203,22 @@ export class DrawHelper
 			let stepContDiv = document.getElementById('stepContDiv');
 			stepContDiv.innerHTML = '';
 			let step, stepDiv;
+
+			if(StepHelper._stepArr.length > 1)
+			{
+				let delDiv  = document.createElement('div');
+				delDiv.innerHTML = '&#8810;';
+				delDiv.setAttribute('title', 'Шаг назад');
+				delDiv.className = 'step_div';
+				delDiv.style.backgroundColor = 'lightpink'
+
+				delDiv.addEventListener('click', function (evt) {
+					Global.delLastStep();
+				})
+
+				stepContDiv.appendChild(delDiv);				
+			}
+
 
 			for(i=0; i < StepHelper._stepArr.length; i++)
 			{
@@ -140,11 +266,12 @@ export class DrawHelper
 	static onMouseMove(target)
 	{
 		//log('onMouseMove')
+
 		let selBlocksChanged;
+
 		if(target && target.hasOwnProperty('id'))
 		{
-
-
+			if(target.id == 'kletki') return;
 
 			if(Global._lastMouseObjectId != target.id)
 			{
@@ -156,11 +283,14 @@ export class DrawHelper
 				{
 					selBlocksChanged = Global.clearSelectedBlocks('mmm');
 				}
-				else{
+				else
+				{
 					selBlocksChanged = Global.setSelectedBlocks(target._pos, target._blockId, 1);
 				}
+
 				if(selBlocksChanged)
 				{
+					//Brilliant.saveCurrentSolution('DrawHelper.onMouseMove');
 					DrawHelper.drawAll('mousemove setSelectedBlocks');
 				}
 

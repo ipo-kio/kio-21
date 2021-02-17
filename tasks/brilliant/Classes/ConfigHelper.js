@@ -6,6 +6,68 @@ import { Global } from './Global.js';
 
 export class ConfigHelper
 {
+	static _konturDic = {};
+
+	static init()
+	{
+		if(Global._level == 2)
+		{
+			ConfigHelper._konturDic['6-3'] = 'H';
+			ConfigHelper._konturDic['7-3'] = 'H';
+
+			ConfigHelper._konturDic['5-4'] = 'H';
+			ConfigHelper._konturDic['6-4'] = 'H';
+			ConfigHelper._konturDic['7-4'] = 'H';
+			ConfigHelper._konturDic['8-4'] = 'H';
+
+			ConfigHelper._konturDic['4-5'] = 'V';
+			ConfigHelper._konturDic['5-5'] = 'H';
+			ConfigHelper._konturDic['6-5'] = 'H';
+			ConfigHelper._konturDic['7-5'] = 'H';
+			ConfigHelper._konturDic['8-5'] = 'H';
+			ConfigHelper._konturDic['9-5'] = 'V';
+
+			ConfigHelper._konturDic['3-6'] = 'V';
+			ConfigHelper._konturDic['4-6'] = 'V';
+			ConfigHelper._konturDic['9-6'] = 'V';
+			ConfigHelper._konturDic['10-6'] = 'V';
+
+			ConfigHelper._konturDic['2-7'] = 'V';
+			ConfigHelper._konturDic['3-7'] = 'V';
+			ConfigHelper._konturDic['4-7'] = 'V';
+			ConfigHelper._konturDic['9-7'] = 'V';
+			ConfigHelper._konturDic['10-7'] = 'V';
+			ConfigHelper._konturDic['11-7'] = 'V';
+
+			ConfigHelper._konturDic['2-8'] = 'V';
+			ConfigHelper._konturDic['3-8'] = 'V';
+			ConfigHelper._konturDic['4-8'] = 'V';
+			ConfigHelper._konturDic['9-8'] = 'V';
+			ConfigHelper._konturDic['10-8'] = 'V';
+			ConfigHelper._konturDic['11-8'] = 'V';
+
+			ConfigHelper._konturDic['3-9'] = 'V';
+			ConfigHelper._konturDic['4-9'] = 'V';
+			ConfigHelper._konturDic['9-9'] = 'V';
+			ConfigHelper._konturDic['10-9'] = 'V';
+
+			ConfigHelper._konturDic['4-10'] = 'V';
+			ConfigHelper._konturDic['5-10'] = 'H';
+			ConfigHelper._konturDic['6-10'] = 'H';
+			ConfigHelper._konturDic['7-10'] = 'H';
+			ConfigHelper._konturDic['8-10'] = 'H';
+			ConfigHelper._konturDic['9-10'] = 'V';
+			
+			ConfigHelper._konturDic['5-11'] = 'H';
+			ConfigHelper._konturDic['6-11'] = 'H';
+			ConfigHelper._konturDic['7-11'] = 'H';
+			ConfigHelper._konturDic['8-11'] = 'H';
+					
+			ConfigHelper._konturDic['6-12'] = 'H';
+			ConfigHelper._konturDic['7-12'] = 'H';
+		}
+	}
+
 	static getStartStr()
 	{
 		let blocksStr;
@@ -14,15 +76,19 @@ export class ConfigHelper
 		{
 			//-- горизонтальный
 			blocksStr = '3:5-2:5;5:5-4:5;7:5-6:5;9:5-8:5;8:6-9:6;6:6-7:6;4:6-5:6;2:6-3:6;4:4-3:4;6:4-5:4;8:4-7:4;6:3-7:3;4:3-5:3;6:2-5:2;4:7-3:7;6:7-5:7;8:7-7:7;6:8-7:8;4:8-5:8;6:9-5:9;';
-			//-- вертикальный 3:5-3:4;3:7-3:6;2:6-2:5;4:4-4:3;4:6-4:5;4:8-4:7;5:3-5:2;5:5-5:4;5:7-5:6;5:9-5:8;6:8-6:9;6:6-6:7;6:4-6:5;6:2-6:3;7:4-7:3;7:6-7:5;7:8-7:7;8:6-8:7;8:4-8:5;9:6-9:5;
+			//-- вертикальный 
+			//blocksStr = "3:5-3:4;3:7-3:6;2:6-2:5;4:4-4:3;4:6-4:5;4:8-4:7;5:3-5:2;5:5-5:4;5:7-5:6;5:9-5:8;6:8-6:9;6:6-6:7;6:4-6:5;6:2-6:3;7:4-7:3;7:6-7:5;7:8-7:7;8:6-8:7;8:4-8:5;9:6-9:5";
 		}
 		else  if(Global._level == 1)
 		{
-			blocksStr = '2:4-1:4;2:5-1:5;4:4-3:4;4:5-3:5;6:5-5:5;5:4-6:4;8:4-7:4;7:5-8:5;3:3-2:3;5:3-4:3;7:3-6:3;4:2-3:2;6:2-5:2;5:1-4:1;3:6-2:6;5:6-4:6;7:6-6:6;4:7-3:7;6:7-5:7;5:8-4:8;';
-		}
+			//-- горизонтальный
+			blocksStr = '3:5-2:5;5:5-4:5;7:5-6:5;9:5-8:5;8:6-9:6;6:6-7:6;4:6-5:6;2:6-3:6;4:4-3:4;6:4-5:4;8:4-7:4;6:3-7:3;4:3-5:3;6:2-5:2;4:7-3:7;6:7-5:7;8:7-7:7;6:8-7:8;4:8-5:8;6:9-5:9;';
+			//-- вертикальный 
+			//blocksStr = "3:5-3:4;3:7-3:6;2:6-2:5;4:4-4:3;4:6-4:5;4:8-4:7;5:3-5:2;5:5-5:4;5:7-5:6;5:9-5:8;6:8-6:9;6:6-6:7;6:4-6:5;6:2-6:3;7:4-7:3;7:6-7:5;7:8-7:7;8:6-8:7;8:4-8:5;9:6-9:5";
+	}
 		else if(Global._level == 2)
 		{
-			blocksStr = '2:4-1:4;2:5-1:5;4:4-3:4;4:5-3:5;6:5-5:5;5:4-6:4;8:4-7:4;7:5-8:5;3:3-2:3;5:3-4:3;7:3-6:3;4:2-3:2;6:2-5:2;5:1-4:1;3:6-2:6;5:6-4:6;7:6-6:6;4:7-3:7;6:7-5:7;5:8-4:8;';
+			blocksStr = '6:4-5:4;8:4-7:4;2:7-2:6;3:5-3:6;4:4-4:5;6:3-5:3;8:3-7:3;7:2-6:2;9:5-9:4;10:6-10:5;10:8-10:7;9:9-9:8;9:7-9:6;3:8-3:7;4:7-4:6;4:9-4:8;6:9-5:9;8:9-7:9;6:10-5:10;8:10-7:10;11:6-11:7;6:11-7:11';
 		}
 
 		return blocksStr;

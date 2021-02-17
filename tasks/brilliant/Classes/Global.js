@@ -12,6 +12,8 @@ import { ConfigHelper } from "./ConfigHelper.js";
 export class Global
 {
 	static _level;
+	static _klentkiCountX;
+	static _klentkiCountY;
 	static _storona = 40;
 	static _storonaPrev = 20;
 	static _blockArr = [];
@@ -343,15 +345,15 @@ export class Global
 
 		let stepResult = SolutionHelper.getModifedString();
 
-		log(oldStr);
-		log(stepResult._string);
+		//log(oldStr);
+		//log(stepResult._string);
 
-		if(stepResult._string != oldStr)
+		if(!SolutionHelper.compareStrings(stepResult._string, oldStr))
 		{
 			StepHelper.addNewStep(stepResult._string, stepResult._stepType, 'modifySolution-' + src);
 			Start.createNewFromString('Global.modifySolution', stepResult._string);
 
-			SolutionHelper.getCurrentSolution();
+			SolutionHelper.getCurrentSolution('modifySolution');
 		}
 
 		Global._canClick = true;
@@ -429,6 +431,11 @@ export class Global
 
 
 		}
+	}
+
+	static delLastStep()
+	{
+		Global.gotoStep(StepHelper._currentStepIndex - 1);
 	}
 }
 

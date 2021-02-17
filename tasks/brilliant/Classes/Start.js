@@ -34,9 +34,13 @@ export class Start
 
 		let startData = ConfigHelper.getStartData('start', Start._blocksStr);
 
+		Global._klentkiCountX = startData._maxX + 2 + 1;
+		Global._klentkiCountY = startData._maxY + 2 + 2;
+
 		let w = (startData._maxX + 2) * Global._storona + Global._storona + 4;
 		let h = (startData._maxY + 2) * Global._storona + Global._storona + 4;
 
+		//log('Global._klentkiCount = ' + Global._klentkiCountX + ' ' + Global._klentkiCountY)
 
 
 		let canvasContDiv = document.createElement('div')

@@ -59,27 +59,74 @@ export class Brilliant
 			ordering: 'minimize'
 		}
 
-		let _complit = {
-			name: '_complit',
-			title: 'Решено:',
+		let s;
+
+		if(Global._level == 0)
+		{
+			s = 'Собрано';
+		}
+		else if(Global._level == 1)
+		{
+			s = 'Собрано';
+		}
+		else if(Global._level == 2)
+		{
+			s = 'В рамках';
+		}
+
+		let _isComplit = {
+			name: '_isComplit',
+			title: s,
+			ordering: 'maximize',
+			view: function (ok) {
+			  if (ok) {
+				return 'Да'
+			  } else {
+				return 'Нет'
+			  }
+			}
+		  }
+			   
+		let _orientalCount = {
+			name: '_orientalCount',
+			title: 'Смена ориентации:',
 			ordering: 'maximize'
 		}
 
 
-		return[_complit, _moveCount, _rotateCount];
+		if(Global._level == 2)
+		{
+			return[_orientalCount, _isComplit,  _moveCount, _rotateCount];
+		}
+		else{
+			return[_isComplit, _moveCount, _rotateCount];
+		}
+		
 
 	}
 
 	static saveCurrentSolution (src)
 	{
 		log('saveCurrentSolution src=' + src)
-		let solution = SolutionHelper.getCurrentSolution()
+		let solution = SolutionHelper.getCurrentSolution('saveCurrentSolution')
 
-		Brilliant.kioapi.submitResult({
-			_complit: solution._complit,
-			_rotateCount: solution._rotateCount,
-			_moveCount: solution._moveCount
-		})
+		if(Global._level == 2)
+		{
+			Brilliant.kioapi.submitResult({
+				_isComplit: solution._isComplit,
+				_orientalCount: solution._orientalCount,
+				_rotateCount: solution._rotateCount,
+				_moveCount: solution._moveCount
+			})
+		}
+		else{
+			Brilliant.kioapi.submitResult({
+				_isComplit: solution._isComplit,
+				_rotateCount: solution._rotateCount,
+				_moveCount: solution._moveCount
+			})
+		}
+
 
 
 	}
@@ -87,9 +134,9 @@ export class Brilliant
 	solution (){
 		log('solution()')
 
-		let solution = SolutionHelper.getCurrentSolution();
+		let solution = SolutionHelper.getCurrentSolution('solution');
 
-		log(solution)
+		//log(solution)
 
 		return JSON.stringify(solution)
 	}
@@ -101,20 +148,12 @@ export class Brilliant
 
 
 		log('loadSolution()')
-		log(solutionJson)
+		//log(solutionJson)
 
 		
 		if(!Global._appStarted)
 		{
 			log('startData')
-
-
-
-			//let startData = ConfigHelper.getStartData();
-
-			
-			//log(startData)
-			//Start.start(this._domNode , startData)
 
 			Global._appStarted = true;
 		}
@@ -146,6 +185,7 @@ export class Brilliant
 		log('initInterface()')
 		_thisProblem = this
 		this._domNode = domNode;
+		ConfigHelper.init();
 		Start._blocksStr = ConfigHelper.getStartStr();
 		Start.start(domNode)
 	}

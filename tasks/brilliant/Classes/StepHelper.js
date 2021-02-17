@@ -9,7 +9,7 @@ export class StepHelper
 	static addNewStep(str, stepType, src)
 	{
 		let n;
-		log('addNewStep() step=' + StepHelper._currentStepIndex + ' src=' + src)
+		log('addNewStep() prevStep=' + StepHelper._currentStepIndex + ' src=' + src)
 
 		//if(StepHelper._currentStepIndex >= 0 &&  StepHelper._currentStepIndex < StepHelper._stepArr.length-1)
 		if(StepHelper._currentStepIndex < StepHelper._stepArr.length-1)
@@ -25,6 +25,9 @@ export class StepHelper
 
 			log('slice len=' +  StepHelper._stepArr.length);
 			log( StepHelper._stepArr)
+		}
+		else{
+			log('StepHelper._currentStepIndex < ' + (StepHelper._stepArr.length - 1))
 		}
 
 		let step = new Step();
