@@ -35,17 +35,22 @@ export class InterfaceHelper
 
     static setDay(src, dayNumber)
     {
-        log('setDay('+dayNumber+') src=' + src);
+        //log('setDay('+dayNumber+') src=' + src);
 
         if(dayNumber < 1 || dayNumber > Config._dayCount)
         {
             dayNumber = Config._dayCount;
             log('setDay('+dayNumber+') src=' + src + '  dayNumber ERROR!');
+            Global.playStop();
         }
 
         DrawHelper.drawTik(dayNumber);
 
-        Global.setTikCounter(dayNumber);
+        if(!Global._isPlay)
+        {
+            Global.setTikCounter(dayNumber);
+        }
+        
         Global._slider.setValue(dayNumber);
     }
 
@@ -144,6 +149,16 @@ export class InterfaceHelper
             t = document.getElementById('str_to_' + newId);
             t.addEventListener('input', function(){
                 Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_day_toleft_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDaysMove(newId, 'left');
+            }); 
+
+            t = document.getElementById('str_day_toright_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDaysMove(newId, 'right');
             }); 
             
         }

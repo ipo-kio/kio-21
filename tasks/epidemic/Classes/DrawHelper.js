@@ -1,6 +1,7 @@
 import { Global } from "./Global";
 import { Epidemic } from "../epidemic";
 import { Processor } from "./Processor";
+import { Config } from "./Config";
 
 export class DrawHelper
 {
@@ -10,28 +11,34 @@ export class DrawHelper
         let ctx = Global._ctx;
         let W = Global._canvas1W;
         let H = Global._canvas1H;
-
-        Global._manArr.forEach((element) => {element._stuk = false;})
-
+        
         ctx.clearRect(0, 0, W , H);
         ctx.fillStyle="white";
         ctx.fillRect(0,0,W,H);
 
         let day = Global._dayArr[dayNumber-1];
 
-        DrawHelper.drawVariant1(ctx, day);  //-- все стоят
-
-        //DrawHelper.drawVariant2(ctx, day);  //-- все бегают
-
-
+        if(Config._level == 1)
+        {
+            DrawHelper.drawVariant1(ctx, day);  //-- все стоят
+        }
+        else{
+            DrawHelper.drawVariant2(ctx, day);  //-- все бегают
+        }
+        
+        DrawHelper.drawDayInfo(day);
     }
 
     static drawVariant2(ctx, day)
     {
         let radius = 3; //-- ширина/2 человечка
+        let radius2 = radius * 2;
         let man, man2;
         let W = Global._canvas1W;
         let H = Global._canvas1H;
+        let x, y;
+
+        Global._manArr.forEach((element) => {element._stuk = false;})
 
         for(let i=0; i < Global._manArr.length; i++)
         {
@@ -52,12 +59,12 @@ export class DrawHelper
 
 
                     if(
-                        (man.x >= man2.x && man.x <= (man2.x + radius)
-                        && man.y >= man2.y && man.y <= (man2.y + radius)
+                        (man.x >= man2.x && man.x <= (man2.x + radius2)
+                        && man.y >= man2.y && man.y <= (man2.y + radius2)
                         )
                         ||
-                        (man2.x >= man.x && man2.x <= (man.x + radius)
-                        && man2.y >= man.y && man2.y <= (man.y + radius))
+                        (man2.x >= man.x && man2.x <= (man.x + radius2)
+                        && man2.y >= man.y && man2.y <= (man.y + radius2))
                     )
                     {
                         Processor.createVector(man);
@@ -118,6 +125,17 @@ export class DrawHelper
         let img = Epidemic.kioapi.getResource('kucha');
         let n = day._eeTotal / 100;
         ctx.drawImage(img, 0, 0, n, n);
+
+        x = n + 10;
+        y = 20;
+
+        let s = (day._ee < 0 ? "" : "+");
+
+        ctx.beginPath();
+        ctx.font = "bold 20px Arial";
+        ctx.fillStyle = 'brown';
+        ctx.fillText(day._eeTotal.toFixed(0) + ' (' + s +  day._ee.toFixed(0) + ')', x, y);
+        ctx.fill();
     }
 
     static drawVariant1(ctx, day)
@@ -187,6 +205,84 @@ export class DrawHelper
         img = Epidemic.kioapi.getResource('kucha');
         let n = day._eeTotal / 100;
         ctx.drawImage(img, 0, 0, n, n);
+
+
+        //-- куча 2
+        let n1 = day._ee / 5;
+        ctx.drawImage(img, n, n, n1, n1);
+
+        x = n + 80;
+        y = 20;
+
+        let s = (day._ee < 0 ? "" : "+");
+
+        ctx.beginPath();
+        ctx.font = "bold 20px Arial";
+        ctx.fillStyle = 'brown';
+        ctx.fillText(day._eeTotal.toFixed(0) + ' (' + s +  day._ee.toFixed(0) + ')', x, y);
+        ctx.fill();
+    }
+
+    static drawDayInfo(day)
+    {
+        let ctx = Global._ctx2;
+        let W = Global._canvas2W;
+        let H = Global._canvas2H;
+        let x, y;
+
+        
+        ctx.clearRect(0, 0, W , H);
+        ctx.fillStyle="white";
+        ctx.fillRect(0,0,W,H);
+
+        
+        ctx.beginPath();
+        ctx.font = "bold 16px Arial";
+        ctx.fillStyle = 'black';
+        ctx.fillText('День:  ' + day._number, 10, 20);
+        ctx.fill();
+        
+
+        x = 10;
+        y = 40;
+
+        let s = (day._ee < 0 ? "" : "+");
+
+        ctx.beginPath();
+        ctx.font = "bold 15px Arial";
+        ctx.fillStyle = 'brown';
+        ctx.fillText(day._eeTotal.toFixed(0) + ' (' + s +  day._ee.toFixed(0) + ')', x, y);
+        ctx.fill();        
+
+        x = 10;
+
+        y = 70;
+        let y1 = 30;
+        
+
+        DrawHelper.drawDayInfoMan(ctx, 'm_green', x, y + y1*0, day._greenCount);
+        DrawHelper.drawDayInfoMan(ctx, 'm_yellow', x, y + y1*1, day._yellowCount);
+        DrawHelper.drawDayInfoMan(ctx, 'm_red', x, y + y1*2, day._redCount);
+        DrawHelper.drawDayInfoMan(ctx, 'm_blue', x, y + y1*3, day._blueCount);
+
+    }
+
+    static drawDayInfoMan(ctx, imgId, x, y, colorCount)
+    {
+        let n = 20;
+        let m = n - 5;
+        let img = Epidemic.kioapi.getResource(imgId);
+        ctx.drawImage(img, x, y, n, n);
+
+        x = x + n + 5;
+
+        y = y + m ;
+
+        ctx.beginPath();
+        ctx.font = "14px Arial";
+        ctx.fillStyle = 'black';
+        ctx.fillText('- ' + colorCount, x, y);
+        ctx.fill();
     }
 
     static getColorForDay(man, dayIndex)

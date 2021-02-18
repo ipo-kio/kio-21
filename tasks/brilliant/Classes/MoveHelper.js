@@ -11,8 +11,8 @@ export class MoveHelper
 
 		//-- определим, свободен ли целевой квадратик
 
-		log('canMove2('+src+') movedBlock._X1 = '+movedBlock._X1+'   moveToX=' + moveToX + ' moveToY=' + moveToY);
-		log('canMove2() DrawMoving._mouseDownX1 = '+DrawMoving._mouseDownX1+'   DrawMoving._mouseDownY1=' + DrawMoving._mouseDownY1 );
+		//log('canMove2('+src+') movedBlock._X1 = '+movedBlock._X1+'   moveToX=' + moveToX + ' moveToY=' + moveToY);
+		//log('canMove2() DrawMoving._mouseDownX1 = '+DrawMoving._mouseDownX1+'   DrawMoving._mouseDownY1=' + DrawMoving._mouseDownY1 );
 
 		let ok = true;
 
@@ -35,33 +35,15 @@ export class MoveHelper
 				return false;
 			}
 			else{
-				log('DDDDDDDDD n=' + n + ' DrawMoving._mouseDownX=' + DrawMoving._mouseDownX  + ' DrawHelper._stageX=' + DrawHelper._stageX)
+				//log('DDDDDDDDD n=' + n + ' DrawMoving._mouseDownX=' + DrawMoving._mouseDownX  + ' DrawHelper._stageX=' + DrawHelper._stageX)
 			}
 
 		}
 		else{
-			log('PPPPPPPPPP ')
+			//log('PPPPPPPPPP ')
 		}
 
 
-		/*
-		if(movedBlock._VH == 'H')
-		{
-			if(movedBlock._X1 == moveToX && movedBlock._Y1 == moveToY)
-			{
-				ok = false;
-				return false;
-			}
-		}
-		else
-		{
-			if(movedBlock._X1 == moveToX && movedBlock._Y1 == moveToY)
-			{
-				ok = false;
-				return false;
-			}
-		}
-		*/
 
 		//-- можно передвинуть только на соседнюю (на 1 ход)
 
@@ -120,26 +102,6 @@ export class MoveHelper
 				}
 			}
 
-
-
-			/*
-			if(block._VH == 'H' && block._Y1 == moveToY)
-			{
-				if(block._X1 == moveToX || block._X2 == moveToX)
-				{
-					ok = false;
-					break;
-				}
-			}
-			else if(block._VH == 'V' && block._X1 == moveToX)
-			{
-				if(block._Y1 == moveToY || block._Y2 == moveToY)
-				{
-					ok = false;
-					break;
-				}
-			}
-			*/
 		}
 
 		canMove = ok;
@@ -147,55 +109,7 @@ export class MoveHelper
 
 		return canMove;
 	}
-	/*
-	static canMove(block, moveToX, moveToY)
-	{
-		let canMove = false;
 
-		let X1 = block._kvadr1._posX;
-		let X2 = block._kvadr2._posX;
-		let Y1 = block._kvadr1._posY;
-		let Y2 = block._kvadr2._posY;
-
-		if(block._VH == 'H')
-		{
-
-			if(moveToY != Y1)
-			{
-				//-- значит сдиг в бок по вертикали
-				//log('FFFFFFFFFFFFFFF 1')
-
-				if(Global._XY2MoveDic.hasOwnProperty(X1 + '_' + moveToY)
-					&& Global._XY2MoveDic.hasOwnProperty(X2 + '_' + moveToY))
-				{
-					canMove = true;
-				}
-			}
-			else{
-				canMove = true;
-			}
-		}
-		else
-		{
-			if(moveToX != X1)
-			{
-				//-- значит сдиг в бок по горизонтали
-				//log('FFFFFFFFFFFFFFF 2 Global._moveToY=' + moveToY + " Y1=" + Y1)
-
-				if(Global._XY2MoveDic.hasOwnProperty(moveToX + '_' + Y1)
-					&& Global._XY2MoveDic.hasOwnProperty(moveToX + '_' + Y2))
-				{
-					canMove = true;
-				}
-			}
-			else{
-				canMove = true;
-			}
-		}
-
-		return canMove;
-	}
-	*/
 }
 
 function log(s)

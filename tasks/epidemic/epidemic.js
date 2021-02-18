@@ -88,7 +88,7 @@ export class Epidemic
 
 	loadSolution (solution)
 	{
-		log('loadSolution() - ' + solution)
+		log('loadSolution()  ' )
 
 		let solutionObject;
 
@@ -139,6 +139,8 @@ export class Epidemic
 	
 	}
 }
+
+
 
 function log(s){
 	console.log(s);

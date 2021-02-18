@@ -4,6 +4,7 @@ import { Config } from './Config.js'
 import { InterfaceHelper } from "./InterfaceHelper";
 import { StrategyHelper } from "./StrategyHelper";
 
+
 export class Controller
 {
     static go2Start()
@@ -63,9 +64,44 @@ export class Controller
     static strDelete(strId)
     {
         let strDiv = document.getElementById('strategy_' + strId);
-        strDiv.parentNode.removeChild(strDiv);
-        Global.recalcFromInterface('strDelete');
+        $('#strategy_' + strId).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).promise().done(function(){
+            strDiv.parentNode.removeChild(strDiv);
+            Global.recalcFromInterface('strDelete ');
+        });
+
         return false;
+    }
+
+    static strDaysMove(strId, toLeftRight)
+    {
+        let pm;
+        let ok = false;
+
+        if(toLeftRight == 'left')
+        {
+            pm = 'minus';
+
+            ok = Controller.strSetPlusMinus('str_from_', strId, pm);
+
+            if(ok)
+            {
+                Controller.strSetPlusMinus('str_to_', strId, pm);
+            }            
+        }
+        else{
+            pm = 'plus';
+
+            ok = Controller.strSetPlusMinus('str_to_', strId, pm);
+
+            if(ok)
+            {
+                Controller.strSetPlusMinus('str_from_', strId, pm);
+            }    
+        }
+
+        if(ok){
+            Global.recalcFromInterface('strDaysMove');
+        }      
     }
 
     static strCheck(strId)
@@ -73,8 +109,9 @@ export class Controller
         Global.recalcFromInterface('strCheck strId=' + strId);
     }
 
-    static strDayPlusMinus(targetInputId, strId, pm)
+    static strSetPlusMinus(targetInputId, strId, pm)
     {
+        let res = true;
         let t = document.getElementById(targetInputId + strId);
 
         let s = t.value.trim();
@@ -85,26 +122,49 @@ export class Controller
         {
             if(pm == 'minus')
             {
-                val = val - 1;
+                if(val > 1)
+                {
+                    val = val - 1;
+                }
+                else if(val == 1){
+                    res = false;
+                }
+                else{
+                    val = 1;
+                    res = true;
+                }              
             }
             else{
-                val = val + 1;
-            }
 
-            if(val < 1)
-            {
-                val = 1;
-            }
-            else
-            {
-                if(val > Global._dayCount)
+                if(val < Config._dayCount)
                 {
-                    val = Global._dayCount;
+                    val = val + 1;
+                    res = true;
                 }
+                else if(val == Config._dayCount){
+                    res = false;
+                }
+                else{
+                    val = Config._dayCount;
+                    res = true;
+                }            
             }
     
             t.value = val;
+          
+        }
+        else{
+            res = false;
+        }
 
+        return res;
+          
+    }
+
+    static strDayPlusMinus(targetInputId, strId, pm)
+    {        
+        if(Controller.strSetPlusMinus(targetInputId, strId, pm))
+        {
             Global.recalcFromInterface('strDayPlusMinus');
         }
     

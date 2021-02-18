@@ -4,19 +4,24 @@ import { InterfaceHelper } from "./InterfaceHelper";
 import { Controller } from "./Controller";
 import { SolutionHelper } from "./SolutionHelper";
 import { Processor } from "./Processor";
+import { Config } from "./Config";
 
 export class Global
 {
+
 	static _canvasTop;
 	static _slider;
 	static _currentSolution;
 	static _canvas1W;
 	static _canvas1H;
+	static _canvas2W;
+	static _canvas2H;
 	static _manArr = [];
 	static _dayArr = [];
 	static _isPlay = false;
 	static _tikCounter = 0;
 	static _ctx;
+	static _ctx2;
 	static _selectedStrategyId = -1;
 
     static getStrategyForDay(dayNumber, solutionObject)
@@ -41,7 +46,7 @@ export class Global
 
     static getCurrentDayIndex()
     {
-        return  Math.trunc((Global._tikCounter - 1) / 4);  //-- 4 - это количество тиков в одном дне
+        return  Math.trunc((Global._tikCounter - 1) / 10);  //-- 4 - это количество тиков в одном дне
     }
 
 	static playStop()
@@ -53,6 +58,13 @@ export class Global
 
 	static playStart()
 	{
+		let dayIdx = Global.getCurrentDayIndex();
+
+		if(dayIdx >= Config._dayCount-1)
+		{
+			Controller.go2Start();
+		}
+
 		Global._isPlay = true;
 		Global.playTik();
 		document.getElementById('btn_play').innerHTML = '||';  //--- stop play
@@ -63,10 +75,16 @@ export class Global
 	{
 		if(Global._isPlay)
 		{
-			Global.go2NextDay('tik');
-			setTimeout(Global.playTik, 100);	
-			
-			
+			Global._tikCounter++;
+			let dayIdx = Global.getCurrentDayIndex();
+
+			InterfaceHelper.setDay('playTik', dayIdx+1 );
+			//Global.go2NextDay('tik');
+		
+			setTimeout(Global.playTik, 100);						
+		}
+		else{
+			Global.playStop();
 		}
 	}
 
@@ -86,9 +104,9 @@ export class Global
 
 	static setTikCounter(dayNumber)
 	{
-		Global._tikCounter = dayNumber * 4;  //-- 4 - это количество тиков в одном дне
+		Global._tikCounter = dayNumber * 10;  //-- 4 - это количество тиков в одном дне
 
-		log('tikcounter=' + Global._tikCounter )
+		log('setTikCounter=' + Global._tikCounter + ' dayNumber=' + dayNumber )
 	}
 
 	static getCurrentSolution()

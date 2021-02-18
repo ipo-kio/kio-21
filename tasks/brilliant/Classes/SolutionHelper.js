@@ -3,6 +3,8 @@ import { StepResult } from './StepResult.js';
 import { Global } from './Global.js'
 import { Solution } from './Solution.js'
 import { StepHelper } from './StepHelper.js'
+import { Config } from '../../epidemic/Classes/Config.js';
+import { ConfigHelper } from './ConfigHelper.js';
 
 export class SolutionHelper
 {
@@ -294,13 +296,16 @@ export class SolutionHelper
 		return result;
 	}
 
-	static getCurrentSolution()
+	static getCurrentSolution(src)
 	{
-		log('SolutionHelper.getCurrentSolution()')
+		log('SolutionHelper.getCurrentSolution() src=' + src)
 		let solution = new Solution();
 		solution._moveCount = 0;
 		solution._rotateCount = -1;
-		let step;
+		solution._isComplit = false;
+		solution._orientalCount = 0;
+
+		let step, block, s;
 
 		let i;
 
@@ -319,8 +324,396 @@ export class SolutionHelper
 			solution._stepArr.push(step);
 		}
 
+		solution._isComplit = true;
+		let minY = 100;
+		let minX = 100;
+
+		if(Global._level == 0 || Global._level == 1)
+		{
+			let kvadrArr = [];
+
+			//-- все должны быть горизонтально (level 0 1)
+
+			for(i = 0; i < Global._blockArr.length; i++)
+			{
+				block = Global._blockArr[i];
+	
+				if( block._VH == 'H')
+				{
+					solution._isComplit = false;
+					//log('Ошибка вертикалки')
+					break;
+				}
+
+				kvadrArr.push(block._kvadr1);
+				kvadrArr.push(block._kvadr2);
+
+				if(block._kvadr1._posX < minX)
+				{
+					minX = block._kvadr1._posX;
+				}
+				if(block._kvadr2._posX < minX)
+				{
+					minX = block._kvadr2._posX;
+				}
+
+				if(block._kvadr1._posY < minY)
+				{
+					minY = block._kvadr1._posY;
+				}
+				if(block._kvadr2._posY < minY)
+				{
+					minY = block._kvadr2._posY;
+				}
+			}
+
+
+			if(solution._isComplit)
+			{
+				//-- собран ли правильный квадрат в любом месте.
+				//-- сверху вниз
+
+
+				//-- сверху вниз по рядам
+
+				let kvadr;
+				let kCount, kCount2;
+				let nY, nY2;
+
+				if(Global._level == 1)
+				{
+					minY = 2;
+				}
+
+				//log('minX=' + minX + ' minY=' + minY)							
+
+				for(let y = minY; y < minY + 4; y++)
+				{
+					//log('Проверка ряда  y=' + y)
+					//-- для каждого ряда сверху вниз
+					
+					nY = 0;
+					nY2 = 7;
+
+					if(y == minY+nY || y == minY+nY2) // 1 8
+					{
+						//-- в первом ряду должно быть 2 квадратика, 
+						//-- но первый ряд может начаться не с самого верха minY
+						//-- и еще есть сдвиг слева  minX
+						kCount = 0;
+						kCount2 = 0;
+						for(i = 0; i < kvadrArr.length; i++)
+						{
+							kvadr = kvadrArr[i];
+		
+							if(kvadr._posY == minY+nY || kvadr._posY == minY +nY2 ) //-- тут должно быть два квадратика смещенные на 3 и 4 по Х
+							{
+								if(kvadr._posX == (minX + 3) 
+								|| kvadr._posX == (minX + 4))
+								{
+									if(kvadr._posY == (minY+nY))
+									{
+										kCount++;
+
+										if(kCount > 2)
+										{
+											break;
+										}
+									}
+									else{
+										kCount2++;
+
+										if(kCount2 > 2)
+										{
+											break;
+										}
+									}
+								}						
+							}
+						}
+
+						if(kCount != 2)
+						{							
+							log('Ошибка в  ряду 1 - minY=' + minY+ ' kCount=' + kCount + ' y=' + y + ' nY=' + nY)
+							solution._isComplit = false;
+							break
+						}
+
+						if(kCount2 != 2)
+						{							
+							log('Ошибка в  ряду 8 - minY=' + minY+ ' kCount2=' + kCount2 + ' y=' + y+ ' nY2=' + nY2)
+							solution._isComplit = false;
+							break
+						}
+					}
+
+					nY = 1;
+					nY2 = 6;
+
+					if(y == (minY+nY) || y == (minY+nY2)) // 2 7
+					{
+						//-- во втором ряду 4 квадратика
+						kCount = 0;
+						kCount2 = 0;
+						for(i = 0; i < kvadrArr.length; i++)
+						{
+							kvadr = kvadrArr[i];
+		
+							if(kvadr._posY == minY+nY || kvadr._posY == minY+nY2) //-- тут должно быть два квадратика смещенные на 2,3,4,5 по Х
+							{
+								if(kvadr._posX == (minX + 2) 
+								|| kvadr._posX == (minX + 3) 
+								|| kvadr._posX == (minX + 4) 
+								|| kvadr._posX == (minX + 5))
+								{
+									if(kvadr._posY == (minY+nY))
+									{
+										kCount++;
+
+										if(kCount > 4)
+										{
+											break;
+										}
+									}
+									else{
+										kCount2++;
+
+										if(kCount2 > 4)
+										{
+											break;
+										}
+									}
+								}						
+							}
+						}
+
+						//log(' minY=' + minY+ ' kCount=' + kCount + ' y=' + y + ' nY=' + nY)
+						//log(' minY=' + minY+ ' kCount2=' + kCount2 + ' y=' + y + ' nY2=' + nY2)
+
+						
+						if(kCount != 4)
+						{							
+							log('Ошибка в  ряду 2 - minY=' + minY+ ' kCount=' + kCount + ' y=' + y + ' nY=' + nY)
+							solution._isComplit = false;
+							break;
+						}
+			
+						if(kCount2 != 4)
+						{							
+							log('Ошибка в  ряду 7 - minY=' + minY+ ' kCount2=' + kCount2 + ' y=' + y+ ' nY2=' + nY2)
+							solution._isComplit = false;
+							break;
+						}						
+					}
+
+					nY = 2;
+					nY2 = 5;
+
+					if(y == (minY+nY) || y == (minY+nY2)) // 3 6 ряды
+					{
+						//-- во 3 и 6 ряду  6 квадратиков
+						kCount = 0;
+						kCount2 = 0;
+						for(i = 0; i < kvadrArr.length; i++)
+						{
+							kvadr = kvadrArr[i];
+		
+							if(kvadr._posY == minY+nY || kvadr._posY == minY+nY2) //-- тут должно быть смещенные на 1,2,3,4,5, 6 по Х
+							{
+								if( kvadr._posX == (minX + 1)
+								|| kvadr._posX == (minX + 2)								 
+								|| kvadr._posX == (minX + 3) 
+								|| kvadr._posX == (minX + 4) 
+								|| kvadr._posX == (minX + 5)
+								|| kvadr._posX == (minX + 6)
+								)
+								{
+									if(kvadr._posY == (minY+nY))
+									{
+										kCount++;
+
+										if(kCount > 6)
+										{
+											break;
+										}
+									}
+									else{
+										kCount2++;
+
+										if(kCount2 > 6)
+										{
+											break;
+										}
+									}
+
+								}						
+							}
+						}
+
+					
+						if(kCount != 6)
+						{							
+							log('Ошибка в  ряду 3 - minY=' + minY+ ' kCount=' + kCount + ' y=' + y + ' nY=' + nY)
+							solution._isComplit = false;
+							break;
+						}
+
+						if(kCount2 != 6)
+						{							
+							log('Ошибка в  ряду 6 - minY=' + minY+ ' kCount2=' + kCount2 + ' y=' + y+ ' nY2=' + nY2)
+							solution._isComplit = false;
+							break;
+						}
+						
+
+					}
+				
+					nY = 3;
+					nY2 = 4;
+
+					if(y == (minY+nY) || y == (minY+nY2)) // 4 5 ряд
+					{
+						//-- во 4 и 5 ряду  8 квадратиков
+						kCount = 0;
+						kCount2 = 0;
+						for(i = 0; i < kvadrArr.length; i++)
+						{
+							kvadr = kvadrArr[i];
+		
+							if(kvadr._posY == minY+nY || kvadr._posY == minY+nY2) //-- тут должно быть  смещенные на 0, 1,2,3,4,5, 6, 7 по Х
+							{
+								if( kvadr._posX == (minX + 0) 
+								|| kvadr._posX == (minX + 1)
+								|| kvadr._posX == (minX + 2)								 
+								|| kvadr._posX == (minX + 3) 
+								|| kvadr._posX == (minX + 4) 
+								|| kvadr._posX == (minX + 5)
+								|| kvadr._posX == (minX + 6)
+								|| kvadr._posX == (minX + 7)
+								)
+								{
+									if(kvadr._posY == (minY+nY))
+									{
+										kCount++;
+
+										if(kCount > 8)
+										{
+											break;
+										}
+									}
+									else{
+										kCount2++;
+
+										if(kCount2 > 8)
+										{
+											break;
+										}
+									}
+								}						
+							}
+						}
+
+						if(kCount != 8)
+						{							
+							log('Ошибка в  ряду 4 - minY=' + minY+ ' kCount=' + kCount + ' y=' + y + ' nY=' + nY)
+							solution._isComplit = false;
+							break
+						}
+
+						if(kCount2 != 8)
+						{							
+							log('Ошибка в  ряду 5 - minY=' + minY+ ' kCount2=' + kCount2 + ' y=' + y+ ' nY2=' + nY2)
+							solution._isComplit = false;
+							break
+						}
+					}
+				}
+			}
+		}
+		else if(Global._level == 2)
+		{
+			//-- покрыта ли та же область
+			{
+				let kondurDic = ConfigHelper._konturDic;
+
+
+				for(i = 0; i < Global._blockArr.length; i++)
+				{
+					block = Global._blockArr[i];
+
+					//kvadrArr.push(block._kvadr1);
+					//kvadrArr.push(block._kvadr2);
+
+					if(!kondurDic.hasOwnProperty((block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1))
+					|| !kondurDic.hasOwnProperty((block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1))
+					)
+					{
+						log('Ошибка контура')
+						solution._isComplit = false;
+						//break;
+					}
+
+					s = kondurDic[(block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1)];
+
+					if(block._VH != s)
+					{
+						solution._orientalCount++;
+					}
+
+					
+				}
+			}
+
+			//-- Смена ориентации
+			{
+
+			}
+		}
+
+
 		return solution;
 
+	}
+
+	static compareStrings(str1, str2)
+	{
+		//3:5-2:5;5:5-4:5;7:5-6:5;9:5-8:5;8:6-9:6;6:6-7:6;4:6-5:6;2:6-3:6;4:4-3:4;6:4-5:4;8:4-7:4;6:3-7:3;4:3-5:3;6:2-5:2;4:7-3:7;6:7-5:7;8:7-7:7;6:8-7:8;4:8-5:8;6:9-5:9;
+
+		str1 = str1.trim();
+		str2 = str2.trim();
+
+		let ss;
+		let a;
+		let strArr = str1.split(';')
+		let strDic = {};
+		let res = true;
+
+		for(let i = 0; i < strArr.length; i++)
+		{
+
+			ss = strArr[i].split('-')
+
+			if(ss.length == 2)
+			{
+				strDic[ss[0] + '-' + ss[1]] = 1;
+				strDic[ss[1] + '-' + ss[0]] = 1;
+			}
+
+
+		}
+
+		strArr = str2.split(';')
+
+		for(let i = 0; i < strArr.length; i++)
+		{
+			if(strArr[i] != '' &&   !strDic.hasOwnProperty(strArr[i]))
+			{
+				res = false;
+				break;
+			}
+		}
+
+		return res;
 	}
 }
 

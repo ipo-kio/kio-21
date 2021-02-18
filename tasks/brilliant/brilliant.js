@@ -23,6 +23,7 @@ export class Brilliant
 		log('constructor==============================')
 		this.settings = settings
 		log(settings)
+		Global._level = settings.level;
 
 	}
 	/**
@@ -58,20 +59,74 @@ export class Brilliant
 			ordering: 'minimize'
 		}
 
+		let s;
 
-		return[_moveCount, _rotateCount];
+		if(Global._level == 0)
+		{
+			s = 'Собрано';
+		}
+		else if(Global._level == 1)
+		{
+			s = 'Собрано';
+		}
+		else if(Global._level == 2)
+		{
+			s = 'В рамках';
+		}
+
+		let _isComplit = {
+			name: '_isComplit',
+			title: s,
+			ordering: 'maximize',
+			view: function (ok) {
+			  if (ok) {
+				return 'Да'
+			  } else {
+				return 'Нет'
+			  }
+			}
+		  }
+			   
+		let _orientalCount = {
+			name: '_orientalCount',
+			title: 'Смена ориентации:',
+			ordering: 'maximize'
+		}
+
+
+		if(Global._level == 2)
+		{
+			return[_orientalCount, _isComplit,  _moveCount, _rotateCount];
+		}
+		else{
+			return[_isComplit, _moveCount, _rotateCount];
+		}
+		
 
 	}
 
 	static saveCurrentSolution (src)
 	{
 		log('saveCurrentSolution src=' + src)
-		let solution = SolutionHelper.getCurrentSolution()
+		let solution = SolutionHelper.getCurrentSolution('saveCurrentSolution')
 
-		Brilliant.kioapi.submitResult({
-			_rotateCount: solution._rotateCount,
-			_moveCount: solution._moveCount
-		})
+		if(Global._level == 2)
+		{
+			Brilliant.kioapi.submitResult({
+				_isComplit: solution._isComplit,
+				_orientalCount: solution._orientalCount,
+				_rotateCount: solution._rotateCount,
+				_moveCount: solution._moveCount
+			})
+		}
+		else{
+			Brilliant.kioapi.submitResult({
+				_isComplit: solution._isComplit,
+				_rotateCount: solution._rotateCount,
+				_moveCount: solution._moveCount
+			})
+		}
+
 
 
 	}
@@ -79,9 +134,9 @@ export class Brilliant
 	solution (){
 		log('solution()')
 
-		let solution = SolutionHelper.getCurrentSolution();
+		let solution = SolutionHelper.getCurrentSolution('solution');
 
-		log(solution)
+		//log(solution)
 
 		return JSON.stringify(solution)
 	}
@@ -95,48 +150,28 @@ export class Brilliant
 		log('loadSolution()')
 		//log(solutionJson)
 
+		
 		if(!Global._appStarted)
 		{
-			let url = new URL(window.location.href);
-			Start._blocksStr = url.searchParams.get("bloksstr");
-
-			if(Start._blocksStr == null)
-			{
-				Start._blocksStr = '1:2-1:1;2:2-2:1;2:3-1:3;2:4-1:4;4:1-3:1;4:2-3:2;4:4-4:3;4:5-3:5;1:5-2:5;5:4-5:5;5:2-5:3;6:1-5:1;6:3-6:2;6:5-6:4;';
-			}
-
-			let startData = ConfigHelper.getStartData(Start._blocksStr);
-
-			//log('startData')
-			//log(startData)
-			Start.start(this._domNode , startData)
+			log('startData')
 
 			Global._appStarted = true;
 		}
-
-
+		
 
 		if (solutionJson !== undefined )
 		{
-			//log('sol1')
-			let sol = c
-			//log('sol2')
-			//log(sol)
-			//log('sol3')
 
-			if(sol._stepArr.length > 0)
-			{
 
-			}
-			else{
-
-			}
+			let sol = JSON.parse(solutionJson);
 
 			Global.applaySolution(sol)
 			 //log('sol4')
 		}
-		else{
+		else
+		{
 			//log('sssssssssol 1')
+			//log(Start._blocksStr)
 			StepHelper.addNewStep(Start._blocksStr, 0, 'start');
 			//log('sssssssssol 2')
 			Global.drawStepPrev(0);
@@ -150,7 +185,9 @@ export class Brilliant
 		log('initInterface()')
 		_thisProblem = this
 		this._domNode = domNode;
-		//Start.start(domNode)
+		ConfigHelper.init();
+		Start._blocksStr = ConfigHelper.getStartStr();
+		Start.start(domNode)
 	}
 
 
