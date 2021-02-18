@@ -328,11 +328,72 @@ export class SolutionHelper
 		let minY = 100;
 		let minX = 100;
 
-		if(Global._level == 0 || Global._level == 1)
+		if(Global._level == 0)
 		{
 			let kvadrArr = [];
 
-			//-- все должны быть горизонтально (level 0 1)
+			for(i = 0; i < Global._blockArr.length; i++)
+			{
+				block = Global._blockArr[i];
+
+				kvadrArr.push(block._kvadr1);
+				kvadrArr.push(block._kvadr2);
+
+				if(block._kvadr1._posX < minX)
+				{
+					minX = block._kvadr1._posX;
+				}
+				if(block._kvadr2._posX < minX)
+				{
+					minX = block._kvadr2._posX;
+				}
+
+				if(block._kvadr1._posY < minY)
+				{
+					minY = block._kvadr1._posY;
+				}
+				if(block._kvadr2._posY < minY)
+				{
+					minY = block._kvadr2._posY;
+				}
+			}
+
+			let kvadr;
+			//log('minY=' + minY+ ' minX=' + minX )
+
+			for(let y = minY; y < minY + 4; y++)
+			{
+				//-- для каждого ряда сверху вниз
+				//log('y=' + y)
+
+				for(i = 0; i < kvadrArr.length; i++)
+				{
+					kvadr = kvadrArr[i];
+					//log(kvadr)
+
+					if(kvadr._posX < minX || kvadr._posX > minX + 3)
+					{
+						log('Ошибка в  ряду по X  - minY=' + minY+ ' minX=' + minX + ' y=' + y )
+						//log(kvadr)
+						solution._isComplit = false;
+						break
+					}
+
+					if(kvadr._posY > minY + 3)
+					{
+						log('Ошибка в  ряду  по Y  - minY=' + minY+ ' minX=' + minX + ' y=' + y )
+						//log(kvadr)
+						solution._isComplit = false;
+						break
+					}
+				}
+			}
+		}
+		else if(Global._level == 1)
+		{
+			let kvadrArr = [];
+
+			//-- все должны быть горизонтально (level 1)
 
 			for(i = 0; i < Global._blockArr.length; i++)
 			{
@@ -669,7 +730,6 @@ export class SolutionHelper
 
 			}
 		}
-
 
 		return solution;
 

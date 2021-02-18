@@ -18,7 +18,7 @@ export class SolutionHelper
 
 	static createSolutionFromInterface()
 	{
-		let i, strDiv, strId, d1, d2, str, bgColor, ok, t;
+		let i, strDiv, strId, d1, d2, str, bgColor, ok, t, s;
 		let errMess = '';
 		log('SolutionHelper.createSolutionFromInterface()')
 		let solution = SolutionHelper.creteEmptySolution(); 
@@ -72,10 +72,12 @@ export class SolutionHelper
 				str = StrategyHelper.createEmptyStarategy(parseInt(strId, 10));
 				str._dayStart = d1;
 				str._dayFinish = d2;
-				str._isMaski = document.getElementById('str_mask_' + strId).checked;
+				//str._isMaski = document.getElementById('str_mask_' + strId).checked;
 				str._isKarantin = document.getElementById('str_kar_' + strId).checked;
 				//str._isLok = document.getElementById('str_lok_' + strId).checked;
-				str._isActive = ok;
+				
+
+				str._maskKoef = parseInt(strDiv.getAttribute('mask_koef'));
 
 				solution._strategyArr.push(str);
 
@@ -83,6 +85,37 @@ export class SolutionHelper
 
 				t = document.getElementById('strategy_' + str._id);
 				t.setAttribute('title', errMess);
+
+				//-- дистанционка
+				s = document.getElementById('str_dist_' + strId).value.trim();
+
+				if(s == '')
+				{
+					d1 = 0;
+				}
+				else{
+					d1 = parseInt(s, 10);
+				}
+				
+
+				if(!Funcs.isInt(d1))
+				{
+					errMess = 'Ошибка дистанционки!' ;
+					ok = false;
+					d1 = 0;
+				}
+				else
+				{
+					if(d1 < 0 || d1 > 100)
+					{
+						errMess = 'Ошибка дистанционки 0-100' ;
+						ok = false;
+					}
+				}
+
+				str._distPercent = d1;
+
+				str._isActive = ok;
 			}
 		}
 		
@@ -127,6 +160,8 @@ export class SolutionHelper
 
 			}
 		}
+
+
 
 		return solution;
 	}

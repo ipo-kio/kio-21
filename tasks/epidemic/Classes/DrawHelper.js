@@ -23,10 +23,129 @@ export class DrawHelper
             DrawHelper.drawVariant1(ctx, day);  //-- все стоят
         }
         else{
-            DrawHelper.drawVariant2(ctx, day);  //-- все бегают
+            //DrawHelper.drawVariant2(ctx, day);  //-- все бегают
+            DrawHelper.drawVariant3(ctx, day);  //-- все бегают по новой
         }
         
         DrawHelper.drawDayInfo(day);
+    }
+
+    static drawVariant3(ctx, day)
+    {
+        let radius = 3; //-- ширина/2 человечка
+        let radius2 = radius * 2;
+        let man, man2;
+        let W = Global._canvas1W;
+        let H = Global._canvas1H;
+        let x, y, dayColor;
+        let leftX, rightX;
+        let topY, botY;
+
+
+        Global._manArr.forEach((element) => {element._stuk = false;})
+
+        for(let i=0; i < Global._manArr.length; i++)
+        {
+            man = Global._manArr[i];
+
+            dayColor = DrawHelper.getColorForDay(man, day._dayIndex);
+
+            //-- определим столкновения
+            if(!man._stuk)
+            {
+                for (let j=i+1; j < Global._manArr.length; j++)
+                {
+                    man2 = Global._manArr[j];
+                    if(man2._stuk) continue;
+                    if(man2._lastStukId == man._lastStukId)
+                    {
+                        //-- был стук с тем же самым в прошлой итерации. Это чтоб не прилипали
+                        continue;
+                    }
+
+
+                    if(
+                        (man.x >= man2.x && man.x <= (man2.x + radius2)
+                        && man.y >= man2.y && man.y <= (man2.y + radius2)
+                        )
+                        ||
+                        (man2.x >= man.x && man2.x <= (man.x + radius2)
+                        && man2.y >= man.y && man2.y <= (man.y + radius2))
+                    )
+                    {
+                        Processor.createVector(man);
+                        Processor.createVector(man2);
+
+                        man._stuk = true;
+                        man2._stuk = true;
+
+                        man._lastStukId = i + '_' + j;
+                        man2._lastStukId = i + '_' + j;
+
+                    }
+                }
+            }	
+            
+            //-- отскок от края
+            if(!man._stuk)
+            {
+
+
+                if(dayColor == 'red')
+                {
+                    leftX = 0
+                    rightX = 50;
+                    topY = 0;              
+                    botY = 50;
+
+                }
+                else{
+                    leftX = 0
+                    rightX = W;
+                    topY = 50;              
+                    botY = H;
+                }
+                
+
+                if ((man.y+radius) > botY || (man.y-radius) < topY)
+                {
+                    man.vy = -man.vy;
+
+                    if((man.y + radius) > botY)
+                    {
+                        man.y = botY - radius;
+                    }
+                    else  if((man.y - radius) < topY)
+                    {
+                        man.y =  radius + topY;
+                    }
+                }
+
+                if ((man.x+radius) > rightX || (man.x-radius) < leftX)
+                {
+                    man.vx = -man.vx;
+
+                    if((man.x + radius) > rightX)
+                    {
+                        man.x = rightX - radius;
+                    }
+                    else  if((man.x - radius) < leftX)
+                    {
+                        man.x =  radius + leftX;
+                    }
+                }
+            }
+
+            
+
+            man.x += man.vx;
+            man.y += man.vy;
+    
+            ctx.beginPath();
+            ctx.arc(man.x, man.y, radius, 0, 2*Math.PI, false);
+            ctx.fillStyle = dayColor;
+            ctx.fill();            
+        }
     }
 
     static drawVariant2(ctx, day)
@@ -258,10 +377,18 @@ export class DrawHelper
 
         y = 70;
         let y1 = 30;
+        let zS = ''
+
+        if(day._zarazPlus > 0)
+        {
+            zS = '(+' + day._zarazPlus + ')'
+        }
+
+        
         
 
         DrawHelper.drawDayInfoMan(ctx, 'm_green', x, y + y1*0, day._greenCount);
-        DrawHelper.drawDayInfoMan(ctx, 'm_yellow', x, y + y1*1, day._yellowCount);
+        DrawHelper.drawDayInfoMan(ctx, 'm_yellow', x, y + y1*1, day._yellowCount + zS);
         DrawHelper.drawDayInfoMan(ctx, 'm_red', x, y + y1*2, day._redCount);
         DrawHelper.drawDayInfoMan(ctx, 'm_blue', x, y + y1*3, day._blueCount);
 
