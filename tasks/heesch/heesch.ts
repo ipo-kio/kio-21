@@ -2,7 +2,6 @@ import './heesch.scss'; //TODO заменить имя файла со стил�
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
-import {PolyLineUtils} from "./model/PolyLineUtils";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {Tessellation} from "./model/Tessellation";
@@ -45,22 +44,31 @@ export class Heesch { //TODO название класса должно совп
      */
     initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
         // test
-        let square = new Piece([
+        /*let square = new Piece([
             new Point(0, 0),
             new Point(0, 18),
             new Point(18, 18),
             new Point(18, 0)
         ]);
         square = square.fulfill();
-        square.searchForType((t, i) => {});
+        square.searchForType((t, i) => {});*/
 
         this.kioapi = kioapi;
 
         this.editor_canvas = document.createElement('canvas');
+        this.editor_canvas.classList.add('piece')
+        this.editor_canvas.width = 400;
+        this.editor_canvas.height = 400;
+
         this.tesselation_canvas = document.createElement('canvas');
 
-        this.tesselation_canvas.width = 600;
-        this.tesselation_canvas.height = 600;
+        this.tesselation_canvas.height = 500;
+        this.tesselation_canvas.classList.add('tesselation');
+        let resize_listener = () => {
+            this.tesselation_canvas.width = domNode.clientWidth;
+            this.updateTessellationView();
+        };
+        window.addEventListener('resize', resize_listener);
 
         this.tessellation_ctx = this.tesselation_canvas.getContext('2d');
 
@@ -70,11 +78,11 @@ export class Heesch { //TODO название класса должно совп
         this.tesselationSelect.addEventListener("input", e => this.updateTessellationView());
 
         domNode.classList.add('heesch-task-container');
+        domNode.appendChild(this.tesselation_canvas);
         domNode.appendChild(this.editor_canvas);
         domNode.append(this.tesselationSelect);
-        domNode.appendChild(this.tesselation_canvas);
 
-        let tcctgg = new Piece([
+        let piece = new Piece([
             new Point(4, 3),
             new Point(1, 4),
             new Point(0, 2),
@@ -90,11 +98,13 @@ export class Heesch { //TODO название класса должно совп
         ]);
 
         this.editor = new PieceEditor(this.editor_canvas);
-        this.editor.piece = tcctgg;
+        this.editor.piece = piece;
 
-        this.updateTessellationPiece(tcctgg);
+        this.updateTessellationPiece(piece);
 
         this.editor.pieceChangeListener = piece => this.updateTessellationPiece(piece);
+
+        resize_listener();
     }
 
     static preloadManifest(): void { //KioResourceDescription[] {
@@ -130,7 +140,9 @@ export class Heesch { //TODO название класса должно совп
 
         let selectedIndex: number = +this.tesselationSelect.value;
 
-        let tessellationView = new TessellationView(this.tessellations[selectedIndex], 300, 400, 10);
+        let x0 = this.tesselation_canvas.width / 2;
+        let y0 = this.tesselation_canvas.height / 2;
+        let tessellationView = new TessellationView(this.tessellations[selectedIndex], x0, y0, 10);
         tessellationView.draw(this.tessellation_ctx, 'black');
     }
 

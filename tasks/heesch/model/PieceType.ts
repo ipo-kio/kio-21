@@ -360,7 +360,6 @@ export const TYPE_LLC4C4 = new PieceType(
         let D = piece.point(indexes[3]);
 
         let type = is_parallelogram_type(A, B, C, D);
-        console.log("TESSELATING LLC4C4", type, A.toString(), B.toString(), C.toString(), D.toString());
         if (type !== "square")
             return null;
 
@@ -399,7 +398,29 @@ export const TYPE_LLLL = new PieceType(
         ['L']
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        let type = is_parallelogram_type(A, B, C, D);
+        if (type !== "square" && type !== "parallelogram")
+            return null;
+
+        let sym1 = S(C, D);
+        let sym2 = S(A, D);
+
+        let piece1 = sym1.applyToPiece(piece);
+        let piece2 = sym2.applyToPiece(piece);
+        let piece3 = sym1.applyToPiece(piece2);
+
+        let T1 = D.sub(A).mul(2);
+        let T2 = B.sub(A).mul(2);
+
+        return {
+            T1, T2, pieces: [piece, piece1, piece2, piece3],
+            indexes: indexes.slice()
+        };
     }
 );
 

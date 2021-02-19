@@ -1,0 +1,29 @@
+$editor_size: 400px;
+$editor_skip: 8px;
+
+.heesch-task-container {
+  position: relative;
+  height: 500px;
+
+  canvas {
+    position: absolute;
+
+    &.piece {
+      left: 8px;
+      top: 8px;
+    }
+
+    &.tesselation {
+      left: 0;
+      top: 0;
+    }
+  }
+
+  select {
+    margin-top: $editor_skip;
+    margin-left: $editor_size + $editor_skip;
+    position: relative;
+    height: $editor_size;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+}
