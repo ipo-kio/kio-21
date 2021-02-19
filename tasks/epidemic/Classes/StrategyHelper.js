@@ -32,10 +32,12 @@ export class StrategyHelper
         
         str._dayStart = 1;
         str._dayFinish = 2;
-        str._isMaski = false;
+        //str._isMaski = false;
         str._isKarantin = false;
         //str._isLok = false;
         str._isActive = true;
+        str._maskKoef = 0;
+        str._distPercent = 0;
 
         return str;
     }

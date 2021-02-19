@@ -106,7 +106,7 @@ export class Global
 	{
 		Global._tikCounter = dayNumber * 10;  //-- 4 - это количество тиков в одном дне
 
-		log('setTikCounter=' + Global._tikCounter + ' dayNumber=' + dayNumber )
+		//log('setTikCounter=' + Global._tikCounter + ' dayNumber=' + dayNumber )
 	}
 
 	static getCurrentSolution()

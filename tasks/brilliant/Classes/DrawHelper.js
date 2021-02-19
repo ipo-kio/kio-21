@@ -133,7 +133,7 @@ export class DrawHelper
 
 			kvShape.graphics.setStrokeStyle(1);
 			kvShape.graphics.beginStroke("red");
-			kvShape.graphics.beginFill('lightblue');
+			kvShape.graphics.beginFill('lightpink');
 		
 
 			for(i = 0; i < Global._klentkiCountX; i++)
@@ -290,7 +290,7 @@ export class DrawHelper
 
 				if(selBlocksChanged)
 				{
-					//Brilliant.saveCurrentSolution('DrawHelper.onMouseMove');
+					Brilliant.saveCurrentSolution('DrawHelper.onMouseMove');
 					DrawHelper.drawAll('mousemove setSelectedBlocks');
 				}
 

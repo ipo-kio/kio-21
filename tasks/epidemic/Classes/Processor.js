@@ -18,6 +18,8 @@ export class Processor
         let strategy;
         let kY, ySum;
         let totalEE = 0;
+        let zarazByDay;
+        let zAdd;
 
         Global._manArr = [];
         Global._dayArr = [];
@@ -78,6 +80,7 @@ export class Processor
             yellowCount = 0;
             redCount = 0;
             blueCount = 0;
+
 
             strategy = Global.getStrategyForDay(dayNumber, solutionObject);
 
@@ -156,16 +159,17 @@ export class Processor
                 if(dayNumber == 1) //-- первый день обрабатываем особо. В нем никто не заражается
                 {
                     ySum = 0;
-                    kY = 0;
+                    zarazByDay = 0;
                 }
                 else{
     
-                    kY = Processor.getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy); //-- кол. заразившихся в этот день
+                    zarazByDay = Processor.getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy); //-- кол. заразившихся в этот день
                     //--Накапливаем, т.к. количество может быть меньше единицы
-                    ySum = ySum + kY;
+                    ySum = ySum + zarazByDay;
                             
                 }
 
+                zAdd = 0;
 
                 if(ySum >= 1)
                 {
@@ -183,6 +187,8 @@ export class Processor
                             n--;
                             greenCount--;
                             yellowCount++;
+
+                            zAdd++;
                         }
     
                         if(n == 0)
@@ -215,10 +221,13 @@ export class Processor
                 day._blueCount = blueCount;
                 day._greenCount = greenCount;
                 day._yellowCount = yellowCount;
-                day._kY = kY;
+                day._zarazByDay = zarazByDay;
+                day._zarazPlus = zAdd;
                 day._ySum = ySum;
     
                 Global._dayArr.push(day);
+
+                //log(dayNumber + ' zarazByDay=' + zarazByDay)
             }
         }
 
@@ -236,16 +245,26 @@ export class Processor
 
     static getEEForDay(greenCount, yellowCount, redCount, blueCount, strategy)
     {
-        //-- Чем больше одновременно красных, тем больше убыль ЕЕ
+
     
         var n;   
         var rab = (greenCount +  yellowCount + blueCount);  
         var U =  0 ; //redCount + (redCount*(redCount-1))/10;
+        
+
+        //-- дистанционка
+        //--переход на дистанционную работу части работников 
+        //--(указывается процент переведенных - дома производительность вдвое меньше)
+        if(strategy)
+        {
+            rab = rab -  (rab/100 *  strategy._distPercent)/2;
+        }
+
         var EE = rab - U;
     
-        if(strategy && strategy._isMaski)
+        if(strategy)
         {
-            n = Math.abs(EE) * Config._maskEE;
+            n = Math.abs(EE) * (0.1 * strategy._maskKoef);
     
             if(EE < 0)
             {
@@ -254,6 +273,7 @@ export class Processor
             else{
                 EE = n;
             }
+            //log('EE mask = ' + n)
         }
     
         if(strategy && strategy._isKarantin)
@@ -287,9 +307,54 @@ export class Processor
         return EE;
     }
 
-        //-- количество заразившихся за один день
+    //-- количество заразившихся за один день
     static getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy)
     {
+        /*
+        На самом деле количество встреч уменьшается при изменении здоровых или заразных определяется произведением 
+        G*(Y+R)*k*p, 
+        где p-вероятность заразиться (которая и должна быть константой), 
+        а коэффициентом k мы управляем, вводя жесткость масочного режима 
+        (например, он меняется как 1/log(f+2), 
+        где f - степень жесткости масочного режима, а логарифм берется по основанию 2
+        */        
+        let f = 0;
+        let k;
+        let p = 0.1;
+
+        //-- дистанционка
+        //--переход на дистанционную работу части работников 
+        //--(указывается процент переведенных - дома производительность вдвое меньше)
+        if(strategy)
+        {            
+            greenCount = greenCount -  (greenCount/100 *  strategy._distPercent)/2;
+            yellowCount = yellowCount -  (yellowCount/100 *  strategy._distPercent)/2;
+            blueCount = blueCount -  (blueCount/100 *  strategy._distPercent)/2;
+        }
+
+        if(strategy != null && strategy._maskKoef > 0)
+        {
+            f = strategy._maskKoef;
+            k = 1 / (Math.log2(f + 2));
+        }
+        else{
+            k = 1;
+        }
+
+  
+       
+
+        
+
+        let res = (greenCount + blueCount) * (redCount + yellowCount) * k * p;
+
+    
+
+        return res;
+    }
+    static getZarazforDay_Old(greenCount, yellowCount, redCount, blueCount, strategy)
+    {
+
         let res = 0;
         let Z = (yellowCount + redCount) ; //-- количество заразных
 

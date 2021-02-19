@@ -81,21 +81,21 @@ export class Controller
         {
             pm = 'minus';
 
-            ok = Controller.strSetPlusMinus('str_from_', strId, pm);
+            ok = Controller.strSetPlusMinus('str_from_', strId, pm, 1, Config._dayCount);
 
             if(ok)
             {
-                Controller.strSetPlusMinus('str_to_', strId, pm);
+                Controller.strSetPlusMinus('str_to_', strId, pm, 1, Config._dayCount);
             }            
         }
         else{
             pm = 'plus';
 
-            ok = Controller.strSetPlusMinus('str_to_', strId, pm);
+            ok = Controller.strSetPlusMinus('str_to_', strId, pm, 1, Config._dayCount);
 
             if(ok)
             {
-                Controller.strSetPlusMinus('str_from_', strId, pm);
+                Controller.strSetPlusMinus('str_from_', strId, pm, 1, Config._dayCount);
             }    
         }
 
@@ -109,7 +109,29 @@ export class Controller
         Global.recalcFromInterface('strCheck strId=' + strId);
     }
 
-    static strSetPlusMinus(targetInputId, strId, pm)
+    static strMaskSet(strategyId, maskKoef)
+    {
+        log('strMaskSet ' + strategyId + ' ' + maskKoef)
+        let div = document.getElementById('strategy_' + strategyId)
+        let btn;
+        let arr = div.getElementsByClassName('str_mask_btn');
+
+        for(let i = 0; i < arr.length; i++)
+        {
+            btn = arr[i];
+            btn.style.backgroundColor = 'silver';
+
+            if(btn.getAttribute('koef') == maskKoef)
+            {
+                btn.style.backgroundColor = 'red';
+                div.setAttribute('mask_koef', maskKoef)
+            }
+        }
+
+        Global.recalcFromInterface('strMaskSet strategyId=' + strategyId);
+    }
+
+    static strSetPlusMinus(targetInputId, strId, pm, min, max)
     {
         let res = true;
         let t = document.getElementById(targetInputId + strId);
@@ -122,30 +144,31 @@ export class Controller
         {
             if(pm == 'minus')
             {
-                if(val > 1)
+                if(val > min)
                 {
                     val = val - 1;
                 }
-                else if(val == 1){
+                else if(val == min)
+                {
                     res = false;
                 }
                 else{
-                    val = 1;
+                    val = min;
                     res = true;
                 }              
             }
             else{
 
-                if(val < Config._dayCount)
+                if(val < max)
                 {
                     val = val + 1;
                     res = true;
                 }
-                else if(val == Config._dayCount){
+                else if(val == max){
                     res = false;
                 }
                 else{
-                    val = Config._dayCount;
+                    val = max;
                     res = true;
                 }            
             }
@@ -161,9 +184,9 @@ export class Controller
           
     }
 
-    static strDayPlusMinus(targetInputId, strId, pm)
+    static strDayPlusMinus(targetInputId, strId, pm, min, max)
     {        
-        if(Controller.strSetPlusMinus(targetInputId, strId, pm))
+        if(Controller.strSetPlusMinus(targetInputId, strId, pm, min, max))
         {
             Global.recalcFromInterface('strDayPlusMinus');
         }

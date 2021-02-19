@@ -54,7 +54,18 @@ export class Start
 					</td>\
 				</tr>\
 			</table>\
-			<input type="checkbox" id="str_mask_"> <label for="str_mask_">Маски</label>\
+			<span>Маски</span>\
+			<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
+			<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
+			<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
+			<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
+			<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
+			<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>\
+			<br>\
+			<span>Дистант</span>\
+			<input type="text" id="str_dist_" value="0" class="str_day">%\
+			<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
+			<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>\
 			<br>\
 			<input type="checkbox" id="str_kar_"> <label for="str_kar_">Карантин</label>\
 			<span style="float: right;">\
@@ -67,6 +78,7 @@ export class Start
 		divSSPattern.id = 'strategy_';
 		divSSPattern.className = 'str_div';
 		divSSPattern.setAttribute('title', '')
+		divSSPattern.setAttribute('mask_koef', '0')
 		superDiv.appendChild(divSSPattern);
 
 		//-------------------
