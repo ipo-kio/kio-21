@@ -12,46 +12,126 @@ export class DrawHelper
         let W = Global._canvas1W;
         let H = Global._canvas1H;
         
+        
         ctx.clearRect(0, 0, W , H);
         ctx.fillStyle="white";
         ctx.fillRect(0,0,W,H);
 
         let day = Global._dayArr[dayNumber-1];
 
+   
+
+        //let strategy = Global.getStrategyForDay(dayNumber, Global._currentSolution);
+
+        /*
         if(Config._level == 1)
         {
             DrawHelper.drawVariant1(ctx, day);  //-- все стоят
         }
         else{
             //DrawHelper.drawVariant2(ctx, day);  //-- все бегают
-            DrawHelper.drawVariant3(ctx, day);  //-- все бегают по новой
+            
         }
+        */
+        DrawHelper.drawVariant3(ctx, day);  //-- все бегают по новой
+        //DrawHelper.drawVariant2(ctx, day);  //-- все стоят
         
         DrawHelper.drawDayInfo(day);
     }
 
     static drawVariant3(ctx, day)
     {
+
         let radius = 3; //-- ширина/2 человечка
         let radius2 = radius * 2;
         let man, man2;
         let W = Global._canvas1W;
         let H = Global._canvas1H;
-        let x, y, dayColor;
+        let x, y, dayColor, n;
         let leftX, rightX;
         let topY, botY;
+    
+
+        if(day._strategy != null)
+        {
+            //rab = rab -  (rab/100 *  strategy._distPercent)/2;
+        }
 
 
         Global._manArr.forEach((element) => {element._stuk = false;})
 
+  
         for(let i=0; i < Global._manArr.length; i++)
         {
             man = Global._manArr[i];
-
+            man._vxSetted = false;
             dayColor = DrawHelper.getColorForDay(man, day._dayIndex);
 
-            //-- определим столкновения
-            if(!man._stuk)
+
+            //-- кого куда
+            {
+                //-- общая область
+                leftX = 0
+                rightX = W;
+                topY = 50;              
+                botY = H;
+
+                if(dayColor == 'red')
+                {
+                    if(man._firstRedDay < day._number - 1)
+                    {
+                        //-- угол для красных
+                        leftX = 0
+                        rightX = 50;
+                        topY = 0;              
+                        botY = 50;
+                    }
+                    else
+                    {   
+                        if(man.x > rightX/2)
+                        {
+                            man.vx = -10;
+                            man.vy = -2;
+                        }
+                        else{
+                            man.vx = -10;
+                            man.vy = -10;
+                        }
+
+
+                        man._vxSetted = true;
+                    }
+ 
+                }
+                else if(dayColor == 'green' || dayColor == 'yellow' || dayColor == 'blue')
+                {
+                    if(man._distByDayDic.hasOwnProperty(day._number))
+                    {
+                        //-- угол для удаленщиков
+                        leftX = W - 50
+                        rightX = W;
+                        topY = 0;              
+                        botY = 50;
+
+                        if(man.x < W/2)
+                        {
+                            man.vx = 10;
+                            man.vy = 3;
+                        }
+                        else{
+                            //man.vx = 10;
+                            //man.vy = 10;
+                        }
+
+                        //log('sssssssss')
+
+   
+                    }
+                }
+            }
+
+            //-- определим столкновения            
+            if(!man._stuk && !man._vxSetted)
             {
                 for (let j=i+1; j < Global._manArr.length; j++)
                 {
@@ -87,25 +167,8 @@ export class DrawHelper
             }	
             
             //-- отскок от края
-            if(!man._stuk)
-            {
-
-
-                if(dayColor == 'red')
-                {
-                    leftX = 0
-                    rightX = 50;
-                    topY = 0;              
-                    botY = 50;
-
-                }
-                else{
-                    leftX = 0
-                    rightX = W;
-                    topY = 50;              
-                    botY = H;
-                }
-                
+            if(!man._stuk &&  !man._vxSetted)
+            {             
 
                 if ((man.y+radius) > botY || (man.y-radius) < topY)
                 {
@@ -136,15 +199,70 @@ export class DrawHelper
                 }
             }
 
-            
 
-            man.x += man.vx;
-            man.y += man.vy;
+            man.x = man.x + man.vx;
+            man.y = man.y + man.vy;
+
+
+
     
             ctx.beginPath();
-            ctx.arc(man.x, man.y, radius, 0, 2*Math.PI, false);
             ctx.fillStyle = dayColor;
-            ctx.fill();            
+            ctx.arc((man.x), (man.y), radius, 0, 2*Math.PI, false);      
+            ctx.fill();   
+            //ctx.strokeStyle = "#000000";
+            //ctx.stroke();
+            ctx.closePath();
+                 
+        }
+
+        //-- куча
+        {
+            let img = Epidemic.kioapi.getResource('kucha');
+            n = Math.trunc(day._eeTotal / 100);
+
+            let kuchaW = 10;
+            let ny = -kuchaW;
+            let nx = 0;
+            let ySdvig = 0;
+            let xSdvig = 0;
+            let rowCount = 0;
+
+            for(i = 0; i < n; i++)
+            {
+                if(i%10 == 0)
+                {
+                    
+                    nx = 0;
+                    rowCount++;
+
+                    if(rowCount == 5)
+                    {
+                        rowCount = 0;
+                        ny = -kuchaW;
+    
+                        if(ySdvig == 0)
+                        {
+                            ySdvig = kuchaW/2;
+                            xSdvig = kuchaW/2;
+                        }
+                    }
+
+                    ny = ny + kuchaW;
+                }
+                else{
+                    nx++;
+                }
+
+                x =  100 + kuchaW * nx + xSdvig;
+                y = ny + ySdvig;
+
+                ctx.drawImage(img, x, y, kuchaW, kuchaW);
+
+
+            }
+
+            
         }
     }
 

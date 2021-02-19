@@ -32,12 +32,11 @@ export class StrategyHelper
         
         str._dayStart = 1;
         str._dayFinish = 2;
-        //str._isMaski = false;
         str._isKarantin = false;
-        //str._isLok = false;
         str._isActive = true;
         str._maskKoef = 0;
         str._distPercent = 0;
+        str._testPercent = 0;
 
         return str;
     }
@@ -45,5 +44,12 @@ export class StrategyHelper
     static getNextNewDay()
     {
         return 1;
+    }
+
+    static getDistManCount(strategy, manCount)
+    {
+        if(strategy == null) return 0;
+
+        return  Math.trunc(manCount/100 *  strategy._distPercent);
     }
 }

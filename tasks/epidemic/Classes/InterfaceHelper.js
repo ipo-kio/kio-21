@@ -129,12 +129,6 @@ export class InterfaceHelper
                 Controller.strDayPlusMinus('str_to_', newId, 'plus', 1, Config._dayCount);
             });            
 
-            /*
-            t = document.getElementById('str_mask_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strCheck(newId);
-            }); 
-            */
 
             t = document.getElementById('str_mask_btn0_' + newId);
             t.addEventListener('click', function(){
@@ -166,11 +160,6 @@ export class InterfaceHelper
                 Controller.strMaskSet(newId, '5');
             }); 
 
-
-            t = document.getElementById('str_kar_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strCheck(newId);
-            }); 
 
             t = document.getElementById('str_from_' + newId);
             t.addEventListener('input', function(){
@@ -207,17 +196,29 @@ export class InterfaceHelper
             t.addEventListener('click', function(){
                 Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
             }); 
+
+            t = document.getElementById('str_test_' + newId);
+            t.addEventListener('input', function(){
+                Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_test_minus_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDayPlusMinus('str_test_', newId, 'minus', 0, 100);
+            });
+
+            t = document.getElementById('str_test_plus_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDayPlusMinus('str_test_', newId, 'plus', 0, 100);
+            }); 
             
         }
 
 
         document.getElementById('str_from_' + newId).value = strategy._dayStart;
         document.getElementById('str_to_' + newId).value = strategy._dayFinish;
-        //document.getElementById('str_mask_' + newId).checked = (strategy._isMaski);
-        document.getElementById('str_kar_' + newId).checked = (strategy._isKarantin);
-        //document.getElementById('str_lok_' + newId).checked = (strategy._isLok);
-        // document.getElementById('str_active_' + newId).checked = (strategy._isActive);
         document.getElementById('str_dist_' + newId).value = (strategy._distPercent);
+        document.getElementById('str_test_' + newId).value = (strategy._testPercent);
 
         Controller.strMaskSet(newId, strategy._maskKoef + '');
     }

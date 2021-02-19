@@ -1,6 +1,7 @@
 import { Epidemic } from "../epidemic";
 import { Global } from './Global.js'
 import { Config } from './Config.js'
+import { StrategyHelper } from "./StrategyHelper";
 
 export class Processor
 {
@@ -20,6 +21,8 @@ export class Processor
         let totalEE = 0;
         let zarazByDay;
         let zAdd;
+        let toDistCnt;
+        let redCountZaraz;
 
         Global._manArr = [];
         Global._dayArr = [];
@@ -38,7 +41,10 @@ export class Processor
 			Processor.createVector(man);
 			man._stuk = true;
 			man._id = i;
-			man._lastStukId = i;			
+			man._lastStukId = i;	
+            man._distByDayDic = {};
+            man._vxSetted = false;
+            
 			Global._manArr.push(man);
         }
 
@@ -80,9 +86,12 @@ export class Processor
             yellowCount = 0;
             redCount = 0;
             blueCount = 0;
+            redCountZaraz = 0;
 
 
             strategy = Global.getStrategyForDay(dayNumber, solutionObject);
+
+            
 
             for(let j=0; j < Global._manArr.length; j++)
             {
@@ -118,6 +127,11 @@ export class Processor
                            man._color = 'blue';
                            man._firstBlueDay = dayNumber;
                            man._firstYellowDay = -1;
+                       }
+                       
+                       if(man._firstRedDay == dayNumber - 1)
+                       {
+                            redCountZaraz++;
                        }
                    }
                    else if(man._color == 'blue')
@@ -163,7 +177,7 @@ export class Processor
                 }
                 else{
     
-                    zarazByDay = Processor.getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy); //-- кол. заразившихся в этот день
+                    zarazByDay = Processor.getZarazforDay(greenCount, yellowCount, redCountZaraz, blueCount, strategy); //-- кол. заразившихся в этот день
                     //--Накапливаем, т.к. количество может быть меньше единицы
                     ySum = ySum + zarazByDay;
                             
@@ -199,12 +213,28 @@ export class Processor
     
                     ySum = ySum - n1;
                 }
-            }            
+            } 
+            
+            //-- количество людей на дистанционке в этот день
+            toDistCnt = StrategyHelper.getDistManCount(strategy, (greenCount + yellowCount + blueCount));  
 
             for(let j=0; j < Global._manArr.length; j++)
             {
                 man = Global._manArr[j];        
                 man._dayColorArr.push(man._color);
+
+                //-- дистанционка
+                {
+                    if(toDistCnt > 0)
+                    {
+                        if(man._color == 'green')
+                        {
+                            man._distByDayDic[dayNumber] = 1;
+
+                            toDistCnt--;
+                        }
+                    }    
+                }
             }
 
             //-- делаем текущий day
@@ -224,6 +254,7 @@ export class Processor
                 day._zarazByDay = zarazByDay;
                 day._zarazPlus = zAdd;
                 day._ySum = ySum;
+                day._strategy = strategy;
     
                 Global._dayArr.push(day);
 
@@ -317,6 +348,8 @@ export class Processor
         а коэффициентом k мы управляем, вводя жесткость масочного режима 
         (например, он меняется как 1/log(f+2), 
         где f - степень жесткости масочного режима, а логарифм берется по основанию 2
+
+        Красные шарики после появления присутствуют на рабочем поле (и влияют на заболеваемость) 1 единицу времени
         */        
         let f = 0;
         let k;
@@ -341,14 +374,17 @@ export class Processor
             k = 1;
         }
 
-  
-       
-
-        
-
         let res = (greenCount + blueCount) * (redCount + yellowCount) * k * p;
 
-    
+        if(greenCount > 0)
+        {
+            res = greenCount - 1;
+        }
+        else{
+            res = 0;
+        }
+
+        res = 1;
 
         return res;
     }
