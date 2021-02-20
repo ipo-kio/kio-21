@@ -44,6 +44,8 @@ export class InterfaceHelper
             Global.playStop();
         }
 
+
+
         DrawHelper.drawTik(dayNumber);
 
         if(!Global._isPlay)

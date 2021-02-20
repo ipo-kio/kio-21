@@ -121,8 +121,8 @@ export class Start
 		div.id = 'div_canvas';
 		superDiv.appendChild(div);
 
-		Global._canvas1W = 400;
-		Global._canvas1H = 200;
+		Global._canvas1W = 600;
+		Global._canvas1H = 400;
 
 		let canvas1 = document.createElement('canvas');
 		canvas1.id = 'canvas1';
@@ -150,6 +150,13 @@ export class Start
 		div.appendChild(canvas2);
 
 		Global._ctx2 = canvas2.getContext('2d');
+
+		//------------------
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_log'
+		div.id = 'div_log';
+		superDiv.appendChild(div);
 
 		//--------------------
 
@@ -218,7 +225,7 @@ export class Start
 
 		let img = Epidemic.kioapi.getResource('slider_p');
 
-		Global._slider = Slider.Create(div, 800, 50, 'canvas_slider'
+		Global._slider = Slider.Create(div, 800, 70, 'canvas_slider'
 		,img
 		, 0, Config._dayCount
 		);

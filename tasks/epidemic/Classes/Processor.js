@@ -2,6 +2,7 @@ import { Epidemic } from "../epidemic";
 import { Global } from './Global.js'
 import { Config } from './Config.js'
 import { StrategyHelper } from "./StrategyHelper";
+import { Zaraza } from "./Zaraza";
 
 export class Processor
 {
@@ -22,7 +23,12 @@ export class Processor
         let zarazByDay;
         let zAdd;
         let toDistCnt;
+        let toDistForDay;
+        let toTestCnt;
         let redCountZaraz;
+        let yellowCountZaraz;
+        let bolnicaCount; //-- счетчик оставшихся мест в больнице
+        let logStr = '';
 
         Global._manArr = [];
         Global._dayArr = [];
@@ -43,7 +49,11 @@ export class Processor
 			man._id = i;
 			man._lastStukId = i;	
             man._distByDayDic = {};
+            man._testByDayDic = {};
+            man._bolnicaDayDic = {};
             man._vxSetted = false;
+            man._testDayStart = 0;
+            
             
 			Global._manArr.push(man);
         }
@@ -87,10 +97,106 @@ export class Processor
             redCount = 0;
             blueCount = 0;
             redCountZaraz = 0;
+            yellowCountZaraz = 0;
+            bolnicaCount = Config._bolnicaCount;
+
+
+            for(let j=0; j < Global._manArr.length; j++)
+            {
+                man = Global._manArr[j];
+
+                if(man._color == 'green')
+                {
+                    greenCount++;
+                }
+                else if(man._color == 'yellow')
+                {
+                    yellowCount++;
+                }
+                else if(man._color == 'red')
+                {
+                    redCount++;
+                }
+                else if(man._color == 'blue')
+                {
+                    blueCount++;
+                }                                
+            }
+
 
 
             strategy = Global.getStrategyForDay(dayNumber, solutionObject);
 
+
+            //-- Дистанционка и тестирование. Влияют на участвующих в расчете заражения в день
+            {
+                if(strategy)
+                {
+                    if(strategy._dayStart == dayNumber)
+                    {
+                        //-- количество людей на дистанционке в эту стратегию
+                        strategy._distManCount = StrategyHelper.getDistManCount(strategy, (greenCount)); 
+                    }
+
+                    toDistForDay = strategy._distManCount;
+                }
+                else{
+                    toDistForDay = 0;
+                }
+
+                //-- количество людей на дистанционке в этот день
+                //toDistForDay = StrategyHelper.getDistManCount(strategy, (greenCount));  
+                toDistCnt = toDistForDay;
+                //-- количество тестируемых в этот день
+                toTestCnt = StrategyHelper.getTestManCount(strategy, greenCount, yellowCount);  
+
+                //log(dayNumber + ' - ' +  toTestCnt)
+
+                greenCount = 0;
+                yellowCount = 0;
+                redCount = 0;
+                blueCount = 0;
+
+                for(let j=0; j < Global._manArr.length; j++)
+                {
+                    man = Global._manArr[j];
+
+                    //-- дистанционка  только для зеленых
+                    {
+                        if(toDistCnt > 0)
+                        {
+                            //-- 
+                            if(man._color == 'green')
+                            {
+                                man._distByDayDic[dayNumber] = 1;
+
+                                toDistCnt--;
+                            }
+                        }    
+
+                        //
+                        //-- тестирование только для желтых
+                        if(toTestCnt > 0)
+                        {
+                            if(man._color == 'yellow' ) // && (man._firstYellowDay < dayNumber - 1)
+                            {
+                                man._testByDayDic[dayNumber] = 1;
+
+                                if(man._testDayStart == 0)
+                                {
+                                    man._testDayStart = dayNumber;
+                                }
+                                
+
+                                //log(man)
+
+                                toTestCnt--;
+                                //yellowCountZaraz--;  //-- убрали одного в тестирование
+                            }
+                        }  
+                    }
+                }
+            }
             
 
             for(let j=0; j < Global._manArr.length; j++)
@@ -110,29 +216,75 @@ export class Processor
                        {
                            man._color = 'yellow';
                            man._firstYellowDay = dayNumber;
+                           if(!man._testByDayDic.hasOwnProperty(dayNumber))
+                           {
+                                yellowCountZaraz++; 
+                           }
+                           
                        }
                    }
                    else if(man._color == 'yellow')
                    {
-                       if(man._firstYellowDay <= dayNumber - Config._toRedDays)
-                       {
-                           man._color = 'red';
-                           man._firstRedDay = dayNumber;
-                       }
+
+                        if(man._firstYellowDay <= dayNumber - Config._toRedDays)
+                        {
+                            man._color = 'red';
+                            man._firstRedDay = dayNumber;
+
+                            if(!man._testByDayDic.hasOwnProperty(dayNumber))
+                            {
+                                redCountZaraz++;
+                            }
+                            
+                        }
+                        else
+                        {
+                            if(!man._testByDayDic.hasOwnProperty(dayNumber))
+                            {
+                                yellowCountZaraz++; 
+                            }
+                            
+                        }
                    }
                    else if(man._color == 'red')
                    {
-                       if(man._firstRedDay <= dayNumber - Config._toBlueDays)
-                       {
-                           man._color = 'blue';
-                           man._firstBlueDay = dayNumber;
-                           man._firstYellowDay = -1;
-                       }
-                       
-                       if(man._firstRedDay == dayNumber - 1)
-                       {
-                            redCountZaraz++;
-                       }
+                        if(man._firstRedDay <= dayNumber - Config._toBlueDays)
+                        {
+                            man._color = 'blue';
+                            man._firstBlueDay = dayNumber;
+                            man._firstYellowDay = -1;
+                            //man._testDayStart = 0;
+                        }
+                        else
+                        {
+                            //--количество мест в больнице сделать ограниченным и оставлять больного в рабочем поле для заражения других, 
+                            //--но не учитывать его как производителя.
+
+                            if(!man._testByDayDic.hasOwnProperty(dayNumber))
+                            {
+                                if(man._firstRedDay == dayNumber - 1)
+                                {
+                                    redCountZaraz++;
+                                    //bolnicaCount--;
+                                    //man._bolnicaDayDic[dayNumber] = 1;
+                                }
+                                else
+                                {
+                                    if(bolnicaCount > 0)
+                                    {
+                                        bolnicaCount--;
+                                        man._bolnicaDayDic[dayNumber] = 1;
+                                    }
+                                    else
+                                    {
+                                        redCountZaraz++;
+                                    }
+                                }                               
+                            }
+
+
+                        }
+
                    }
                    else if(man._color == 'blue')
                    {
@@ -166,18 +318,31 @@ export class Processor
                     }
                 }
 
-            }
+            } //-- for manArr
 
-            //-- процесс заражения для этого дня
+
+
+            //-- процесс заражения для этого дня. Происходит после ежедневного перехода состояний (смена цветов)
             {
                 if(dayNumber == 1) //-- первый день обрабатываем особо. В нем никто не заражается
                 {
                     ySum = 0;
                     zarazByDay = 0;
                 }
-                else{
-    
-                    zarazByDay = Processor.getZarazforDay(greenCount, yellowCount, redCountZaraz, blueCount, strategy); //-- кол. заразившихся в этот день
+                else
+                {
+                    if(yellowCountZaraz < 0) yellowCountZaraz = 0;
+                    
+
+                    toDistForDay =  (toDistForDay  - toDistCnt); //-- реальное количество дистанционщиков
+
+                    //-- кол. заразившихся в этот день    
+                    zarazByDay = Zaraza.getZarazforDay(greenCount, yellowCountZaraz, redCountZaraz, blueCount, strategy, toDistForDay); 
+                    
+                    logStr = logStr + '<br><br>' +   dayNumber + ') Z=' + zarazByDay.toFixed(2) +  ' G=' + greenCount + ' Yz=' + yellowCountZaraz + ' Rz=' + redCountZaraz + ' B=' + blueCount + ' D=' + toDistForDay  ;
+
+                    //log(dayNumber +  ' G=' + greenCount + ' Yz=' + yellowCountZaraz + ' Rz=' + redCountZaraz + ' B=' + blueCount + ' zarazByDay=' + zarazByDay)
+
                     //--Накапливаем, т.к. количество может быть меньше единицы
                     ySum = ySum + zarazByDay;
                             
@@ -194,7 +359,7 @@ export class Processor
                     {
                         man = Global._manArr[j];
     
-                        if(man._color == 'green')
+                        if(man._color == 'green' && !man._distByDayDic.hasOwnProperty(dayNumber))
                         {
                             man._color = 'yellow';
                             man._firstYellowDay = dayNumber;
@@ -215,26 +380,12 @@ export class Processor
                 }
             } 
             
-            //-- количество людей на дистанционке в этот день
-            toDistCnt = StrategyHelper.getDistManCount(strategy, (greenCount + yellowCount + blueCount));  
+
 
             for(let j=0; j < Global._manArr.length; j++)
             {
                 man = Global._manArr[j];        
                 man._dayColorArr.push(man._color);
-
-                //-- дистанционка
-                {
-                    if(toDistCnt > 0)
-                    {
-                        if(man._color == 'green')
-                        {
-                            man._distByDayDic[dayNumber] = 1;
-
-                            toDistCnt--;
-                        }
-                    }    
-                }
             }
 
             //-- делаем текущий day
@@ -242,8 +393,14 @@ export class Processor
                 day = new Object();
                 day._number = dayNumber;
                 day._dayIndex = dayNumber-1;
+
+
+                //-- TODO PETER - расчет прибыли
                 day._ee = Processor.getEEForDay(greenCount, yellowCount, redCount, blueCount, strategy) ; //- (redCount) --расчет ЭЭ за этот день
     
+                logStr = logStr + '<br>' +   dayNumber + ') E=' + day._ee.toFixed(2) +  ' G=' + greenCount + ' Y=' + yellowCount + ' R=' + redCount + ' B=' + blueCount  ;
+
+
                 totalEE = totalEE + day._ee;
     
                 day._eeTotal = totalEE;
@@ -262,6 +419,8 @@ export class Processor
             }
         }
 
+        document.getElementById('div_log').innerHTML = logStr;
+
         //-- окончательный расчет
         {
             let totalEEAvr = totalEE/Config._dayCount;
@@ -272,6 +431,8 @@ export class Processor
 
         Global._currentSolution = solutionObject;
         Epidemic.saveCurrentSolution('calcSolution');
+
+        //log(Global._dayArr)
     }
 
     static getEEForDay(greenCount, yellowCount, redCount, blueCount, strategy)
@@ -338,8 +499,9 @@ export class Processor
         return EE;
     }
 
-    //-- количество заразившихся за один день
-    static getZarazforDay(greenCount, yellowCount, redCount, blueCount, strategy)
+
+
+    static getZarazforDay_old2(greenCount, yellowCount, redCount, blueCount, strategy)
     {
         /*
         На самом деле количество встреч уменьшается при изменении здоровых или заразных определяется произведением 

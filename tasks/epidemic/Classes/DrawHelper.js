@@ -42,7 +42,7 @@ export class DrawHelper
     static drawVariant3(ctx, day)
     {
 
-        let radius = 3; //-- ширина/2 человечка
+        let radius = 5; //-- ширина/2 человечка
         let radius2 = radius * 2;
         let man, man2;
         let W = Global._canvas1W;
@@ -50,11 +50,124 @@ export class DrawHelper
         let x, y, dayColor, n;
         let leftX, rightX;
         let topY, botY;
+        let vvOK;
+        let maskKoef = 0;
+        let aa;
+        let drawManKontur = false;
+
+        let headerH = 100;
+        let leftW = 100;
+        let distW = 150;
+        let testH = 150;
     
 
         if(day._strategy != null)
         {
-            //rab = rab -  (rab/100 *  strategy._distPercent)/2;
+            maskKoef = day._strategy._maskKoef;
+        }
+
+        //-- контуры и тексты
+        {
+            //-- горизонтальное отсечение
+
+            y = headerH;
+
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = 'black';
+            ctx.moveTo(0, y);              
+            ctx.lineTo(W , y);   
+            ctx.stroke();
+
+            //-- левая область (вертикальная линия)
+
+            x = leftW;
+            y = headerH;
+
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = 'black';
+            ctx.moveTo(leftW, 0);              
+            ctx.lineTo(leftW , H);   
+            ctx.stroke();
+
+            //-- больница
+            {
+                x = 5;
+                y = 15;
+
+                ctx.beginPath();
+                ctx.font = "bold 12px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText('Больница', x, y);
+                ctx.fill(); 
+            }
+
+            //-- Продукт
+            {
+                x = leftW + 15;
+                y = 15;
+
+                ctx.beginPath();
+                ctx.font = "bold 12px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText('Производство', x, y);
+                ctx.fill(); 
+            }
+
+
+            //-- правая верхняя для удаленки
+            {
+                x = leftW;
+                y = headerH;
+    
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = 'black';
+                ctx.moveTo(W - distW, 0);              
+                ctx.lineTo(W - distW , headerH);   
+                ctx.stroke();
+
+                x = W - distW + 5;
+                y = 15;
+
+                ctx.beginPath();
+                ctx.font = "bold 12px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText('Удаленка', x, y);
+                ctx.fill(); 
+            }
+
+
+
+            //-- верхняя граница тестирования
+            {
+                y = H - testH;
+
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = 'black';
+                ctx.moveTo(0, y);              
+                ctx.lineTo(leftW , y);   
+                ctx.stroke();
+
+                x = 5;
+                y =  H - testH - 5;
+
+                ctx.beginPath();
+                ctx.font = "bold 12px Arial";
+                ctx.fillStyle = 'black';
+                ctx.fillText('Тестирование', x, y);
+                ctx.fill();                
+            }
+          
+
+
+            
         }
 
 
@@ -70,63 +183,168 @@ export class DrawHelper
 
             //-- кого куда
             {
+                vvOK = false;
+
                 //-- общая область
-                leftX = 0
+                leftX = leftW;
                 rightX = W;
-                topY = 50;              
+                topY = headerH;              
                 botY = H;
+                //log('day._number=' + day._number + ' ' + dayColor)
 
-                if(dayColor == 'red')
+                if(dayColor != 'blue')
                 {
-                    if(man._firstRedDay < day._number - 1)
+                    if(man._testByDayDic.hasOwnProperty(day._number)
+                    || (man._testDayStart > 0 && man._testDayStart <= day._number )
+                    )
                     {
-                        //-- угол для красных
-                        leftX = 0
-                        rightX = 50;
-                        topY = 0;              
-                        botY = 50;
-                    }
-                    else
-                    {   
-                        if(man.x > rightX/2)
+                        //-- тестировщики
+                        //-- угол для тестируемых
+
+                        if(man._testDayStart <= day._number - 1)
+                        //if(man._testByDayDic.hasOwnProperty(day._number-1))
                         {
-                            man.vx = -10;
-                            man.vy = -2;
+                            leftX = 0
+                            rightX = leftW;
+                            topY = H - testH;              
+                            botY = H;
                         }
-                        else{
-                            man.vx = -10;
-                            man.vy = -10;
+                        else
+                        {
+                            if(man.x > rightX/3)
+                            {
+                                man.vx = -10;
+                                man.vy = 2;
+                            }
+                            else
+                            {
+                                man.vx = -10;
+                                man.vy = 10;
+                            }
                         }
 
-
-                        man._vxSetted = true;
+                        vvOK = true;
+                        //log('111 vy=' + man.vy)
                     }
- 
                 }
-                else if(dayColor == 'green' || dayColor == 'yellow' || dayColor == 'blue')
+
+                if(!vvOK)
                 {
-                    if(man._distByDayDic.hasOwnProperty(day._number))
+                   // log('2222')
+
+                    if(dayColor == 'red')
                     {
-                        //-- угол для удаленщиков
-                        leftX = W - 50
-                        rightX = W;
-                        topY = 0;              
-                        botY = 50;
-
-                        if(man.x < W/2)
+                        if(man._bolnicaDayDic.hasOwnProperty(day._number))
                         {
-                            man.vx = 10;
-                            man.vy = 3;
+                            //-- угол для красных
+                            leftX = 0
+                            rightX = leftW;
+                            topY = 0;              
+                            botY = headerH;     
+                            
+                            
                         }
-                        else{
-                            //man.vx = 10;
-                            //man.vy = 10;
-                        }
-
-                        //log('sssssssss')
-
-   
+                        else                       
+                        //if(man._bolnicaDayDic.hasOwnProperty(day._number))
+                        {
+                            if((man._bolnicaDayDic.hasOwnProperty(day._number+1)))
+                            {
+                                //-- если ему в больницу завтра
+                                if(man.x > rightX - rightX/3)
+                                {
+                                    man.vx = -10;
+                                    man.vy = -1;
+                                }
+                                else if(man.x > rightX/3)
+                                {
+                                    man.vx = -10;
+                                    man.vy = -2;
+                                }
+                                else if(man.x < rightX/6)
+                                {
+                                    man.vx = 0;
+                                    man.vy = -5;
+                                }
+                                else
+                                {
+                                    man.vx = -10;
+                                    man.vy = -10;
+                                }
+        
+        
+                                man._vxSetted = true;
+                                
+                            }
+                           
+                        } 
                     }
+                }
+
+                if(!vvOK)
+                {
+
+                    if(dayColor == 'green' || dayColor == 'yellow' || dayColor == 'blue')
+                    {
+                        {
+                            if(man._distByDayDic.hasOwnProperty(day._number))
+                            {
+                                //-- угол для удаленщиков
+                                leftX = W - distW
+                                rightX = W;
+                                topY = 0;              
+                                botY = headerH;
+    
+                                if(man.x < W/2)
+                                {
+                                    man.vx = 10;
+                                    man.vy = 3;
+                                }
+                                else{
+                                    //man.vx = 10;
+                                    //man.vy = 10;
+                                }  
+                            }
+                        }
+    
+                    }
+                }
+
+            }
+
+            //-- отскок от края
+            if(!man._stuk &&  !man._vxSetted)
+            {             
+
+                if ((man.y + radius) > botY || (man.y-radius2) < topY)
+                {
+                    man.vy = -man.vy;
+
+                    if((man.y + radius) > botY)
+                    {
+                        man.y = botY - radius;
+                    }
+                    else  if((man.y - radius2) < topY)
+                    {
+                        man.y =  radius2 + topY;
+                    }
+
+                    man._vxSetted = true;
+                }
+
+                if ((man.x+radius) > rightX || (man.x-radius) < leftX)
+                {
+                    man.vx = -man.vx;
+
+                    if((man.x + radius) > rightX)
+                    {
+                        man.x = rightX - radius -1;
+                    }
+                    else  if((man.x - radius) < leftX)
+                    {
+                        man.x =  leftX + radius + 1;
+                    }
+
+                    man._vxSetted = true;
                 }
             }
 
@@ -166,52 +384,50 @@ export class DrawHelper
                 }
             }	
             
-            //-- отскок от края
-            if(!man._stuk &&  !man._vxSetted)
-            {             
 
-                if ((man.y+radius) > botY || (man.y-radius) < topY)
-                {
-                    man.vy = -man.vy;
-
-                    if((man.y + radius) > botY)
-                    {
-                        man.y = botY - radius;
-                    }
-                    else  if((man.y - radius) < topY)
-                    {
-                        man.y =  radius + topY;
-                    }
-                }
-
-                if ((man.x+radius) > rightX || (man.x-radius) < leftX)
-                {
-                    man.vx = -man.vx;
-
-                    if((man.x + radius) > rightX)
-                    {
-                        man.x = rightX - radius;
-                    }
-                    else  if((man.x - radius) < leftX)
-                    {
-                        man.x =  radius + leftX;
-                    }
-                }
-            }
 
 
             man.x = man.x + man.vx;
             man.y = man.y + man.vy;
 
+            aa = 1;
+            drawManKontur = false;
 
+
+          
+            if(dayColor == 'green')
+            {
+                aa = maskKoef / 10 + 0.5;
+
+                if(maskKoef > 0)
+                {
+                    drawManKontur = true;
+                }
+            }
+          
+            if(dayColor == 'yellow')
+            {
+                aa = (10 - maskKoef) / 10;
+
+                dayColor = '#dbb63d';
+            }
+            
 
     
             ctx.beginPath();
+            ctx.globalAlpha = aa;
             ctx.fillStyle = dayColor;
             ctx.arc((man.x), (man.y), radius, 0, 2*Math.PI, false);      
             ctx.fill();   
-            //ctx.strokeStyle = "#000000";
-            //ctx.stroke();
+
+            if(man._testByDayDic.hasOwnProperty(day._number)
+            || drawManKontur)
+            {
+                ctx.strokeStyle = "#000000";
+                ctx.stroke();
+            }
+
+
             ctx.closePath();
                  
         }
@@ -221,6 +437,8 @@ export class DrawHelper
             let img = Epidemic.kioapi.getResource('kucha');
             n = Math.trunc(day._eeTotal / 100);
 
+            let startY = 30;
+            let startX = 50;
             let kuchaW = 10;
             let ny = -kuchaW;
             let nx = 0;
@@ -230,7 +448,7 @@ export class DrawHelper
 
             for(i = 0; i < n; i++)
             {
-                if(i%10 == 0)
+                if(i%20 == 0)
                 {
                     
                     nx = 0;
@@ -254,9 +472,10 @@ export class DrawHelper
                     nx++;
                 }
 
-                x =  100 + kuchaW * nx + xSdvig;
-                y = ny + ySdvig;
+                x =  100 + kuchaW * nx + xSdvig + startX;
+                y = ny + ySdvig + startY;
 
+                ctx.globalAlpha = 1;
                 ctx.drawImage(img, x, y, kuchaW, kuchaW);
 
 
@@ -517,6 +736,7 @@ export class DrawHelper
         let n = 20;
         let m = n - 5;
         let img = Epidemic.kioapi.getResource(imgId);
+        ctx.globalAlpha = 1;
         ctx.drawImage(img, x, y, n, n);
 
         x = x + n + 5;
