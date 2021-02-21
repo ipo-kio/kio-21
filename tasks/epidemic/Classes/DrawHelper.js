@@ -41,7 +41,6 @@ export class DrawHelper
 
     static drawVariant3(ctx, day)
     {
-
         let radius = 5; //-- ширина/2 человечка
         let radius2 = radius * 2;
         let man, man2;
@@ -54,17 +53,71 @@ export class DrawHelper
         let maskKoef = 0;
         let aa;
         let drawManKontur = false;
+        let distPercent = 0;
+        let testPercent = 0;
 
         let headerH = 100;
         let leftW = 100;
         let distW = 150;
         let testH = 150;
+        let bolW = 150;
     
 
         if(day._strategy != null)
         {
             maskKoef = day._strategy._maskKoef;
+            distPercent = day._strategy._distPercent;
+            testPercent = day._strategy._testPercent;
         }
+
+        //-- заливка комнат Больница
+        if(day._bolnicaCount > 0)
+        {
+            n = day._bolnicaCount / Config._bolnicaCount;
+            y = headerH - headerH * n;
+            x = 0;
+                 
+            ctx.fillStyle = 'red';
+            ctx.globalAlpha = 0.1;
+            ctx.fillRect(x, y, bolW, headerH * n );           
+        } 
+
+        //-- заливка комнат производство
+        if(day._eeTotal != 0)
+        {
+            x = bolW;
+            n = day._eeTotal / Global._currentSolution._totalProfit;
+            y = headerH - headerH * n;
+
+            ctx.fillStyle = 'blue';
+            ctx.globalAlpha = 0.2;
+            ctx.fillRect(x, y, W - bolW - distW, headerH * n );  
+        }
+
+        //-- заливка комнат Удаленка
+        if(distPercent > 0)
+        {
+            x = W - distW;
+            n = distPercent/100;
+            y = headerH - headerH * n;
+
+            ctx.fillStyle = 'green';
+            ctx.globalAlpha = 0.2;
+            ctx.fillRect(x, y, distW, headerH * n );  
+        }
+
+        //-- заливка комнат Тестирование
+        if(testPercent > 0)
+        {
+            x = 0;
+            n = testPercent/100;
+            y = H - testH * n;
+
+            ctx.fillStyle = 'yellow';
+            ctx.globalAlpha = 0.2;
+            ctx.fillRect(x, y, leftW, testH * n );  
+        }
+
 
         //-- контуры и тексты
         {
@@ -89,12 +142,23 @@ export class DrawHelper
             ctx.lineWidth = 1;
             ctx.globalAlpha = 1;
             ctx.strokeStyle = 'black';
-            ctx.moveTo(leftW, 0);              
+            ctx.moveTo(leftW, headerH);              
             ctx.lineTo(leftW , H);   
             ctx.stroke();
 
             //-- больница
             {
+                x = leftW;
+                y = headerH;
+    
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = 'black';
+                ctx.moveTo(bolW, 0);              
+                ctx.lineTo(bolW , headerH);   
+                ctx.stroke();
+
                 x = 5;
                 y = 15;
 
@@ -107,7 +171,7 @@ export class DrawHelper
 
             //-- Продукт
             {
-                x = leftW + 15;
+                x = bolW + 15;
                 y = 15;
 
                 ctx.beginPath();
@@ -156,7 +220,7 @@ export class DrawHelper
                 ctx.stroke();
 
                 x = 5;
-                y =  H - testH - 5;
+                y =  H - testH + 15;
 
                 ctx.beginPath();
                 ctx.font = "bold 12px Arial";
@@ -238,7 +302,7 @@ export class DrawHelper
                         {
                             //-- угол для красных
                             leftX = 0
-                            rightX = leftW;
+                            rightX = bolW;
                             topY = 0;              
                             botY = headerH;     
                             
@@ -438,7 +502,7 @@ export class DrawHelper
             n = Math.trunc(day._eeTotal / 100);
 
             let startY = 30;
-            let startX = 50;
+            let startX = bolW + 50;
             let kuchaW = 10;
             let ny = -kuchaW;
             let nx = 0;
@@ -472,7 +536,7 @@ export class DrawHelper
                     nx++;
                 }
 
-                x =  100 + kuchaW * nx + xSdvig + startX;
+                x =  kuchaW * nx + xSdvig + startX;
                 y = ny + ySdvig + startY;
 
                 ctx.globalAlpha = 1;
@@ -483,200 +547,6 @@ export class DrawHelper
 
             
         }
-    }
-
-    static drawVariant2(ctx, day)
-    {
-        let radius = 3; //-- ширина/2 человечка
-        let radius2 = radius * 2;
-        let man, man2;
-        let W = Global._canvas1W;
-        let H = Global._canvas1H;
-        let x, y;
-
-        Global._manArr.forEach((element) => {element._stuk = false;})
-
-        for(let i=0; i < Global._manArr.length; i++)
-        {
-            man = Global._manArr[i];
-
-            //-- определим столкновения
-            if(!man._stuk)
-            {
-                for (let j=i+1; j < Global._manArr.length; j++)
-                {
-                    man2 = Global._manArr[j];
-                    if(man2._stuk) continue;
-                    if(man2._lastStukId == man._lastStukId)
-                    {
-                        //-- был стук с тем же самым в прошлой итерации. Это чтоб не прилипали
-                        continue;
-                    }
-
-
-                    if(
-                        (man.x >= man2.x && man.x <= (man2.x + radius2)
-                        && man.y >= man2.y && man.y <= (man2.y + radius2)
-                        )
-                        ||
-                        (man2.x >= man.x && man2.x <= (man.x + radius2)
-                        && man2.y >= man.y && man2.y <= (man.y + radius2))
-                    )
-                    {
-                        Processor.createVector(man);
-                        Processor.createVector(man2);
-
-                        man._stuk = true;
-                        man2._stuk = true;
-
-                        man._lastStukId = i + '_' + j;
-                        man2._lastStukId = i + '_' + j;
-
-                    }
-                }
-            }	
-            
-            //-- отскок от края
-            if(!man._stuk)
-            {
-                if ((man.y+radius) > H || (man.y-radius) < 0)
-                {
-                    man.vy = -man.vy;
-
-                    if((man.y + radius) > H)
-                    {
-                        man.y = H - radius;
-                    }
-                    else  if((man.y - radius) < 0)
-                    {
-                        man.y =  radius;
-                    }
-                }
-
-                if ((man.x+radius) > W || (man.x-radius) < 0)
-                {
-                    man.vx = -man.vx;
-
-                    if((man.x + radius) > W)
-                    {
-                        man.x = W - radius;
-                    }
-                    else  if((man.x - radius) < 0)
-                    {
-                        man.x =  radius;
-                    }
-                }
-            }
-
-            man.x += man.vx;
-            man.y += man.vy;
-    
-            ctx.beginPath();
-            ctx.arc(man.x, man.y, radius, 0, 2*Math.PI, false);
-            ctx.fillStyle = DrawHelper.getColorForDay(man, day._dayIndex);
-            ctx.fill();
-        }
-
-        //-- куча
-        let img = Epidemic.kioapi.getResource('kucha');
-        let n = day._eeTotal / 100;
-        ctx.drawImage(img, 0, 0, n, n);
-
-        x = n + 10;
-        y = 20;
-
-        let s = (day._ee < 0 ? "" : "+");
-
-        ctx.beginPath();
-        ctx.font = "bold 20px Arial";
-        ctx.fillStyle = 'brown';
-        ctx.fillText(day._eeTotal.toFixed(0) + ' (' + s +  day._ee.toFixed(0) + ')', x, y);
-        ctx.fill();
-    }
-
-    static drawVariant1(ctx, day)
-    {
-        let man;
-        let lastx = 50;
-		let y = 100;
-        let x;
-		let manCountInLine = 25;
-		let inLineCount = 0;
-        let img;
-        let color;
-
-        let imgRed = Epidemic.kioapi.getResource('m_red');
-        let imgGreen = Epidemic.kioapi.getResource('m_green');
-        let imgYellow = Epidemic.kioapi.getResource('m_yellow');
-        let imgBlue = Epidemic.kioapi.getResource('m_blue');
-
-        for(let i=0; i < Global._manArr.length; i++)
-        {
-            man = Global._manArr[i];
-
-			inLineCount++;
-			//x = lastx + (radius*2) + radius;
-            x = lastx + 2 + 10;
-
-            color = DrawHelper.getColorForDay(man, day._dayIndex);
-
-            if(color == 'green')
-            {
-                img = imgGreen;
-            }
-            else if(color == 'yellow')
-            {
-                img = imgYellow;
-            }
-            else if(color == 'red')
-            {
-                img = imgRed;
-            }
-            else if(color == 'blue')
-            {
-                img = imgBlue;
-            }                        
-
-            ctx.drawImage(img, x, y, 20, 20);
-
-            /*
-			ctx.beginPath();
-			ctx.arc(x, y, radius, 0, 2*Math.PI, false);
-			ctx.fillStyle = DrawHelper.getColorForDay(man, day._dayIndex);
-			ctx.fill();
-            */
-
-			lastx = x;
-			
-
-			if( inLineCount == manCountInLine)
-			{
-				y = y + 22;
-				lastx = 50;
-				inLineCount = 0;
-			}            
-        }
-
-        //-- куча
-        img = Epidemic.kioapi.getResource('kucha');
-        let n = day._eeTotal / 100;
-        ctx.drawImage(img, 0, 0, n, n);
-
-
-        //-- куча 2
-        let n1 = day._ee / 5;
-        ctx.drawImage(img, n, n, n1, n1);
-
-        x = n + 80;
-        y = 20;
-
-        let s = (day._ee < 0 ? "" : "+");
-
-        ctx.beginPath();
-        ctx.font = "bold 20px Arial";
-        ctx.fillStyle = 'brown';
-        ctx.fillText(day._eeTotal.toFixed(0) + ' (' + s +  day._ee.toFixed(0) + ')', x, y);
-        ctx.fill();
     }
 
     static drawDayInfo(day)

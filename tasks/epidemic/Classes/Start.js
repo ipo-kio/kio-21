@@ -25,7 +25,8 @@ export class Start
 
 		//------strategy--patternDiv------------
 
-		//-- TODO PETER - блок стратегии подработать
+		//-- TODO PETER - блок стратегии подработать и писать описание
+
 
 		let s = '<div>\
 			<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\

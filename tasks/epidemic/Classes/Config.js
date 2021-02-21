@@ -36,7 +36,7 @@ export class Config
             Config._dayCount = 50;
             Config._manCount = 50;
             Config._startYCount = 1;
-            Config._bolnicaCount = 100;
+            Config._bolnicaCount = 10;
         }
     
     }
