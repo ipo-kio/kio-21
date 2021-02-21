@@ -386,6 +386,7 @@ export class DrawHelper
 
 		}
 
+
 		//-- вторая половинка блока
 		{
 			blockShape2 = new createjs.Shape()
@@ -396,6 +397,8 @@ export class DrawHelper
 			blockShape2._blockId = block._id;
 
 			blockShape2.graphics.beginFill('white');
+
+
 
 			if(block._VH == 'V')
 			{
@@ -447,6 +450,20 @@ export class DrawHelper
 
 		}
 
+		/*
+		let kondurDic = ConfigHelper._konturDic;
+		if(!kondurDic.hasOwnProperty((block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1)))
+		{
+			b1.graphics.beginFill('red');
+			b1.graphics.drawRect(0, 0, storona * 2, storona/2);
+			b1.graphics.endFill();
+
+			blockShape2.graphics.beginFill('red');
+			blockShape2.graphics.drawRect(0, 0, storona * 2, storona/2);
+			blockShape2.graphics.endFill();
+		}
+		*/
+
 		//log(Brilliant._stageTop)
 	}
 
@@ -488,6 +505,8 @@ export class DrawHelper
 				blockShape2.graphics.lineTo(0, storona/2);
 				blockShape2.graphics.lineTo(storona * 2, storona/2);
 				blockShape2.graphics.lineTo(storona * 2, 0);
+
+
 			}
 		}
 

@@ -96,7 +96,7 @@ export class Brilliant
 
 		if(Global._level == 2)
 		{
-			return[_orientalCount, _isComplit,  _moveCount, _rotateCount];
+			return[_isComplit, _orientalCount,  _moveCount, _rotateCount];
 		}
 		else{
 			return[_isComplit, _moveCount, _rotateCount];
@@ -126,9 +126,6 @@ export class Brilliant
 				_moveCount: solution._moveCount
 			})
 		}
-
-
-
 	}
 
 	solution (){
@@ -161,21 +158,13 @@ export class Brilliant
 
 		if (solutionJson !== undefined )
 		{
-
-
 			let sol = JSON.parse(solutionJson);
-
 			Global.applaySolution(sol)
-			 //log('sol4')
 		}
 		else
 		{
-			//log('sssssssssol 1')
-			//log(Start._blocksStr)
 			StepHelper.addNewStep(Start._blocksStr, 0, 'start');
-			//log('sssssssssol 2')
 			Global.drawStepPrev(0);
-			//log('sssssssssol 3')
 			DrawHelper.drawAll('Global.applaySolution() start'  )
 		}
 	}

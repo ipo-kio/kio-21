@@ -354,6 +354,7 @@ export class Global
 			Start.createNewFromString('Global.modifySolution', stepResult._string);
 
 			SolutionHelper.getCurrentSolution('modifySolution');
+			Brilliant.saveCurrentSolution('modifySolution');
 		}
 
 		Global._canClick = true;

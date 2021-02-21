@@ -402,7 +402,7 @@ export class SolutionHelper
 				if( block._VH == 'H')
 				{
 					solution._isComplit = false;
-					//log('Ошибка вертикалки')
+					log('Ошибка вертикалки')
 					break;
 				}
 
@@ -695,6 +695,12 @@ export class SolutionHelper
 		{
 			//-- покрыта ли та же область
 			{
+				//Я предлагал для каждой клетки исходной фигуры (а не доминошки) считать, 
+				//сохранилась ли ориентация домино над ней. То есть, поворачивая две доминошки в нужных рамках 
+				// - смена ориентации меняются не в 2, а в 4 клетках. 
+				//С другой стороны при выходе за границы без поворота доминошки, число смен ориентации может уменьшится из-за того, 
+				//что ориентация считается только над клетками исходной фигуры.
+				
 				let kondurDic = ConfigHelper._konturDic;
 
 
@@ -705,30 +711,40 @@ export class SolutionHelper
 					//kvadrArr.push(block._kvadr1);
 					//kvadrArr.push(block._kvadr2);
 
-					if(!kondurDic.hasOwnProperty((block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1))
-					|| !kondurDic.hasOwnProperty((block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1))
-					)
+					if(!kondurDic.hasOwnProperty((block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1)))
 					{
-						log('Ошибка контура')
+						log('Ошибка контура1')
 						solution._isComplit = false;
 						//break;
 					}
+					else{
+						//-- Смена ориентации1
+						s = kondurDic[(block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1)];
 
-					s = kondurDic[(block._kvadr1._posX-0) + '-' + (block._kvadr1._posY+1)];
-
-					if(block._VH != s)
-					{
-						solution._orientalCount++;
+						if(block._VH != s)
+						{
+							solution._orientalCount++;
+						}
 					}
 
-					
+					if(!kondurDic.hasOwnProperty((block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1))
+					)
+					{
+						log('Ошибка контура2')
+						solution._isComplit = false;
+						//break;
+					}
+					else{
+						//-- Смена ориентации2
+						s = kondurDic[(block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1)];
+
+						if(block._VH != s)
+						{
+							solution._orientalCount++;
+						}				
+					}				
 				}
-			}
-
-			//-- Смена ориентации
-			{
-
-			}
+			}	
 		}
 
 		return solution;
