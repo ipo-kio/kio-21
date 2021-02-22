@@ -119,6 +119,26 @@ export class Controller
         Global.recalcFromInterface('strCheck strId=' + strId);
     }
 
+    static strDistClick(strId)
+    {
+        Controller.setDist(strId);
+        Controller.strCheck(strId);
+    }
+
+    static setDist(strId)
+    {
+        if(Config._level == 0)
+        {
+            if(document.getElementById('str_dist_act_' + strId).checked)
+            {
+                document.getElementById('str_dist_' + strId).value = 30;
+            }
+            else{
+                document.getElementById('str_dist_' + strId).value = 0;
+            }
+        }
+    }
+
     static strMaskSet(strategyId, maskKoef)
     {
         log('strMaskSet ' + strategyId + ' ' + maskKoef)
@@ -129,11 +149,11 @@ export class Controller
         for(let i = 0; i < arr.length; i++)
         {
             btn = arr[i];
-            btn.style.backgroundColor = 'silver';
+            btn.style.backgroundColor = '#f0e9e9';
 
             if(btn.getAttribute('koef') == maskKoef)
             {
-                btn.style.backgroundColor = 'red';
+                btn.style.backgroundColor = '#fcc7c7';
                 div.setAttribute('mask_koef', maskKoef)
             }
         }

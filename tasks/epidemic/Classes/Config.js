@@ -22,21 +22,21 @@ export class Config
             Config._dayCount = 100;
             Config._manCount = 100;
             Config._startYCount = 1;
-            Config._bolnicaCount = 100;
+            Config._bolnicaMax = 100;
         }
         else if(level == 1)
         {
             Config._dayCount = 100;
-            Config._manCount = 1;
+            Config._manCount = 100;
             Config._startYCount = 1;
-            Config._bolnicaCount = 100;
+            Config._bolnicaMax = 100;
         }
         else if(level == 2)
         {
-            Config._dayCount = 50;
-            Config._manCount = 50;
+            Config._dayCount = 100;
+            Config._manCount = 100;
             Config._startYCount = 1;
-            Config._bolnicaCount = 10;
+            Config._bolnicaMax = 10;
         }
     
     }

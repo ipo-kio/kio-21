@@ -32,6 +32,8 @@ export class Processor
         let bolnicaCount; //-- счетчик оставшихся мест в больнице
         let logStr = '';
         let yellowRabCount;
+        let greenRabCount;
+        let blueRabCount;
         let bolnicaFillCount = 0;
 
         Global._manArr = [];
@@ -103,11 +105,13 @@ export class Processor
             greenCount = 0;
             yellowCount = 0;
             yellowRabCount = 0;
+            greenRabCount = 0
             redCount = 0;
             blueCount = 0;
             redCountZaraz = 0;
+            blueRabCount = 0;
             yellowCountZaraz = 0;
-            bolnicaCount = Config._bolnicaCount;
+            bolnicaCount = Config._bolnicaMax;
             bolnicaFillCount = 0;
 
             //log('333')
@@ -119,6 +123,7 @@ export class Processor
                 if(man._color == 'green')
                 {
                     greenCount++;
+                  
                 }
                 else if(man._color == 'yellow')
                 {
@@ -166,7 +171,7 @@ export class Processor
                 //-- количество людей на дистанционке в этот день
                 //toDistForDay = StrategyHelper.getDistManCount(strategy, (greenCount));  
                 toDistCnt = toDistForDay;
-                //-- количество тестируемых в этот день. Желтуе только из рабочих
+                //-- количество тестируемых в этот день. Желтые  только из рабочих
                 toTestCnt = StrategyHelper.getTestManCount(strategy, greenCount, yellowRabCount);  
                 toTestForDay = 0;
                 //log(dayNumber + ' - ' +  toTestCnt)
@@ -180,8 +185,9 @@ export class Processor
                 {
                     man = Global._manArr[j];
 
-                    //-- дистанционка  только для зеленых
+                    //-- дистанционка и тестирование
                     {
+                        //-- дистанционка  только для зеленых
                         if(toDistCnt > 0)
                         {
                             //-- 
@@ -190,25 +196,27 @@ export class Processor
                                 man._distByDayDic[dayNumber] = 1;
 
                                 toDistCnt--;
+                                
                             }
                         }    
 
-                        //
                         
+
+
                         //--  проверим может он уже на тестировании
-                        if(toTestCnt > 0)
+                        if(strategy && strategy._testPercent > 0)
                         {
                             if(man._color != 'blue')
                             {
                                 if(man._testByDayDic.hasOwnProperty(dayNumber-1))
                                 {
-                                    toTestCnt--;
-                                    toTestForDay++;
+                                    
                                     man._testByDayDic[dayNumber] = 1;
 
                                     if(man._color == 'yellow')
                                     {
                                         man._state = 'Y test old'
+                                        toTestForDay++;
                                     }
                                     else if(man._color == 'red')
                                     {
@@ -221,7 +229,7 @@ export class Processor
                         else
                         {
                             //-- исключаем из тестирования, т.к. мест нет или тестирования нет
-
+                            /*
                             //if(man._testByDayDic.hasOwnProperty(dayNumber))
                             if(man._testDayStart > 0)
                             {
@@ -237,7 +245,7 @@ export class Processor
                                     man._state = 'R'
                                 }
                             }
-
+                            */
                         }
 
 
@@ -263,7 +271,7 @@ export class Processor
 
                                 toTestCnt--;
                                 toTestForDay++;
-                                //yellowCountZaraz--;  //-- убрали одного в тестирование
+
                             }
                         }  
                     }
@@ -295,8 +303,14 @@ export class Processor
                            }
                            else{
                                 man._state = 'Y nozaraz'
-                           }
+                           }                         
+                       }
+                       else{
                            
+                            if(!man._distByDayDic.hasOwnProperty(dayNumber))
+                            {
+                                greenRabCount++; 
+                            } 
                        }
                    }
                    else if(man._color == 'yellow')
@@ -404,6 +418,11 @@ export class Processor
                     else if(man._color == 'blue')
                     {
                         blueCount++;
+
+                        if(!man._distByDayDic.hasOwnProperty(dayNumber))
+                        {
+                            blueRabCount++; 
+                        } 
                     }
                 }
 
@@ -426,9 +445,10 @@ export class Processor
                     toDistForDay =  (toDistForDay  - toDistCnt); //-- реальное количество дистанционщиков
 
                     //-- кол. заразившихся в этот день    
-                    zarazByDay = Zaraza.getZarazforDay(greenCount, yellowCountZaraz, redCountZaraz, blueCount, strategy, toDistForDay); 
+                    zarazByDay = Zaraza.getZarazforDay(greenRabCount, yellowCountZaraz, redCountZaraz, blueRabCount, strategy, toDistForDay); 
                     
-                    logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=' + zarazByDay.toFixed(2) +  '</td><td>G=' + greenCount + '</td><td>Yz=' + yellowCountZaraz + '</td><td>Rz=' + redCountZaraz + '</td><td>B=' + blueCount + '</td><td>D=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
+                    logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=+' + zarazByDay.toFixed(2) 
+                    +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowCountZaraz + '</td><td>Rz=' + redCountZaraz + '</td><td>Bz=' + blueRabCount + '</td><td>D=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
 
                     //log(dayNumber +  ' G=' + greenCount + ' Yz=' + yellowCountZaraz + ' Rz=' + redCountZaraz + ' B=' + blueCount + ' zarazByDay=' + zarazByDay)
 
@@ -531,12 +551,12 @@ export class Processor
         let h;
 
         h = Processor.getPlusminus();  
-        man.vx = (Math.random() * h);
+        man.vx = ((1 + Math.random()) * h);
 
         man.vx = man.vx + 2* h;
     
         h = Processor.getPlusminus();    
-        man.vy = (Math.random() * h);
+        man.vy = ((1 + Math.random())  * h);
     
         
         man.vy = man.vy + 2* h;

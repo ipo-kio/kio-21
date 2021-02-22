@@ -10,10 +10,6 @@ export class Start
 	static createGlobalInterface(domNode)
 	{
 		let div, btn;
-		
-		//let W = 800;
-
-		//let H = 800;
 
 		let superDiv = document.createElement('div')
 		superDiv.innerHTML = '';// Start.getHtml();
@@ -24,8 +20,6 @@ export class Start
 		domNode.appendChild(superDiv);
 
 		//------strategy--patternDiv------------
-
-		//-- TODO PETER - блок стратегии подработать и писать описание
 
 
 		let s = '<div>\
@@ -40,41 +34,72 @@ export class Start
 				<tr>\
 					<td>\
 						<input type="text" id="str_from_" value="1" class="str_day">\
+						<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
+						<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
 					</td>\
 					<td>-</td>\
 					<td>\
 						<input type="text" id="str_to_" value="1" class="str_day">\
+						<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
+						<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
 					</td>\
 				</tr>\
 				<tr>\
-					<td>\
-						<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
-						<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
-					</td>\
 					<td></td>\
-					<td>\
-						<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
-            			<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
-					</td>\
+					<td></td>\
+					<td></td>\
 				</tr>\
-			</table>\
-			<span>Маски</span>\
-			<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
-			<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
-			<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
-			<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
-			<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
-			<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>\
-			<br>\
-			<input type="text" id="str_dist_" value="0" class="str_day">%\
-			<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
-			<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>\
-			<span class="str_prop_name">Дистант</span>\
-			<br>\
+			</table>';
+
+			//-- LEVEL SETTINGS
+			if(Config._level == 2)
+			{
+				s = s + '<span class="str_prop_name">Маски</span>\
+				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
+				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
+				<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
+				<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
+				<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
+				<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>';			
+			}
+			else if(Config._level == 1)
+			{
+				s = s + '<span class="str_prop_name">Маски</span>\
+				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
+				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>';			
+			}
+
+
+
+
+			s = s + '<table class="str_t1">\
+			<tr>\
+			<td><span class="str_prop_name">Дистант</span></td>\
+			<td>';
+
+			//-- LEVEL SETTINGS
+			if(Config._level == 0)
+			{
+				s = s + '<input type="text" id="str_dist_" value="30" disabled class="str_day">%';
+				s = s + '<input type="checkbox" id="str_dist_act_" >';
+			}
+			else{
+				s = s + '<input type="text" id="str_dist_" value="0" class="str_day">%\
+				<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
+				<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
+			}
+
+			s = s + '</td>\
+			</tr>\
+			<tr>\
+			<td><span class="str_prop_name">Тестирование</span></td>\
+			<td>\
 			<input type="text" id="str_test_" value="0" class="str_day">%\
 			<button class="str_day_plusminus" id="str_test_minus_" onclick="" pm="minus" >-</button>\
 			<button class="str_day_plusminus" id="str_test_plus_" onclick="" pm="plus">+</button>\
-			<span class="str_prop_name">Тестирование</span>\
+			</td>\
+			</tr>\
+			</table>\
 			';
 
 
@@ -122,7 +147,7 @@ export class Start
 		div.id = 'div_canvas';
 		superDiv.appendChild(div);
 
-		Global._canvas1W = 600;
+		Global._canvas1W = 800;
 		Global._canvas1H = 400;
 
 		let canvas1 = document.createElement('canvas');
@@ -140,6 +165,7 @@ export class Start
 		div.id = 'div_day_info';
 		superDiv.appendChild(div);
 
+		/*
 		Global._canvas2W = 100;
 		Global._canvas2H = 200;
 
@@ -151,6 +177,7 @@ export class Start
 		div.appendChild(canvas2);
 
 		Global._ctx2 = canvas2.getContext('2d');
+		*/
 
 		//------------------
 		div = document.createElement('div')

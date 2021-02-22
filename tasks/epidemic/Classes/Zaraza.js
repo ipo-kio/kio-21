@@ -40,7 +40,11 @@ export class Zaraza
         //-- тестирование
         //-- количество желтых опрделяется на этапе подготовки к вызову этой функции
 
+        blueCount = 0;
+
         res = (greenCount + blueCount) * (redCountZ + yellowCountZ) * k * p;
+
+        if(res < 0) res = 0;
 
         return res;
     }

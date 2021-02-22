@@ -267,12 +267,22 @@ function slider_redraw()
 					}
 
 					//-- линия маски
+					//-- LEVEL SETTINGS
+					if(Config._level != 0)
 					{
 						y = y + 6
 						lineColor = 'green';
 						if(str._maskKoef > 0)
 						{
-							aa =  (str._maskKoef * 1) / 10 + 0.5;
+							//-- LEVEL SETTINGS
+							if(Config._level == 1)
+							{
+								aa = 1;
+							}
+							else{
+								aa =  (str._maskKoef * 1) / 10 + 0.5;
+							}
+							
 						}
 						else{
 							aa = 0.2;
