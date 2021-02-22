@@ -46,14 +46,14 @@ export class Heesch {
      */
     initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
         // test
-        /*let square = new Piece([
+        let square = new Piece([
             new Point(0, 0),
             new Point(0, 18),
             new Point(18, 18),
             new Point(18, 0)
         ]);
         square = square.fulfill();
-        square.searchForType((t, i) => {});*/
+        square.searchForType((t, i) => {});
 
         //test
         /*let tg1g1tg2g2 = new Piece([
@@ -220,8 +220,6 @@ export class Heesch {
 
         piece.searchForType((pt, ind) => {
             let tessellation = pt.tessellate(piece, ind);
-            if (pt === TYPE_TG1G1TG2G2)
-                console.log("here", tessellation);
             if (tessellation == null)
                 return;
             let new_index = -1 + this.tessellations.push(tessellation);

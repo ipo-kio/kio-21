@@ -28,6 +28,7 @@ export class Piece {
     readonly points: Point[] = [];
     readonly orientation: [Point, Point];
     private invariants_matrix: Invariants[][];
+    private full_length: number;
 
     constructor(points: Point[], orientation: [Point, Point] = DEFAULT_ORIENTATION) {
         this.points = points;
@@ -111,7 +112,7 @@ export class Piece {
         let foundCount = 0;
         console.time('search for type');
 
-        function search(type: PieceType, point_indexes: int[], ind: int) {
+        function search(type: PieceType, point_indexes: int[], ind: int, length_of_all_points: number) {
             searchesCount++;
             //next polyline: type[ind]
             //next index to be put into point_indexes[ind + 1]
@@ -186,6 +187,8 @@ export class Piece {
 
             for (let i = ind_min; i <= ind_max; i++) {
 
+                let new_length_of_all_points = length_of_all_points;
+
                 let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];
 
                 if (letter != '.' && letter != '-') {
@@ -223,12 +226,25 @@ export class Piece {
                                 prev_polyline_start % n, prev_polyline_end % n,
                                 point_indexes[ind] % n, i % n
                             );*/
+
+                        new_length_of_all_points = length_of_all_points - i2[1];
                     }
+                } else {
+                    //and test that the length of this polyline is not greater than the half of the poly
+                    // if (i2[1] * 2 - EPS > piece.full_length)
+                    //     break;
+
+                    new_length_of_all_points = length_of_all_points + i2[1];
                 }
 
-                if (ind < k - 1)
+                if (ind < k - 1) {
                     point_indexes[ind + 1] = i;
-                search(type, point_indexes, ind + 1);
+
+                    let total_length_up_to_here = piece.invariants_matrix[point_indexes[0] % n][i % n][1];
+                    if (new_length_of_all_points - EPS > piece.full_length - total_length_up_to_here)
+                        return;
+                }
+                search(type, point_indexes, ind + 1, new_length_of_all_points);
             }
         }
 
@@ -239,7 +255,7 @@ export class Piece {
             let point_indexes: int[] = new Array<int>(type.size);
             for (let i = 0; i < n; i++) {
                 point_indexes[0] = i;
-                search(type, point_indexes, 0);
+                search(type, point_indexes, 0, 0);
             }
             console.timeEnd("search " + type.name);
             console.log(
@@ -268,6 +284,7 @@ export class Piece {
     private evaluate_invariants() {
         let n = this.size;
         this.invariants_matrix = new Array<Invariants[]>(n);
+
         for (let i = 0; i < n; i++) {
             let vec = 0;
             let dist = 0;
@@ -291,5 +308,7 @@ export class Piece {
                 this.invariants_matrix[i][jj] = [Math.abs(vec), dist, is_line];
             }
         }
+
+        this.full_length = this.invariants_matrix[0][n - 1][1] + this.points[n - 1].dist(this.points[0]);
     }
 }

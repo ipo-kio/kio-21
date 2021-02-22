@@ -498,7 +498,7 @@ export const TYPE_LC4C4 = new PieceType(
     }
 );
 
-export const ALL_PIECE_TYPES = [TYPE_TG1G2TG2G1]; [
+export const ALL_PIECE_TYPES = [
     TYPE_TTTTTT,      // 2        t1 t2      // !
     TYPE_TCCTCC,      // 7        t1 r/2     // !
     TYPE_CC4C4C4C4,   // 16       t1 r/4
