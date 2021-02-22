@@ -229,6 +229,16 @@ export class PieceEditor {
         });
     }
 
+    updatePoints(points: Point[]) {
+        this.points = points;
+        this.movingPoint = -1;
+        this.highlightedPoint = -1;
+        this.highlightedEdge = -1;
+        this.updateErrorEdges();
+        this.redraw();
+        this.firePieceChange();
+    }
+
     redraw() {
         this.drawGrid();
         this.drawEdges();

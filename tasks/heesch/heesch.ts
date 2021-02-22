@@ -1,12 +1,14 @@
-import './heesch.scss'; //TODO заменить имя файла со стилями
+import './heesch.scss';
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {Tessellation} from "./model/Tessellation";
+import {TYPE_TG1G1TG2G2} from "./model/PieceType";
+import {PolyLineUtils} from "./model/PolyLineUtils";
 
-export class Heesch { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
+export class Heesch {
     private settings: KioTaskSettings;
     private kioapi: KioApi;
 
@@ -53,6 +55,32 @@ export class Heesch { //TODO название класса должно совп
         square = square.fulfill();
         square.searchForType((t, i) => {});*/
 
+        //test
+        let tg1g1tg2g2 = new Piece([
+            new Point(0, 0),
+            new Point(4, 0), // 1
+            new Point(8, 3), // 2
+            new Point(8, 4),
+            new Point(8, 5),
+            new Point(8, 6),
+            new Point(8, 7),
+            new Point(8, 8), //7
+            new Point(4, 8),
+            new Point(0, 5),
+            new Point(0, 4),
+            new Point(0, 3),
+            new Point(0, 2),
+            new Point(0, 1)
+        ]);
+        let poly1 = tg1g1tg2g2.part(1, 2);
+        let poly2 = tg1g1tg2g2.part(2, 7);
+        console.log("G", PolyLineUtils.isG(poly1, poly2));
+        let ts = TYPE_TG1G1TG2G2.tessellate(tg1g1tg2g2, [
+            0, 1, 2, 3, 4, 5
+        ]);
+        console.log(ts);
+        tg1g1tg2g2.searchForType((t, i) => {});
+
         this.kioapi = kioapi;
 
         this.editor_canvas = document.createElement('canvas');
@@ -68,14 +96,14 @@ export class Heesch { //TODO название класса должно совп
             this.tesselation_canvas.width = domNode.clientWidth;
             this.updateTessellationView();
         };
-        window.addEventListener('resize', resize_listener);
+        window.addEventListener('resize', debounce(resize_listener));
 
         this.tessellation_ctx = this.tesselation_canvas.getContext('2d');
 
         this.tessellations = [];
         this.tesselationSelect = document.createElement("select");
         this.tesselationSelect.size = 10;
-        this.tesselationSelect.addEventListener("input", e => this.updateTessellationView());
+        this.tesselationSelect.addEventListener("input", debounce((e: any) => this.updateTessellationView()));
 
         domNode.classList.add('heesch-task-container');
         domNode.appendChild(this.tesselation_canvas);
@@ -102,7 +130,7 @@ export class Heesch { //TODO название класса должно совп
 
         this.updateTessellationPiece(piece);
 
-        this.editor.pieceChangeListener = piece => this.updateTessellationPiece(piece);
+        this.editor.pieceChangeListener = debounce((piece: any) => this.updateTessellationPiece(piece));
 
         resize_listener();
     }
@@ -120,14 +148,22 @@ export class Heesch { //TODO название класса должно совп
     loadSolution(solution: Solution) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
-    }
-
-    solution(): Solution {
-        return {};
+        if (!solution)
+            return;
+        if (!('p' in solution))
+            return;
+        let points = solution.p;
+        let n = points.length;
+        let newPoints: Point[] = [];
+        for (let i = 0; i < n; i += 2)
+            newPoints.push(new Point(points[i], points[i + 1]));
+        this.editor.updatePoints(newPoints);
     }
 
     private updateTessellationView() {
-        this.tessellation_ctx.clearRect(0, 0, this.tesselation_canvas.width, this.tesselation_canvas.height);
+        let w = this.tesselation_canvas.width;
+        let h = this.tesselation_canvas.height;
+        this.tessellation_ctx.clearRect(0, 0, w, h);
 
         if (this.tesselationSelect.length == 0) {
             // draw only one piece in the center
@@ -140,10 +176,23 @@ export class Heesch { //TODO название класса должно совп
 
         let selectedIndex: number = +this.tesselationSelect.value;
 
-        let x0 = this.tesselation_canvas.width / 2;
-        let y0 = this.tesselation_canvas.height / 2;
-        let tessellationView = new TessellationView(this.tessellations[selectedIndex], x0, y0, 10);
+        let x0 = w / 2;
+        let y0 = h / 2;
+        let tessellationView = new TessellationView(this.tessellations[selectedIndex], x0, y0, w, h, 10);
         tessellationView.draw(this.tessellation_ctx, 'black');
+
+        let p = this.tessellations[selectedIndex].pieces[0];
+        let i = this.tessellations[selectedIndex].indexes;
+        console.log("selecting tessellation");
+        for (let ii of i)
+            console.log(p.point(ii).toString());
+    }
+
+    solution(): Solution {
+        let points = [];
+        for (let p of this.editor.points)
+            points.push(p.x, p.y);
+        return {p: points};
     }
 
     private updateTessellationPiece(piece: Piece) {
@@ -153,6 +202,8 @@ export class Heesch { //TODO название класса должно совп
 
         piece.searchForType((pt, ind) => {
             let tessellation = pt.tessellate(piece, ind);
+            if (pt === TYPE_TG1G1TG2G2)
+                console.log("here", tessellation);
             if (tessellation == null)
                 return;
             let new_index = -1 + this.tessellations.push(tessellation);
@@ -163,8 +214,20 @@ export class Heesch { //TODO название класса должно совп
         });
 
         this.updateTessellationView();
+        this.kioapi.submitResult({});
     }
 }
 
 interface Solution {
+    p: number[]
+}
+
+// https://medium.com/@griffinmichl/implementing-debounce-in-javascript-eab51a12311e
+function debounce(func: any, wait: number = 500) {
+    let timeout: any;
+    return function(...args: any[]) {
+        const context = this;
+        clearTimeout(timeout)
+        timeout = setTimeout(() => func.apply(context, args), wait)
+    }
 }

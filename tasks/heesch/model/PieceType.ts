@@ -119,10 +119,10 @@ export const TYPE_TG1G1TG2G2 = new PieceType(
     'Heesch-18',
     [
         ['.'],
-        ['.'],
+        ['-'],
         ['G', 1],
         ['T', 0],
-        ['.'],
+        ['-'],
         ['G', 4]
     ],
     function tessellate(piece, indexes) {
@@ -493,7 +493,7 @@ export const TYPE_LC4C4 = new PieceType(
     }
 );
 
-export const ALL_PIECE_TYPES = [
+export const ALL_PIECE_TYPES = [TYPE_TG1G1TG2G2]; [
     TYPE_TTTTTT,      // 2        t1 t2      // !
     TYPE_TCCTCC,      // 7        t1 r/2     // !
     TYPE_CC4C4C4C4,   // 16       t1 r/4
