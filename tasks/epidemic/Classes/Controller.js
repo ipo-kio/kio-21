@@ -10,6 +10,16 @@ export class Controller
     static go2Start()
     {     
         Global.playStop();
+
+        //if(dayNumber == 1)
+        {
+            Global._manArr.forEach((element) => {
+                element.x = Global._canvas1W * Math.random() -0;
+                element.y = Global._canvas1H * Math.random() -0;
+            })
+
+        }
+
         InterfaceHelper.setDay('go2Start', 1);
     }
 

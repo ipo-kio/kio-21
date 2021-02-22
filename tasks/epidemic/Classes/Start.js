@@ -25,13 +25,17 @@ export class Start
 
 		//------strategy--patternDiv------------
 
-		//-- TODO PETER - блок стратегии подработать
+		//-- TODO PETER - блок стратегии подработать и писать описание
+
 
 		let s = '<div>\
-		<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
-		<span class="str_cap">Промежуток дней</span>\
-		<button class="str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
-			</div>\
+			<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
+			<span class="str_cap">Промежуток дней</span>\
+			<button class="str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
+			<span style="float: right;">\
+				<button id="str_del_" onclick="" class="str_del_btn" title="Удалить стратегию" >&#9932;</button>\
+			</span>\
+		</div>\
 			<table class="str_t1">\
 				<tr>\
 					<td>\
@@ -62,15 +66,16 @@ export class Start
 			<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
 			<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>\
 			<br>\
-			<span>Дистант</span>\
 			<input type="text" id="str_dist_" value="0" class="str_day">%\
 			<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
 			<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>\
+			<span class="str_prop_name">Дистант</span>\
 			<br>\
-			<input type="checkbox" id="str_kar_"> <label for="str_kar_">Карантин</label>\
-			<span style="float: right;">\
-				<button id="str_del_" onclick="" class="str_del_btn" title="Удалить стратегию" >&#9932;</button>\
-			</span>';
+			<input type="text" id="str_test_" value="0" class="str_day">%\
+			<button class="str_day_plusminus" id="str_test_minus_" onclick="" pm="minus" >-</button>\
+			<button class="str_day_plusminus" id="str_test_plus_" onclick="" pm="plus">+</button>\
+			<span class="str_prop_name">Тестирование</span>\
+			';
 
 
 		let divSSPattern = document.createElement('div')
@@ -117,8 +122,8 @@ export class Start
 		div.id = 'div_canvas';
 		superDiv.appendChild(div);
 
-		Global._canvas1W = 400;
-		Global._canvas1H = 200;
+		Global._canvas1W = 600;
+		Global._canvas1H = 400;
 
 		let canvas1 = document.createElement('canvas');
 		canvas1.id = 'canvas1';
@@ -146,6 +151,13 @@ export class Start
 		div.appendChild(canvas2);
 
 		Global._ctx2 = canvas2.getContext('2d');
+
+		//------------------
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_log'
+		div.id = 'div_log';
+		superDiv.appendChild(div);
 
 		//--------------------
 
@@ -214,7 +226,7 @@ export class Start
 
 		let img = Epidemic.kioapi.getResource('slider_p');
 
-		Global._slider = Slider.Create(div, 800, 50, 'canvas_slider'
+		Global._slider = Slider.Create(div, 800, 70, 'canvas_slider'
 		,img
 		, 0, Config._dayCount
 		);

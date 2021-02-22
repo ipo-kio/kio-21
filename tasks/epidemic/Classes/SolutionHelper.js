@@ -72,9 +72,7 @@ export class SolutionHelper
 				str = StrategyHelper.createEmptyStarategy(parseInt(strId, 10));
 				str._dayStart = d1;
 				str._dayFinish = d2;
-				//str._isMaski = document.getElementById('str_mask_' + strId).checked;
-				str._isKarantin = document.getElementById('str_kar_' + strId).checked;
-				//str._isLok = document.getElementById('str_lok_' + strId).checked;
+
 				
 
 				str._maskKoef = parseInt(strDiv.getAttribute('mask_koef'));
@@ -87,33 +85,66 @@ export class SolutionHelper
 				t.setAttribute('title', errMess);
 
 				//-- дистанционка
-				s = document.getElementById('str_dist_' + strId).value.trim();
+				{
+					s = document.getElementById('str_dist_' + strId).value.trim();
 
-				if(s == '')
-				{
-					d1 = 0;
-				}
-				else{
-					d1 = parseInt(s, 10);
-				}
-				
-
-				if(!Funcs.isInt(d1))
-				{
-					errMess = 'Ошибка дистанционки!' ;
-					ok = false;
-					d1 = 0;
-				}
-				else
-				{
-					if(d1 < 0 || d1 > 100)
+					if(s == '')
 					{
-						errMess = 'Ошибка дистанционки 0-100' ;
-						ok = false;
+						d1 = 0;
 					}
+					else{
+						d1 = parseInt(s, 10);
+					}
+					
+
+					if(!Funcs.isInt(d1))
+					{
+						errMess = 'Ошибка дистанционки!' ;
+						ok = false;
+						d1 = 0;
+					}
+					else
+					{
+						if(d1 < 0 || d1 > 100)
+						{
+							errMess = 'Ошибка дистанционки 0-100' ;
+							ok = false;
+						}
+					}
+
+					str._distPercent = d1;
 				}
 
-				str._distPercent = d1;
+				//-- Тестирование
+				{
+					s = document.getElementById('str_test_' + strId).value.trim();
+
+					if(s == '')
+					{
+						d1 = 0;
+					}
+					else{
+						d1 = parseInt(s, 10);
+					}
+					
+
+					if(!Funcs.isInt(d1))
+					{
+						errMess = 'Ошибка тестирования!' ;
+						ok = false;
+						d1 = 0;
+					}
+					else
+					{
+						if(d1 < 0 || d1 > 100)
+						{
+							errMess = 'Ошибка тестирования 0-100' ;
+							ok = false;
+						}
+					}
+
+					str._testPercent = d1;
+				}
 
 				str._isActive = ok;
 			}

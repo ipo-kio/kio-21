@@ -63,12 +63,20 @@ export class Slider
 			if (e.button === 0)
 			{
 				slider.setup_waiting_mouse_up(false);
+
+				var isPlay = Global._isPlay;
+				Global.playStop();
 	
 				slider._value = Math.round(slider._value); //-- peter
 	
 				if(slider.onvaluechangeManual)
 				{
 					slider.onvaluechangeManual({});
+				}
+
+				if(isPlay)
+				{
+					//Global.playStart();
 				}
 			}
 	
@@ -79,79 +87,6 @@ export class Slider
 		return slider;
 	}
 }
-/*
-function SliderCreate(parentDiv, width, height, canvasClassName, img, min_value, max_value)
-{
-	var slider = new Object();
-	slider._parentDiv = parentDiv;
-	slider._parentDiv.innerHTML = 'aaaaaaaaaa';
-	slider._canvas = document.createElement('canvas');
-	slider._canvas.className = canvasClassName;
-	slider._canvas.width = width;
-	slider._canvas.height = height;
-	slider._img = img;
-	slider._ctx = slider._canvas.getContext('2d');
-	slider._value = 0;
-	slider._min_value = min_value;
-	slider._max_value = max_value;
-	slider._tik = 0;
-	slider._is_over = false;
-
-	parentDiv.appendChild(slider._canvas);
-
-	slider.redraw = slider_redraw;
-	slider.humb_rect = slider_humb_rect;
-	slider.value_2_pos = slider_value_2_pos;
-	slider.position_2_value = slider_position_2_value;
-	slider.handleMouseDown = slider_handleMouseDown;
-	slider.handleMouseMove = slider_handleMouseMove;
-	slider.setup_waiting_mouse_up = slider_setup_waiting_mouse_up;
-	slider.event2point = slider_event2point;
-	slider.point_in_thumb = slider_point_in_thumb;
-	slider.setValue = slider_setValue;
-	slider.getValue = slider_getValue;
-	slider.setMaxValue = slider_setMaxValue;
-
-
-	var $canvas = $(slider._canvas);
-
-	$canvas
-	.on('mousedown', slider.handleMouseDown.bind(slider))
-	.on('mousemove', slider.handleMouseMove.bind(slider))
-	.on('mouseleave', e => {
-		// tell the browser we're handling this event
-		//log('m = ' + slider._value)
-		e.preventDefault();
-		e.stopPropagation();
-		// get mouse position
-		let {x, y} = slider.event2point(e);
-		// set new thumb & redraw
-
-		slider._value = slider.position_2_value(x - slider.dx);
-
-		slider.redraw();
-	};
-
-	slider.window_up = e => {
-		if (e.button === 0)
-		{
-			slider.setup_waiting_mouse_up(false);
-
-			slider._value = Math.round(slider._value); //-- peter
-
-			if(slider.onvaluechangeManual)
-			{
-				slider.onvaluechangeManual({});
-			}
-		}
-
-	};
-
-	slider.redraw();
-
-	return slider;
-}
-*/
 
 function slider_setMaxValue(maxValue)
 {
@@ -185,6 +120,8 @@ function slider_handleMouseDown(e) {
 	if (e.button != 0)
 		return;
 
+	Global.playStop();
+
 	// tell the browser we're handling this event
 	e.preventDefault();
 	e.stopPropagation();
@@ -202,7 +139,7 @@ function slider_handleMouseDown(e) {
 
 	this.setup_waiting_mouse_up(true);
 
-	this.redraw();
+	//this.redraw();
 }
 
 function slider_handleMouseMove(e)
@@ -243,11 +180,13 @@ function slider_redraw()
 
 	// центральная полоска
 	{
+		y  = this._canvas.height - this._img.width / 2 - 10;
+
 		ctx.lineWidth = 4;
 		ctx.lineCap = 'round';
 		ctx.beginPath();
-		ctx.moveTo(0, this._canvas.height / 2);
-		ctx.lineTo(this._canvas.width, this._canvas.height / 2);
+		ctx.moveTo(0, y);
+		ctx.lineTo(this._canvas.width, y);
 		ctx.strokeStyle = '#085e7d'; //--#f7f700
 		ctx.stroke();		
 	}
@@ -264,7 +203,6 @@ function slider_redraw()
         ctx.beginPath();
         ctx.lineWidth = 1;
 
-		y = this._canvas.height / 2 ;
 
 		for (var i = 0; i <= this._max_value ; i++)
 		{
@@ -291,8 +229,11 @@ function slider_redraw()
 
 		if(solution)
 		{
+			var lineColor;
 			var str;
-			y = 5 ;
+			
+			var aa;
+			var strX1, strX2;
 			var selectedId = Global._selectedStrategyId;
 
 			for (var i = 0; i < solution._strategyArr.length ; i++)
@@ -301,32 +242,109 @@ function slider_redraw()
 
 				if(str._isActive)
 				{
-					ctx.beginPath();
-					ctx.lineWidth = 5;
-
-					if(str._id == selectedId)
+					y = 5 ;
+					
+					//-- основная линия стратегии
 					{
-						ctx.strokeStyle = 'blue';
+						ctx.beginPath();
+						ctx.lineWidth = 5;
+
+						if(str._id == selectedId)
+						{
+							ctx.strokeStyle = 'blue';
+						}
+						else{
+							ctx.strokeStyle = 'gray';
+						}
+
+						strX1 = this.value_2_pos(str._dayStart) - 3;
+						ctx.moveTo(strX1 , y);
+
+						strX2 = this.value_2_pos(str._dayFinish) - 2;
+						ctx.lineTo(strX2 , y);					
+
+						ctx.stroke();						
 					}
-					else{
-						ctx.strokeStyle = 'gray';
+
+					//-- линия маски
+					{
+						y = y + 6
+						lineColor = 'green';
+						if(str._maskKoef > 0)
+						{
+							aa =  (str._maskKoef * 1) / 10 + 0.5;
+						}
+						else{
+							aa = 0.2;
+						}
+						
+
+						ctx.beginPath();
+						ctx.lineWidth = 3;
+						ctx.globalAlpha = aa;
+						ctx.strokeStyle = lineColor;
+						ctx.moveTo(strX1 , y);
+						ctx.lineTo(strX2 , y);
+						ctx.stroke();
 					}
 
-					x = this.value_2_pos(str._dayStart) - 3;
-					ctx.moveTo(x , y);
+					//-- линия Дистант
+					{
+						y = y + 6
+						lineColor = 'red';
+						if(str._distPercent > 0)
+						{
+							aa =  (str._distPercent / 100);
 
-					x = this.value_2_pos(str._dayFinish) - 2;
-					ctx.lineTo(x , y);					
+							if(aa < 0.1)
+							{
+								aa == 0.1
+							}
+						}
+						else{
+							aa = 0.09;
+						}
 
-					ctx.stroke();
 
-					/*
-					ctx.beginPath();
-					ctx.lineWidth = 1;
-					ctx.moveTo(x , y);
-					ctx.lineTo(x , y + 5);					
-					ctx.stroke();
-					*/
+						
+
+						ctx.beginPath();
+						ctx.lineWidth = 3;
+						ctx.globalAlpha = aa;
+						ctx.strokeStyle = lineColor;
+						ctx.moveTo(strX1 , y);
+						ctx.lineTo(strX2 , y);
+						ctx.stroke();
+					}
+
+					//-- линия Тестирования
+					{
+						y = y + 6
+						lineColor = 'brown';
+						if(str._testPercent > 0)
+						{
+							aa =  (str._testPercent / 100);
+
+							if(aa < 0.1)
+							{
+								aa == 0.1
+							}
+						}
+						else{
+							aa = 0.09;
+						}
+
+
+						
+
+						ctx.beginPath();
+						ctx.lineWidth = 3;
+						ctx.globalAlpha = aa;
+						ctx.strokeStyle = lineColor;
+						ctx.moveTo(strX1 , y);
+						ctx.lineTo(strX2 , y);
+						ctx.stroke();
+					}
 
 				}
 			}			
@@ -363,7 +381,8 @@ function slider_humb_rect()
 	let xx = this.value_2_pos(this._value);
 	return {
 		x: xx - this._img.width/2,
-		y: this._canvas.height / 2 - this._img.height / 2,
+		//y: this._canvas.height / 2 - this._img.height / 2,
+		y: this._canvas.height - this._img.height - 5 ,
 		w: this._img.width,
 		h: this._img.height
 	};
