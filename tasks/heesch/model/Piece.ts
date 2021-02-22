@@ -180,6 +180,10 @@ export class Piece {
                 // ind_max = Math.min(circle_index, ind_max);
             }
 
+            // disallow full circle elements
+            if (point_indexes[ind] + n == ind_max)
+                ind_max--;
+
             for (let i = ind_min; i <= ind_max; i++) {
 
                 let i2 = piece.invariants_matrix[point_indexes[ind] % n][i % n];

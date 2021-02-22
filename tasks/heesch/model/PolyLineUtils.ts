@@ -78,7 +78,7 @@ export class PolyLineUtils {
 
         let i1 = 1;
         let i2 = 1;
-        while (i1 < n - 1 && i2 < n - 1) {
+        while (i1 < n - 1 && i2 < m - 1) {
             while (i1 < n - 1) {
                 let i1m = i1 - 1;
                 let i1p = i1 + 1;
@@ -106,7 +106,7 @@ export class PolyLineUtils {
             }
 
             if (i1 < n - 1 && i2 < m - 1) {
-                let p1e = p2.point(i1);
+                let p1e = p1.point(i1);
                 let p2e = p2.point(i2);
                 if (!g.apply(p1e).equals(p2e))
                     return false;

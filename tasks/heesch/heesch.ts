@@ -56,7 +56,7 @@ export class Heesch {
         square.searchForType((t, i) => {});*/
 
         //test
-        let tg1g1tg2g2 = new Piece([
+        /*let tg1g1tg2g2 = new Piece([
             new Point(0, 0),
             new Point(4, 0), // 1
             new Point(8, 3), // 2
@@ -79,7 +79,25 @@ export class Heesch {
             0, 1, 2, 3, 4, 5
         ]);
         console.log(ts);
-        tg1g1tg2g2.searchForType((t, i) => {});
+        tg1g1tg2g2.searchForType((t, i) => {});*/
+
+        //test tg1g2tg2g1
+        /*let tg1g1tg2g2 = new Piece([
+            new Point(0, 0),
+                new Point(2, 0),
+                new Point(3, -1),
+            new Point(4, 0),
+            new Point(8, 3),
+            new Point(8, 8),
+                new Point(7, 7),
+                new Point(6, 8),
+            new Point(4, 8),
+            new Point(0, 5)
+        ]);
+        let poly1 = tg1g1tg2g2.part(1, 3);
+        let poly2 = tg1g1tg2g2.part(5, 7);
+        console.log("isG", PolyLineUtils.isG(poly1, poly2), poly1.toString(), poly2.toString());*/
+        // tg1g1tg2g2.searchForType((t, i) => {console.log('ft', i)});
 
         this.kioapi = kioapi;
 
