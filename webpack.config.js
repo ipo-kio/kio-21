@@ -145,7 +145,11 @@ function add_task_to_config(task_name, config, task_html_template, dist_folder) 
     config.plugins.push(
         new CopyWebpackPlugin({
             patterns: [
-                {from: './tasks/' + task_name + '/res/*', to: './' + task_name + '-resources'},
+                {
+                    from: '*',
+                    to: './' + task_name + '-resources',
+                    context: path.resolve(__dirname, 'tasks', task_name, 'res')
+                },
             ]
         })
     );

@@ -164,10 +164,10 @@ export class Heesch {
         resize_listener();
     }
 
-    static preloadManifest(): void { //KioResourceDescription[] {
-        // return [
-        //     {id: "", src: "heesch-resources/air.jpg"},
-        // ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
+    static preloadManifest(): KioResourceDescription[] {
+        return [
+            {id: "dog", src: "heesch-resources/dog.png"},
+        ];
     }
 
     parameters(): KioResourceDescription[] {
@@ -207,7 +207,7 @@ export class Heesch {
 
         let x0 = w / 2;
         let y0 = h / 2;
-        let tessellationView = new TessellationView(this.tessellations[selectedIndex], x0, y0, w, h, 10);
+        let tessellationView = new TessellationView(this.kioapi, this.tessellations[selectedIndex], x0, y0, w, h, 10);
         tessellationView.draw(this.tessellation_ctx, 'black');
 
         let p = this.tessellations[selectedIndex].pieces[0];
@@ -234,7 +234,7 @@ export class Heesch {
             if (tessellation == null)
                 return;
             for (let old_tessellation of this.tessellations)
-                if (compareTessellations(old_tessellation, tessellation, false))
+                if (compareTessellations(old_tessellation, tessellation, true))
                     return;
 
             let new_index = -1 + this.tessellations.push(tessellation);
