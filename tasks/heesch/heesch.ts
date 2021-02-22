@@ -4,8 +4,8 @@ import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
-import {Tessellation} from "./model/Tessellation";
-import {TYPE_TG1G1TG2G2} from "./model/PieceType";
+import {compareTessellations, Tessellation} from "./model/Tessellation";
+import {TYPE_TG1G1TG2G2, TYPE_TTTTTT} from "./model/PieceType";
 import {PolyLineUtils} from "./model/PolyLineUtils";
 
 export class Heesch {
@@ -46,14 +46,14 @@ export class Heesch {
      */
     initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
         // test
-        let square = new Piece([
+        /*let square = new Piece([
             new Point(0, 0),
             new Point(0, 18),
             new Point(18, 18),
             new Point(18, 0)
         ]);
         square = square.fulfill();
-        square.searchForType((t, i) => {});
+        square.searchForType((t, i) => {});*/
 
         //test
         /*let tg1g1tg2g2 = new Piece([
@@ -98,6 +98,17 @@ export class Heesch {
         let poly2 = tg1g1tg2g2.part(5, 7);
         console.log("isG", PolyLineUtils.isG(poly1, poly2), poly1.toString(), poly2.toString());*/
         // tg1g1tg2g2.searchForType((t, i) => {console.log('ft', i)});
+
+        let sq = new Piece([
+            new Point(0, 0),
+            new Point(0, 10),
+            new Point(10, 10),
+            new Point(10, 0)
+        ]);
+        let t1 = TYPE_TTTTTT.tessellate(sq, [0, 1, 2, 2, 3, 4, 4]);
+        console.log(compareTessellations(t1, t1, false));
+        let t2 = TYPE_TTTTTT.tessellate(sq, [0, 1, 1, 2, 3, 3, 4]);
+        console.log(t1, t2, compareTessellations(t1, t2, false), compareTessellations(t1, t1, false));
 
         this.kioapi = kioapi;
 
@@ -222,12 +233,20 @@ export class Heesch {
             let tessellation = pt.tessellate(piece, ind);
             if (tessellation == null)
                 return;
+            for (let old_tessellation of this.tessellations)
+                if (compareTessellations(old_tessellation, tessellation, false))
+                    return;
+
             let new_index = -1 + this.tessellations.push(tessellation);
             let option = document.createElement("option");
             option.value = "" + new_index;
             option.innerText = pt.name;
             this.tesselationSelect.add(option);
         });
+
+        let tes1 = this.tessellations[1];
+        let tes2 = this.tessellations[2];
+        console.log(tes1, tes2, compareTessellations(tes1, tes2, false));
 
         this.updateTessellationView();
         this.kioapi.submitResult({});
