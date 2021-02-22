@@ -85,6 +85,7 @@ export class SolutionHelper
 				t.setAttribute('title', errMess);
 
 				//-- дистанционка
+				if(Config._level != 0)
 				{
 					s = document.getElementById('str_dist_' + strId).value.trim();
 
@@ -113,6 +114,25 @@ export class SolutionHelper
 					}
 
 					str._distPercent = d1;
+					
+				}
+				else{
+
+					if(document.getElementById('str_dist_act_' + strId).checked)
+					{
+						str._distPercent = 30;
+						str._distEnabled = true;
+						//document.getElementById('str_dist_' + strId).value = 30;
+					}
+					else{
+						str._distPercent = 0;
+						str._distEnabled = false;
+						//document.getElementById('str_dist_' + strId).value = 0;
+					}
+
+
+					
+
 				}
 
 				//-- Тестирование

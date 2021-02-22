@@ -10,9 +10,9 @@ export class Profit
         //--переход на дистанционную работу части работников 
         //--(указывается процент переведенных - дома производительность вдвое меньше)
 
-        if(strategy  && strategy._distPercent > 0) 
+        if(strategy  && realDistForDayCount > 0) 
         {
-            greenCount = (greenCount) - (realDistForDayCount/100 * strategy._distPercent)
+            greenCount = (greenCount) - (realDistForDayCount/2)
         }
 
 
@@ -34,6 +34,34 @@ export class Profit
         {
             result = result - (realTestForDayCount * 2)
         }
+
+        //
+        /*
+        В три шага:
+        1)  X = (fG + Y + B)
+        2) если есть маски
+            X = X - (X/100) * (M * 10)
+        3) если есть тестирование
+            X = X  - (GY * 2)
+
+
+
+        X = (fG + Y + B)
+
+        fG = (G) - (Gd/100 * P)
+        G - всего зеленых
+        Gd - реальное количество Зеленых на уделенке
+        P - процент удаленщиков из стратегии
+
+        Y - всего желтых
+
+        B - всего синих
+
+        M - маски. От 0 до 5
+
+        GY - реальное количество тестируемых Зеленых и Желтых в этот день
+
+        */
 
         return result;
     }

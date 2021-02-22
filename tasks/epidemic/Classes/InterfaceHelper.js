@@ -131,36 +131,43 @@ export class InterfaceHelper
                 Controller.strDayPlusMinus('str_to_', newId, 'plus', 1, Config._dayCount);
             });            
 
+            //-- LEVEL SETTINGS
+            if(Config._level != 0)
+            {
+                t = document.getElementById('str_mask_btn0_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strMaskSet(newId, '0');
+                }); 
 
-            t = document.getElementById('str_mask_btn0_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '0');
-            }); 
+                t = document.getElementById('str_mask_btn1_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strMaskSet(newId, '1');
+                });     
+                
+                if(Config._level == 2)
+                {
+                    t = document.getElementById('str_mask_btn2_' + newId);
+                    t.addEventListener('click', function(){
+                        Controller.strMaskSet(newId, '2');
+                    }); 
 
-            t = document.getElementById('str_mask_btn1_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '1');
-            });     
-            
-            t = document.getElementById('str_mask_btn2_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '2');
-            }); 
+                    t = document.getElementById('str_mask_btn3_' + newId);
+                    t.addEventListener('click', function(){
+                        Controller.strMaskSet(newId, '3');
+                    }); 
 
-            t = document.getElementById('str_mask_btn3_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '3');
-            }); 
+                    t = document.getElementById('str_mask_btn4_' + newId);
+                    t.addEventListener('click', function(){
+                        Controller.strMaskSet(newId, '4');
+                    }); 
 
-            t = document.getElementById('str_mask_btn4_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '4');
-            }); 
+                    t = document.getElementById('str_mask_btn5_' + newId);
+                    t.addEventListener('click', function(){
+                        Controller.strMaskSet(newId, '5');
+                    });                     
+                }              
+            }
 
-            t = document.getElementById('str_mask_btn5_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strMaskSet(newId, '5');
-            }); 
 
 
             t = document.getElementById('str_from_' + newId);
@@ -184,20 +191,34 @@ export class InterfaceHelper
             }); 
 
 
-            t = document.getElementById('str_dist_' + newId);
-            t.addEventListener('input', function(){
-                Controller.strCheck(newId);
-            }); 
+            //-- LEVEL SETTINGS
+            if(Config._level != 0)
+            {
+                t = document.getElementById('str_dist_' + newId);
+                t.addEventListener('input', function(){
+                    Controller.strCheck(newId);
+                }); 
 
-            t = document.getElementById('str_dist_minus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_dist_', newId, 'minus', 0, 100);
-            });
+                t = document.getElementById('str_dist_minus_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_dist_', newId, 'minus', 0, 100);
+                });
+    
+                t = document.getElementById('str_dist_plus_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
+                }); 
+            }
+            else
+            {
+                t = document.getElementById('str_dist_act_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strDistClick(newId);
+                });
+            }
 
-            t = document.getElementById('str_dist_plus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
-            }); 
+
+
 
             t = document.getElementById('str_test_' + newId);
             t.addEventListener('input', function(){
@@ -219,10 +240,33 @@ export class InterfaceHelper
 
         document.getElementById('str_from_' + newId).value = strategy._dayStart;
         document.getElementById('str_to_' + newId).value = strategy._dayFinish;
-        document.getElementById('str_dist_' + newId).value = (strategy._distPercent);
+
+
+        //-- LEVEL SETTINGS
+        let ch = document.getElementById('str_dist_act_' + newId);
+        if(ch)
+        {
+            ch.checked = strategy._distEnabled;
+            Controller.setDist(newId);
+        }
+        else{
+            //if(Config._level == 2)
+            {
+                document.getElementById('str_dist_' + newId).value = strategy._distPercent;
+            }
+        }
+        
+
+
+        
         document.getElementById('str_test_' + newId).value = (strategy._testPercent);
 
-        Controller.strMaskSet(newId, strategy._maskKoef + '');
+        //-- LEVEL SETTINGS
+        if(Config._level != 0)
+        {
+            Controller.strMaskSet(newId, strategy._maskKoef + '');
+        }
+        
     }
 
     static strategyDivClick(strDivId, strategyId )
