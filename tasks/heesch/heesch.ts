@@ -132,7 +132,7 @@ export class Heesch {
         this.tessellations = [];
         this.tesselationSelect = document.createElement("select");
         this.tesselationSelect.size = 10;
-        this.tesselationSelect.addEventListener("input", debounce((e: any) => this.updateTessellationView()));
+        this.tesselationSelect.addEventListener("input", (e: any) => this.updateTessellationView());
 
         domNode.classList.add('heesch-task-container');
         domNode.appendChild(this.tesselation_canvas);

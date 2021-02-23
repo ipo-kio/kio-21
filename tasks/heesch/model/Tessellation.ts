@@ -26,7 +26,8 @@ function pieces_may_be_translated(p1: Piece, p2: Piece, T1: Point, T2: Point, or
     if (orientation) {
         let [ox1, oy1] = p1.orientation;
         let [ox2, oy2] = p2.orientation;
-        return ox1.equals(ox2) && oy1.equals(oy2);
+        if (!ox1.equals(ox2) || !oy1.equals(oy2))
+            return false;
     }
 
     function left_of_top_points(p: Piece): [Point, number] {
