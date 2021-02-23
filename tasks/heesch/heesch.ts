@@ -4,8 +4,8 @@ import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
-import {compareTessellations, Tessellation} from "./model/Tessellation";
-import {TYPE_TG1G1TG2G2, TYPE_TTTTTT} from "./model/PieceType";
+import {compareTessellations, Tessellation, tessellationIsTranslateblyEquivalent} from "./model/Tessellation";
+import {PieceType, TYPE_TG1G1TG2G2, TYPE_TTTTTT} from "./model/PieceType";
 import {PolyLineUtils} from "./model/PolyLineUtils";
 
 export class Heesch {
@@ -190,6 +190,8 @@ export class Heesch {
         for (let i = 0; i < n; i += 2)
             newPoints.push(new Point(points[i], points[i + 1]));
         this.editor.updatePoints(newPoints);
+
+        console.log('loaded piece', this.editor.piece.toString());
     }
 
     private updateTessellationView() {
@@ -229,32 +231,70 @@ export class Heesch {
 
     private updateTessellationPiece(piece: Piece) {
         piece = piece.fulfill();
-        this.tessellations = [];
-        this.tesselationSelect.length = 0;
+
+        let tessellations_groups: [Tessellation, PieceType][][] = [];
 
         piece.searchForType((pt, ind) => {
             let tessellation = pt.tessellate(piece, ind);
             if (tessellation == null)
                 return;
-            for (let old_tessellation of this.tessellations)
-                if (compareTessellations(old_tessellation, tessellation, this.need_take_care_of_orientation))
-                    return;
 
-
-            let new_index = -1 + this.tessellations.push(tessellation);
-            let option = document.createElement("option");
-            option.value = "" + new_index;
-            option.innerText = pt.name;
-            this.tesselationSelect.add(option);
+            let was_added = false;
+            for (let tessellations_group of tessellations_groups) {
+                let [first_tessellation] = tessellations_group[0];
+                if (!tessellationIsTranslateblyEquivalent(tessellation, first_tessellation, this.need_take_care_of_orientation))
+                    continue;
+                // either add tesselation or don't add if there is the same one
+                was_added = true;
+                for (let [tessellation_in_the_group] of tessellations_group)
+                    if (compareTessellations(tessellation_in_the_group, tessellation, this.need_take_care_of_orientation))
+                        return;
+                tessellations_group.push([tessellation, pt]);
+            }
+            if (!was_added) {
+                let tessellations_group: [Tessellation, PieceType][] = [[tessellation, pt]];
+                tessellations_groups.push(tessellations_group);
+            }
         });
 
-        let tes1 = this.tessellations[0];
-        let tes2 = this.tessellations[7];
-        if (tes1 && tes2)
-            console.log('T0-T3', tes1, tes2, compareTessellations(tes1, tes2, false));
+        this.tessellations = [];
+        this.tesselationSelect.innerHTML = '';
+        for (let tessellations_group of tessellations_groups) {
+            if (tessellations_group.length > 1) {
+                let optgroup = document.createElement("optgroup");
+                optgroup.label = "Похожие";
+                for (let [tessellation, pt] of tessellations_group) {
+                    let new_index = -1 + this.tessellations.push(tessellation);
+                    let option = document.createElement("option");
+                    option.value = "" + new_index;
+                    option.innerText = pt.name;
+                    optgroup.append(option);
+                    this.tesselationSelect.add(optgroup);
+                }
+            } else {
+                let [tessellation, pt] = tessellations_group[0];
+                let new_index = -1 + this.tessellations.push(tessellation);
+                let option = document.createElement("option");
+                option.value = "" + new_index;
+                option.innerText = pt.name;
+                this.tesselationSelect.add(option);
+            }
+        }
 
+        /*let tes0 = this.tessellations[0];
+        let tes6 = this.tessellations[6];
+        let tes11 = this.tessellations[11];
+        if (tes11)
+            console.log('T0-T3',
+                compareTessellations(tes6, tes11, false),
+                tessellationIsTranslateblyEquivalent(tes0, tes6, false),
+                tessellationIsTranslateblyEquivalent(tes0, tes11, false),
+                tessellationIsTranslateblyEquivalent(tes6, tes11, false)
+            );
+*/
         this.updateTessellationView();
-        this.kioapi.submitResult({});
+        console.log('result: ', {groups: tessellations_groups.length, total: this.tessellations.length});
+        this.kioapi.submitResult({groups: tessellations_groups.length, total: this.tessellations.length});
     }
 }
 

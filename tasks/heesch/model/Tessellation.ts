@@ -22,7 +22,7 @@ function has_integer_coordinates(t1x: number, t1y: number, t2x: number, t2y: num
     return Math.abs(a - Math.round(a)) < EPS && Math.abs(b - Math.round(b)) < EPS;
 }
 
-function pieces_may_be_translated(p1: Piece, p2: Piece, T1: Point, T2: Point, orientation: boolean): boolean {
+function pieces_may_be_translated(p1: Piece, p2: Piece, T1: Point, T2: Point, orientation: boolean, integer_translation: boolean): boolean {
     if (orientation) {
         let [ox1, oy1] = p1.orientation;
         let [ox2, oy2] = p2.orientation;
@@ -47,14 +47,16 @@ function pieces_may_be_translated(p1: Piece, p2: Piece, T1: Point, T2: Point, or
     let [point1, point1_index] = left_of_top_points(p1);
     let [point2, point2_index] = left_of_top_points(p2);
 
-    //now test that T is made out of T1 and T2
+    //now test that T is made out of T1 and T
     let {x: tx, y: ty} = point2.sub(point1);
 
-    let {x: t1x, y: t1y} = T1;
-    let {x: t2x, y: t2y} = T2;
+    if (integer_translation) {
+        let {x: t1x, y: t1y} = T1;
+        let {x: t2x, y: t2y} = T2;
 
-    if (!has_integer_coordinates(t1x, t1y, t2x, t2y, tx, ty))
-        return false;
+        if (!has_integer_coordinates(t1x, t1y, t2x, t2y, tx, ty))
+            return false;
+    }
 
     // now test that pieces are translatable
     function translatable(second_increment: number): boolean {
@@ -72,9 +74,9 @@ function pieces_may_be_translated(p1: Piece, p2: Piece, T1: Point, T2: Point, or
     return translatable(1) || translatable(-1);
 }
 
-function tesselationGeneratesPiece(t: Tessellation, p: Piece, orientation: boolean): boolean {
+function tesselationGeneratesPiece(t: Tessellation, p: Piece, orientation: boolean, integer_translation: boolean): boolean {
     for (let generating_piece of t.pieces)
-        if (pieces_may_be_translated(generating_piece, p, t.T1, t.T2, orientation))
+        if (pieces_may_be_translated(generating_piece, p, t.T1, t.T2, orientation, integer_translation))
             return true;
     return false;
 }
@@ -83,11 +85,19 @@ function tessellationGeneratesAnother(t1: Tessellation, t2: Tessellation, orient
     let translate1 = T(t2.T1);
     let translate2 = T(t2.T2);
     for (let piece2 of t2.pieces) {
-        if (!tesselationGeneratesPiece(t1, piece2, orientation))
+        if (!tesselationGeneratesPiece(t1, piece2, orientation, true))
             return false;
-        if (!tesselationGeneratesPiece(t1, translate1.applyToPiece(piece2), orientation))
+        if (!tesselationGeneratesPiece(t1, translate1.applyToPiece(piece2), orientation, true))
             return false;
-        if (!tesselationGeneratesPiece(t1, translate2.applyToPiece(piece2), orientation))
+        if (!tesselationGeneratesPiece(t1, translate2.applyToPiece(piece2), orientation, true))
+            return false;
+    }
+    return true;
+}
+
+function tessellationMayBeTranslatedTo(t1: Tessellation, t2: Tessellation, orientation: boolean): boolean {
+    for (let piece2 of t2.pieces) {
+        if (!tesselationGeneratesPiece(t1, piece2, orientation, false))
             return false;
     }
     return true;
@@ -95,4 +105,8 @@ function tessellationGeneratesAnother(t1: Tessellation, t2: Tessellation, orient
 
 export function compareTessellations(t1: Tessellation, t2: Tessellation, orientation: boolean): boolean {
     return tessellationGeneratesAnother(t1, t2, orientation) && tessellationGeneratesAnother(t2, t1, orientation);
+}
+
+export function tessellationIsTranslateblyEquivalent(t1: Tessellation, t2: Tessellation, orientation: boolean): boolean {
+    return tessellationMayBeTranslatedTo(t1, t2, orientation) && tessellationMayBeTranslatedTo(t2, t1, orientation);
 }
