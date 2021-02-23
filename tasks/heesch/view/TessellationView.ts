@@ -11,22 +11,20 @@ export class TessellationView {
     private width: number;
     private height: number;
     private one: number;
-    private kioapi: KioApi;
+    private dog: HTMLImageElement;
 
-    constructor(kioapi: KioApi, tesselation: Tessellation, x0: number, y0: number, width: number, height: number, one: number) {
+    constructor(dog: HTMLImageElement | null, tesselation: Tessellation, x0: number, y0: number, width: number, height: number, one: number) {
         this.tesselation = tesselation;
         this.x0 = x0;
         this.y0 = y0;
         this.width = width;
         this.height = height;
         this.one = one;
-        this.kioapi = kioapi;
+        this.dog = dog;
     }
 
     draw(ctx: CanvasRenderingContext2D, color: string): void {
         ctx.save();
-
-        let img = this.kioapi.getResource('dog') as HTMLImageElement;
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = color;
@@ -76,7 +74,7 @@ export class TessellationView {
                     let translate_x = T1[0] * t1 + T2[0] * t2;
                     let translate_y = T1[1] * t1 + T2[1] * t2;
 
-                    draw_piece(ctx, piece, translate_x, translate_y, piece_in_points.orientation, img);
+                    draw_piece(ctx, piece, translate_x, translate_y, piece_in_points.orientation, this.dog);
                 }
 
                 return L <= U;
@@ -108,7 +106,7 @@ function pair_of_inequalities(a: number, b: number, c: number, d: number): [numb
         return [Math.ceil(right - EPS), Math.floor(left + EPS)];
 }
 
-function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number][], translate_x: number, translate_y: number, orientation: [Point, Point], img: HTMLImageElement): void {
+function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number][], translate_x: number, translate_y: number, orientation: [Point, Point], img: HTMLImageElement | null): void {
     ctx.save();
 
     ctx.beginPath();
@@ -133,16 +131,18 @@ function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number]
     ctx.clip();
     ctx.stroke();
 
-    let x_center = x_sum / n;
-    let y_center = y_sum / n;
+    if (img) {
+        let x_center = x_sum / n;
+        let y_center = y_sum / n;
 
-    ctx.translate(x_center, y_center);
-    let angle = Math.atan2(orientation[0].y, orientation[0].x);
-    ctx.rotate(-angle);
-    if (orientation[0].vec(orientation[1]) < 0) //1,0 vec 0,1
-        ctx.scale(1, -1);
+        ctx.translate(x_center, y_center);
+        let angle = Math.atan2(orientation[0].y, orientation[0].x);
+        ctx.rotate(-angle);
+        if (orientation[0].vec(orientation[1]) < 0) //1,0 vec 0,1
+            ctx.scale(1, -1);
 
-    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+    }
 
     ctx.restore();
 }

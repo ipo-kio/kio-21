@@ -5,8 +5,7 @@ import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {compareTessellations, Tessellation, tessellationIsTranslateblyEquivalent} from "./model/Tessellation";
-import {PieceType, TYPE_TG1G1TG2G2, TYPE_TTTTTT} from "./model/PieceType";
-import {PolyLineUtils} from "./model/PolyLineUtils";
+import {PieceType} from "./model/PieceType";
 
 export class Heesch {
     private settings: KioTaskSettings;
@@ -21,6 +20,7 @@ export class Heesch {
     private tesselationSelect: HTMLSelectElement;
 
     private need_take_care_of_orientation: boolean = false;
+    private draw_orientation = true;
 
     /**
      *
@@ -30,6 +30,7 @@ export class Heesch {
     constructor(settings: KioTaskSettings) {
         this.settings = settings;
         this.need_take_care_of_orientation = +settings.level > 0;
+        this.draw_orientation = +settings.level > 0;
     }
 
     /**
@@ -212,7 +213,8 @@ export class Heesch {
 
         let x0 = w / 2;
         let y0 = h / 2;
-        let tessellationView = new TessellationView(this.kioapi, this.tessellations[selectedIndex], x0, y0, w, h, 10);
+        let dog = this.draw_orientation ? this.kioapi.getResource('dog') as HTMLImageElement : null;
+        let tessellationView = new TessellationView(dog, this.tessellations[selectedIndex], x0, y0, w, h, 10);
         tessellationView.draw(this.tessellation_ctx, 'black');
 
         let p = this.tessellations[selectedIndex].pieces[0];
