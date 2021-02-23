@@ -134,6 +134,39 @@ export class Global
 		Global._slider.redraw();
 	}
 
+	static setZarazKoef()
+	{
+		let s = document.getElementById('zaraz_koef').value.trim();
+
+        let zz = parseFloat(s);
+
+        if(isNaN(parseFloat(s)))
+        {
+            alert('Ошибка коэффициента заражения!!  Применяем по умолчанию = 0.01 ')
+            zz = 0.01
+        }  
+
+        Config._zarazKoef = zz;
+
+		document.getElementById('zaraz_cap').innerHTML = 'Коэф. заражения = ' + zz
+
+		//---------------------------------
+
+		s = document.getElementById('prof_kt').value.trim();
+
+        zz = parseFloat(s);
+
+        if(isNaN(parseFloat(s)))
+        {
+            alert('Ошибка коэффициента затрат на Тестирование!!  Применяем по умолчанию = 2 ')
+            zz = 2
+        }  
+
+        Config._kT = 2;
+
+		document.getElementById('prof_cap').innerHTML = 'Затрат на тест = ' + zz
+	}
+
 }
 
 function log(s){

@@ -223,6 +223,11 @@ export class Controller
     
         return false;
     }
+
+    static recalc()
+    {
+        Global.recalcFromInterface('Controller.recalc');
+    }
 }
 
 function log(s){

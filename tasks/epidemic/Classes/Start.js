@@ -9,7 +9,7 @@ export class Start
 
 	static createGlobalInterface(domNode)
 	{
-		let div, btn;
+		let div, btn, t;
 
 		let superDiv = document.createElement('div')
 		superDiv.innerHTML = '';// Start.getHtml();
@@ -186,6 +186,8 @@ export class Start
 		div.id = 'div_log';
 		superDiv.appendChild(div);
 
+
+
 		//--------------------
 
 		div = document.createElement('div')
@@ -245,6 +247,41 @@ export class Start
 		})
 	
 		//--------------------
+		t = document.createElement('span')
+		t.id = 'zaraz_cap'
+		t.className = 'prop_cap'
+		t.innerHTML = 'Коэф. заражения';
+		div.appendChild(t);
+
+		t = document.createElement('input')
+		t.type = 'text'
+		t.value = '0.01';
+		t.id = 'zaraz_koef';
+		t.className = 'input_txt'
+		div.appendChild(t);
+
+		t = document.createElement('span')
+		t.id = 'prof_cap'
+		t.className = 'prop_cap'
+		t.innerHTML = 'Затрат на тест';
+		div.appendChild(t);
+
+		t = document.createElement('input')
+		t.type = 'text'
+		t.value = '2';
+		t.id = 'prof_kt';
+		t.className = 'input_txt'
+		div.appendChild(t);
+
+		btn = document.createElement('button');
+		btn.innerHTML = 'Перерасчет'; 
+		btn.className = '';
+		div.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.recalc(); 
+		})
+		//--------------------
 
 		div = document.createElement('div')
 		div.innerHTML = '';
@@ -280,6 +317,10 @@ export class Start
 			//log('22222 = '+ _slider.getValue());
 		
 		}
+
+		Global.setZarazKoef()
+
+
 	}
 
 

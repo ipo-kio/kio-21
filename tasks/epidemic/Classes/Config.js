@@ -11,11 +11,15 @@ export class Config
     static _maskZ = 0.5; // Маски - изменяют количество заражений в день и изменяют ЕЕ за день. 
     static _maskEE = 0.8;
     static _karEE = 0.8; // Карантин - изменяет количество заражений в день путем исключения Красных (R) из этого процесса и изменяет ЕЕ за день.
-   static  _bolnicaCount = 100; //-- количество мест в больнице
+    static  _bolnicaCount = 100; //-- количество мест в больнице
+    static _zarazKoef = 0.01;
+    static _kT = 1;
 
     static init(level)
     {
         Config._level = level;
+
+    
 
         if(level == 0)
         {
