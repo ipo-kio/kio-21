@@ -91,7 +91,7 @@ IH-42: LTLT (L)
 trapeziums:
 IH-49: LCLC (L)
 IH-45: LGLG (L)
-IH-54: LLLC (L)
+IH-54: LLLC (L) //seems to be a variant of LCLC if it is not a trapezoid
 
 right-angled:
 IH-81: LC4C4 (L) not IH-56

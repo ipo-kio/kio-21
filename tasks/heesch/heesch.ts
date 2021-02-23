@@ -235,8 +235,12 @@ export class Heesch {
         piece = piece.fulfill();
 
         let tessellations_groups: [Tessellation, PieceType][][] = [];
+        let count_tessellations = 0;
 
         piece.searchForType((pt, ind) => {
+            if (count_tessellations > 1000)
+                return;
+
             let tessellation = pt.tessellate(piece, ind);
             if (tessellation == null)
                 return;
@@ -252,10 +256,12 @@ export class Heesch {
                     if (compareTessellations(tessellation_in_the_group, tessellation, this.need_take_care_of_orientation))
                         return;
                 tessellations_group.push([tessellation, pt]);
+                count_tessellations++;
             }
             if (!was_added) {
                 let tessellations_group: [Tessellation, PieceType][] = [[tessellation, pt]];
                 tessellations_groups.push(tessellations_group);
+                count_tessellations++;
             }
         });
 

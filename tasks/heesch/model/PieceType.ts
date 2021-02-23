@@ -507,7 +507,24 @@ export const TYPE_LGLG = new PieceType(
         ['G', 1]
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        // test AB || CD
+        let v1 = B.sub(A);
+        let v2 = C.sub(D);
+        if (Math.abs(v1.vec(v2)) >= EPS)
+            return null;
+
+        let sym = S(C, D);
+        let piece2 = sym.applyToPiece(piece);
+        let T1 = D.sub(B);
+        let B_sym = sym.apply(B);
+        let T2 = B_sym.sub(B);
+
+        return {T1, T2, pieces: [piece, piece2], indexes: indexes.slice()};
     }
 );
 
@@ -521,7 +538,35 @@ export const TYPE_LLLC = new PieceType(
         ['C']
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        let s1 = B.sub(A);
+        let s2 = C.sub(B);
+
+        if (Math.abs(s1.dot(s2)) > EPS)
+            return null;
+
+        let s3 = C.sub(D);
+        if (Math.abs(s2.dot(s3)) > EPS)
+            return null;
+
+        let M = A.middle(D);
+        let rot = R2(M);
+        let sym = S(A, B);
+
+        let piece_up = rot.applyToPiece(piece);
+        let piece_right = sym.applyToPiece(piece);
+        let piece_up_right = sym.applyToPiece(piece_up);
+
+        return {
+            T1: s2.mul(2),
+            T2: s1.add(s3),
+            pieces: [piece, piece_up, piece_right, piece_up_right],
+            indexes: indexes.slice()
+        };
     }
 );
 
@@ -534,7 +579,26 @@ export const TYPE_LC4C4 = new PieceType(
         ['C4', 1]
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+
+        let rot = R4(C);
+        let B1 = rot.apply(B);
+
+        let piece2 = rot.applyToPiece(piece);
+        let sym1 = S(A, B);
+        let sym2 = S(B, B1);
+
+        let pieces = [piece, piece2];
+        let pieces2 = pieces.slice();
+        for (let p of pieces)
+            pieces2.push(sym1.applyToPiece(p));
+        let pieces3 = pieces2.slice();
+        for (let p of pieces2)
+            pieces3.push(sym2.applyToPiece(p));
+
+        return {T1: C.sub(A).mul(2), T2: C.sub(B).mul(2), pieces: pieces3, indexes: indexes.slice()};
     }
 );
 
