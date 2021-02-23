@@ -20,6 +20,8 @@ export class Heesch {
     private tessellations: Tessellation[] = [];
     private tesselationSelect: HTMLSelectElement;
 
+    private need_take_care_of_orientation: boolean = false;
+
     /**
      *
      * @param settings Объект с настройками задачи. В данный момент, внутри объекта settings ожидается только поле level,
@@ -27,6 +29,7 @@ export class Heesch {
      */
     constructor(settings: KioTaskSettings) {
         this.settings = settings;
+        this.need_take_care_of_orientation = +settings.level > 0;
     }
 
     /**
@@ -234,7 +237,7 @@ export class Heesch {
             if (tessellation == null)
                 return;
             for (let old_tessellation of this.tessellations)
-                if (compareTessellations(old_tessellation, tessellation, false))
+                if (compareTessellations(old_tessellation, tessellation, this.need_take_care_of_orientation))
                     return;
 
 
