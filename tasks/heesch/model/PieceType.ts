@@ -439,7 +439,20 @@ export const TYPE_LTLT = new PieceType(
         ['T', 1]
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        let sym = S(C, D);
+        let pieces = [
+            piece,
+            sym.applyToPiece(piece)
+        ];
+        let T1 = B.sub(A);
+        let T2 = C.sub(B).mul(2);
+
+        return {T1, T2, pieces, indexes: indexes.slice()};
     }
 );
 
@@ -453,7 +466,34 @@ export const TYPE_LCLC = new PieceType(
         ['C']
     ],
     function tessellate(piece, indexes) {
-        return null;
+        let A = piece.point(indexes[0]);
+        let B = piece.point(indexes[1]);
+        let C = piece.point(indexes[2]);
+        let D = piece.point(indexes[3]);
+
+        // test AB || CD
+        let v1 = B.sub(A);
+        let v2 = C.sub(D);
+        if (Math.abs(v1.vec(v2)) >= EPS)
+            return null;
+
+        let sym = S(C, D);
+        let M = A.middle(D);
+        let R = R2(M);
+
+        let piece_up = sym.applyToPiece(piece);
+        let piece_right = R.applyToPiece(piece);
+        let piece_4 = sym.applyToPiece(piece_right);
+
+        let B_sym = sym.apply(B);
+        let C_rot = R.apply(C);
+
+        return {
+            T1: B.sub(B_sym),
+            T2: B.sub(C_rot),
+            pieces: [piece, piece_up, piece_right, piece_4],
+            indexes: indexes.slice()
+        };
     }
 );
 
