@@ -409,7 +409,7 @@ export const TYPE_LLLL = new PieceType(
         let D = piece.point(indexes[3]);
 
         let type = is_parallelogram_type(A, B, C, D);
-        if (type !== "square" && type !== "parallelogram")
+        if (type !== "square" && type !== "rectangle")
             return null;
 
         let sym1 = S(C, D);
