@@ -99,7 +99,7 @@ export class Heesch {
         console.log("isG", PolyLineUtils.isG(poly1, poly2), poly1.toString(), poly2.toString());*/
         // tg1g1tg2g2.searchForType((t, i) => {console.log('ft', i)});
 
-        let sq = new Piece([
+        /*let sq = new Piece([
             new Point(0, 0),
             new Point(0, 10),
             new Point(10, 10),
@@ -108,7 +108,7 @@ export class Heesch {
         let t1 = TYPE_TTTTTT.tessellate(sq, [0, 1, 2, 2, 3, 4, 4]);
         console.log(compareTessellations(t1, t1, false));
         let t2 = TYPE_TTTTTT.tessellate(sq, [0, 1, 1, 2, 3, 3, 4]);
-        console.log(t1, t2, compareTessellations(t1, t2, false), compareTessellations(t1, t1, false));
+        console.log(t1, t2, compareTessellations(t1, t2, false), compareTessellations(t1, t1, false));*/
 
         this.kioapi = kioapi;
 
@@ -234,8 +234,9 @@ export class Heesch {
             if (tessellation == null)
                 return;
             for (let old_tessellation of this.tessellations)
-                if (compareTessellations(old_tessellation, tessellation, true))
+                if (compareTessellations(old_tessellation, tessellation, false))
                     return;
+
 
             let new_index = -1 + this.tessellations.push(tessellation);
             let option = document.createElement("option");
@@ -244,9 +245,10 @@ export class Heesch {
             this.tesselationSelect.add(option);
         });
 
-        let tes1 = this.tessellations[1];
-        let tes2 = this.tessellations[2];
-        console.log(tes1, tes2, compareTessellations(tes1, tes2, false));
+        let tes1 = this.tessellations[0];
+        let tes2 = this.tessellations[7];
+        if (tes1 && tes2)
+            console.log('T0-T3', tes1, tes2, compareTessellations(tes1, tes2, false));
 
         this.updateTessellationView();
         this.kioapi.submitResult({});

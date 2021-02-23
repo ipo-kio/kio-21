@@ -181,3 +181,7 @@ export function S({x: x1, y: y1}: Point, {x: x2, y: y2}: Point) {
 
     return new Transform(a / det, b / det, c / det, d / det, e / det, f / det);
 }
+
+export function T(t: Point) {
+    return new Transform(1, 0, t.x, 0, 1, t.y);
+}
