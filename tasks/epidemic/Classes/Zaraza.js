@@ -1,3 +1,4 @@
+import { Config } from './Config.js';
 
 export class Zaraza
 {
@@ -17,6 +18,9 @@ export class Zaraza
         let f = 0;
         let k = 1;
         let p = 0.01; //-- вероятность заразиться (которая и должна быть константой)
+
+        p = Config._zarazKoef;
+        //log('Zaraz p=' + p)
 
         let res = 0;
 

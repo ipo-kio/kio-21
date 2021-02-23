@@ -1,7 +1,40 @@
+import { Config } from './Config.js';
 
 export class Profit
 {
-    static getEEForDay(greenCount, yellowCount, redCount, blueCount, strategy, realDistForDayCount, realTestForDayCount)
+
+    static getProfitForDay(greenCount, yellowCount, redCount, blueCount, strategy, realDistForDayCount, realTestForDayCount)
+    {
+        //-- Таким образом, производительность в день можно вычислять одной формулой:
+        //-- E = ( Gz+Rz+Yz )*(1-f/10) - (Gz+Rz+Yz)*t*2
+        //--  f- уровень масочного режима
+        //--  t - доля тестируемых в день
+        //--  Gz, Rz, Yz - количество шариков разного цвета в данный день.
+
+        let Gz = greenCount
+        let Rz = blueCount
+        let Yz = yellowCount;
+        let f = 0;
+        if(strategy  && strategy._maskKoef > 0) 
+        {
+            f = strategy._maskKoef;
+        }
+
+        let t = 0;
+        if(strategy  && strategy._testPercent > 0) 
+        {
+            t = strategy._testPercent/100;
+        }
+
+        let kT = Config._kT;  //-- 2
+
+        let result = ( Gz+Rz+Yz )*(1-f/10) - (Gz+Rz+Yz)*t*kT
+
+        return result;
+        
+    }
+ 
+    static getEEForDay_old(greenCount, yellowCount, redCount, blueCount, strategy, realDistForDayCount, realTestForDayCount)
     {
         let result = 0;
          

@@ -73,14 +73,15 @@ export class StrategyHelper
         return result;
     }
 
-    static getDistManCount(strategy, manCount)
+    static getDistManCount(strategy, greenCount, yellowCount)
     {
         if(strategy == null) return 0;
 
+        let manCount = greenCount + yellowCount;
         return  Math.trunc(manCount/100 *  strategy._distPercent);
     }
 
-    static getTestManCount(strategy, greenCount, yellowRabCount)
+    static getTestManCount(strategy, greenRabCount, yellowRabCount, redRabCount)
     {
         /*
         убираются из производственного процесса желтые попавшие в выборку шарики 
@@ -92,7 +93,9 @@ export class StrategyHelper
         */
         if(strategy == null) return 0;
 
-        return yellowRabCount * strategy._testPercent/100;
+        let sum = greenRabCount +  yellowRabCount + redRabCount;
+
+        return sum * strategy._testPercent/100;
         /*
         let gy = greenCount + yellowCount;
 
