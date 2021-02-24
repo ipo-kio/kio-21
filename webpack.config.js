@@ -40,7 +40,25 @@ module.exports = function (env) {
                     exclude: /node_modules/,
                     include: sourceFolders,
                     use: {
-                        loader: 'babel-loader'
+                        loader: 'babel-loader',
+                        options: {
+                            "presets": [
+                                ["@babel/preset-env", {
+                                    "useBuiltIns": "usage",
+                                    "targets": {
+                                        "ie": "11"
+                                    },
+                                    "corejs": 3
+                                }]
+                            ],
+                            "plugins": [
+                                "@babel/plugin-transform-arrow-functions",
+                                "@babel/plugin-syntax-dynamic-import",
+                                "@babel/plugin-proposal-class-properties",
+                                "@babel/plugin-proposal-export-namespace-from",
+                                "@babel/plugin-proposal-throw-expressions"
+                            ]
+                        }
                     }
                 },
                 {

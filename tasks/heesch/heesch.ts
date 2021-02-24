@@ -21,6 +21,7 @@ export class Heesch {
 
     private need_take_care_of_orientation: boolean = false;
     private draw_orientation = true;
+    private has_error: boolean = false;
 
     /**
      *
@@ -163,7 +164,7 @@ export class Heesch {
 
         this.updateTessellationPiece(piece);
 
-        this.editor.pieceChangeListener = debounce((piece: any) => this.updateTessellationPiece(piece));
+        this.editor.pieceChangeListener = debounce((piece: Piece | null) => this.updateTessellationPiece(piece));
 
         resize_listener();
     }
@@ -232,15 +233,29 @@ export class Heesch {
     }
 
     private updateTessellationPiece(piece: Piece) {
+        let generateError = () => {
+            this.has_error = true;
+            this.kioapi.submitResult({});
+            this.updateTessellationView();
+        }
+
+        this.has_error = false;
+
+        if (piece == null) {
+            generateError();
+            return;
+        }
+
         piece = piece.fulfill();
 
+        if (piece.sign == 0) {
+            generateError();
+            return;
+        }
+
         let tessellations_groups: [Tessellation, PieceType][][] = [];
-        let count_tessellations = 0;
 
         piece.searchForType((pt, ind) => {
-            if (count_tessellations > 1000)
-                return;
-
             let tessellation = pt.tessellate(piece, ind);
             if (tessellation == null)
                 return;
@@ -252,16 +267,16 @@ export class Heesch {
                     continue;
                 // either add tesselation or don't add if there is the same one
                 was_added = true;
+                if (tessellations_group.length > 20)
+                    break;
                 for (let [tessellation_in_the_group] of tessellations_group)
                     if (compareTessellations(tessellation_in_the_group, tessellation, this.need_take_care_of_orientation))
                         return;
                 tessellations_group.push([tessellation, pt]);
-                count_tessellations++;
             }
             if (!was_added) {
                 let tessellations_group: [Tessellation, PieceType][] = [[tessellation, pt]];
                 tessellations_groups.push(tessellations_group);
-                count_tessellations++;
             }
         });
 
@@ -301,7 +316,7 @@ export class Heesch {
             );
 */
         this.updateTessellationView();
-        console.log('result: ', {groups: tessellations_groups.length, total: this.tessellations.length});
+        console.log('sign', piece.sign, 'result: ', {groups: tessellations_groups.length, total: this.tessellations.length});
         this.kioapi.submitResult({groups: tessellations_groups.length, total: this.tessellations.length});
     }
 }

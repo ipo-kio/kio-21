@@ -388,6 +388,8 @@ export class PieceEditor {
     }
 
     get piece() {
+        if (this.errorEdges.size > 0)
+            return null;
         return new Piece(this.points);
     }
 
@@ -508,8 +510,16 @@ export class PieceEditor {
         }
     }
 
+    //TODO all points on one line is also an error
+    //TODO mouse move should debounce reevaluation.
+
     firePieceChange() {
         if (this._pieceChangeListener) {
+            if (this.errorEdges.size > 0) {
+                this._pieceChangeListener(null);
+                return;
+            }
+
             let newPoints: Point[] = [];
             for (let point of this.points)
                 newPoints.push(new Point(point.x, point.y));

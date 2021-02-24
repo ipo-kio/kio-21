@@ -27,7 +27,7 @@ type Invariants = [vec: number, dist: number, is_line: boolean];
 export class Piece {
     readonly points: Point[] = [];
     readonly orientation: [Point, Point];
-    private invariants_matrix: Invariants[][];
+    private invariants_matrix: Invariants[][] = null;
     private full_length: number;
     readonly sign: number; //+-1
 
@@ -40,7 +40,6 @@ export class Piece {
         if (Math.abs(d) > EPS)
             console.log('ERROR', o1.toString(), o2.toString());
 
-        this.evaluate_invariants();
         this.sign = this.evaluate_sign();
     }
 
@@ -107,6 +106,9 @@ export class Piece {
     }
 
     searchForType(callback: (type: PieceType, indexes: int[]) => void) {
+        if (!this.invariants_matrix)
+            this.evaluate_invariants();
+
         let piece = this;
         let n = this.size;
 
@@ -218,16 +220,10 @@ export class Piece {
                                     continue;
                                 break;
                             case 'C4':
-                                if (!PolyLineUtils.isC4(previous_polyline.revert(), current_polyline, this.sign))
+                                if (!PolyLineUtils.isC4(previous_polyline.revert(), current_polyline, piece.sign))
                                     continue;
                                 break;
                         }
-
-                        /*if (i1[0] !== i2[0] || i1[1] !== i2[1] || i1[2] !== i2[2])
-                            console.log("HMM", i1, i2, letter, previous_polyline.toString(), current_polyline.toString(),
-                                prev_polyline_start % n, prev_polyline_end % n,
-                                point_indexes[ind] % n, i % n
-                            );*/
 
                         new_length_of_all_points = length_of_all_points - i2[1];
                     }
@@ -271,7 +267,6 @@ export class Piece {
             prevFoundCount = foundCount;
         }
 
-        //TODO TG1G1TG2G2 will always be found two times
         console.timeEnd('search for type');
     }
 

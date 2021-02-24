@@ -18,13 +18,15 @@ export class Brilliant
 	static _stageBottom
 	static _stageTop
 
+	level;
+
 	constructor (settings)
 	{
-		log('constructor==============================')
+		// log('constructor==============================')
 		this.settings = settings
-		log(settings)
-		Global._level = settings.level;
-
+		// log(settings)
+		// Global._level = settings.level;
+		this.level = settings.level;
 	}
 	/**
 	 * Идентификатор задачи, используется сейчас только как ключ для
@@ -37,6 +39,8 @@ export class Brilliant
 
 	initialize (domNode, kioapi, preferred_width)
 	{
+		Global._level = this.level;
+
 		Brilliant.kioapi = kioapi
 		log('initialize')
 
@@ -62,15 +66,15 @@ export class Brilliant
 
 		let s;
 
-		if(Global._level == 0)
+		if(this.level == 0)
 		{
 			s = 'Собрано';
 		}
-		else if(Global._level == 1)
+		else if(this.level == 1)
 		{
 			s = 'Собрано';
 		}
-		else if(Global._level == 2)
+		else if(this.level == 2)
 		{
 			s = 'В рамках';
 		}
@@ -95,7 +99,7 @@ export class Brilliant
 		}
 
 
-		if(Global._level == 2)
+		if(this.level == 2)
 		{
 			return[_isComplit, _orientalCount,  _moveCount, _rotateCount];
 		}
