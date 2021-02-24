@@ -162,7 +162,7 @@ export class Global
             zz = 2
         }  
 
-        Config._kT = 2;
+        Config._kT = zz;
 
 		document.getElementById('prof_cap').innerHTML = 'Затрат на тест = ' + zz
 	}

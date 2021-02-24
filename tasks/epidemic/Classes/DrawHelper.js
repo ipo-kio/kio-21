@@ -51,6 +51,8 @@ export class DrawHelper
         let distW = 200;
         let testH = 150;
         let bolW = 200;
+
+        
     
 
         if(day._strategy != null)
@@ -195,7 +197,7 @@ export class DrawHelper
                 ctx.beginPath();
                 ctx.font = "bold 12px Arial";
                 ctx.fillStyle = 'black';
-                ctx.fillText('Дом', x, y);
+                ctx.fillText('Карантин', x, y);
                 ctx.fill(); 
             }
 
@@ -241,189 +243,6 @@ export class DrawHelper
             dayColor = DrawHelper.getColorForDay(man, day._dayIndex);
             otskokOff = false;
 
-            //-- кого куда
-            {
-                vvOK = false;
-
-                //-- общая область
-                /*
-                leftX = leftW;
-                rightX = W;
-                topY = headerH;              
-                botY = H;
-                */
-                //log('day._number=' + day._number + ' ' + dayColor)
-
-                if(dayColor != 'blue')
-                {
-                    /*
-                    if(man._testByDayDic.hasOwnProperty(day._number)
-                  //  || (man._testDayStart > 0 && man._testDayStart <= day._number )
-                    )
-                    {
-                        //-- тестировщики
-                        //-- угол для тестируемых
-
-                        if(man._testDayStart <= day._number - 1)
-                        //if(man._testByDayDic.hasOwnProperty(day._number-1))
-                        {
-                            leftX = 0
-                            rightX = leftW;
-                            topY = H - testH;              
-                            botY = H;
-                        }
-                        else
-                        {
-                            if(!man._testByDayDic.hasOwnProperty(day._number+1))
-                            {
-                                //-- завтра на свободу
-
-                                man.vx = 4;
-                                man.vy = 0;
-                            }
-                            else
-                            {
-
-                                if(man.x > rightX/3)
-                                {
-                                    man.vx = -10;
-                                    man.vy = 2;
-                                }
-                                else
-                                {
-                                    man.vx = -10;
-                                    man.vy = 10;
-                                }
-                            }
-
-  
-                        }
-
-                        vvOK = true;
-                        //log('111 vy=' + man.vy)
-                    }
-                    */
-                }
-                //man._stukOff = false;
-
-                if(!vvOK)
-                {
-                   // log('2222')
-                    /*
-                    if(dayColor == 'red')
-                    {
-                        if(man._bolnicaDayDic.hasOwnProperty(day._number))
-                        {
-                            man._stukOff = true;
-                            if(!man._bolnicaDayDic.hasOwnProperty(day._number+1))
-                            {
-                                //-- если завтра на свободу
-                                man.vx = 5;
-                                man.vy = 5;                                
-                            }
-
-                            //-- угол для красных
-                            leftX = 0
-                            rightX = bolW - radius2;
-                            topY = 0;              
-                            botY = headerH - radius2;     
-                                                      
-                        }
-                        else                       
-                        {
-                            if(man._bolnicaDayDic.hasOwnProperty(day._number+1) 
-                            //|| man._bolnicaDayDic.hasOwnProperty(day._number+2))
-                            )
-                            {
-                                //-- если ему в больницу завтра
-                                if(man.x > rightX - rightX/3)
-                                {
-                                    man.vx = -10;
-                                    man.vy = -1;
-                                }
-                                else if(man.x > rightX/3)
-                                {
-                                    man.vx = -10;
-                                    man.vy = -2;
-                                }
-                                else if(man.x < rightX/6)
-                                {
-                                    man.vx = -0.5;
-                                    man.vy = -10;
-                                    man._vxSetted = true;
-                                }
-                                else
-                                {
-                                    man.vx = -10;
-                                    man.vy = -10;
-                                }
-        
-                                man._stukOff = true;
-                                //man._vxSetted = true;
-                                
-                            }
-
-                            man._stukOff = false;
-                           
-                        } 
-                    }
-                    */
-                }
-
-                if(!vvOK)
-                {
-                    /*
-                    if(dayColor == 'green' || dayColor == 'yellow' || dayColor == 'blue')
-                    {
-                        {
-                            if(man._distByDayDic.hasOwnProperty(day._number))
-                            {
-                                //-- угол для удаленщиков
-                                leftX = W - distW + radius
-                                rightX = W;
-                                topY = 0;              
-                                botY = headerH - radius;
-    
-                               man._stukOff = true;
-                            }
-                            else
-                            {
-                                man._stukOff = false;
-
-                                //-- если ему на удаленку завтра
-                                if(man._distByDayDic.hasOwnProperty(day._number + 1)
-                                //||man._distByDayDic.hasOwnProperty(day._number + 2)
-                                //||man._distByDayDic.hasOwnProperty(day._number + 3)
-                                )
-                                {
-                                    if(man.x < W-W/4)
-                                    {
-                                        man.vx = 10;
-                                        man.vy = -2;
-                                    }
-
-                                    else{
-                                        man.vx = 1;
-                                        man.vy = -10;
-                                    }
-
-                                    man._stukOff = true;
-
-                                    man._vxSetted = true;
-                                }
-                            }
-                        }
-    
-                    }
-                    */
-                }
-
-            }
-
-
-
-
-
             
             //-- рабочая область
             
@@ -438,71 +257,79 @@ export class DrawHelper
 
             if(!vvOK) //-- угол больница
             {
-                if(man._bolnicaDayDic.hasOwnProperty(day._number))
+                if(!man._distByDayDic.hasOwnProperty(day._number))
                 {
-                    //-- угол больница
-
-                    leftX = 0
-                    rightX = bolW - radius2;
-                    topY = 0;              
-                    botY = headerH - radius2; 
-
-                    if(!man._bolnicaDayDic.hasOwnProperty(day._number - 1))
+                    //-- только для тех кто НЕ дома
+                    
+                    if(man._bolnicaDayDic.hasOwnProperty(day._number))
                     {
-                        //-- первый день в больнице
-                        man.vx = -1 * (0 + Math.random() * 10);
-                        man.vy = -1 * (0 + Math.random() * 10);
-                        man._stukOff = true;      
-                        changeVX = true;   
-                        otskokOff = false;          
-                    }
-                    else{
-                        if(!man._bolnicaDayDic.hasOwnProperty(day._number + 1))
+                        //-- угол больница
+
+                        leftX = 0
+                        rightX = bolW - radius2;
+                        topY = 0;              
+                        botY = headerH - radius2; 
+
+                        if(!man._bolnicaDayDic.hasOwnProperty(day._number - 1))
                         {
-                            //-- если завтра на свободу
-                            man.vx = 2;
-                            man.vy = 2; 
-                            man._stukOff = true;
+                            //-- первый день в больнице
+                            man.vx = -1 * (0 + Math.random() * 10);
+                            man.vy = -1 * (0 + Math.random() * 10);
+                            man._stukOff = true;      
+                            changeVX = true;   
+                            otskokOff = false;          
                         }
                         else{
-                            changeVX = false;
+                            if(!man._bolnicaDayDic.hasOwnProperty(day._number + 1))
+                            {
+                                //-- если завтра на свободу
+                                man.vx = 2;
+                                man.vy = 2; 
+                                man._stukOff = true;
+                            }
+                            else{
+                                changeVX = false;
+                            }
                         }
-                    }
-                    vvOK = true;
-                }    
-                else
-                {
-                    if(man._bolnicaDayDic.hasOwnProperty(day._number + 1))
-                    {
-                        //-- если в больницу завтра
-                        if(man.x > rightX - rightX/3)
-                        {
-                            man.vx = -10;
-                            man.vy = -1 ;
-                        }
-                        else if(man.x > rightX/3)
-                        {
-                            man.vx = -10;
-                            man.vy = -2 ;
-                        }
-                        else if(man.x < rightX/6)
-                        {
-                            man.vx = -2;
-                            man.vy = -10 ;
-                            man._vxSetted = true;
-                        }
-                        else
-                        {
-                            man.vx = -10;
-                            man.vy = -10;
-                        }
-    
-        
-                        man._stukOff = true;                
-                        otskokOff = true;
                         vvOK = true;
-                    }
-                }            
+                    }    
+                    else
+                    {
+                        if(man._bolnicaDayDic.hasOwnProperty(day._number + 1)
+                        && (!man._testByDayDic.hasOwnProperty(day._number + 1)))                  
+                        {
+                            //-- если в больницу завтра
+                            //-- и если он не Дома 
+                            if(man.x > rightX - rightX/3)
+                            {
+                                man.vx = -10;
+                                man.vy = -1 ;
+                            }
+                            else if(man.x > rightX/3)
+                            {
+                                man.vx = -10;
+                                man.vy = -2 ;
+                            }
+                            else if(man.x < rightX/6)
+                            {
+                                man.vx = -2;
+                                man.vy = -10 ;
+                                man._vxSetted = true;
+                            }
+                            else
+                            {
+                                man.vx = -10;
+                                man.vy = -10;
+                            }
+        
+            
+                            man._stukOff = true;                
+                            otskokOff = true;
+                            vvOK = true;
+                        }
+                    }                     
+                }
+           
             }
         
             
@@ -519,25 +346,29 @@ export class DrawHelper
                     if(!man._distByDayDic.hasOwnProperty(day._number - 1))
                     {
                         //-- первый день дома
-
+                        //man.vx =  man.vx + ( Math.random());
+                        //man.vy = man.vy - (1 + Math.random());
                         man._stukOff = true;      
                         otskokOff = false;
-                        changeVX = true;     
-             
+                        changeVX = true;                 
                     }
                     else
                     {
-                        if(!man._distByDayDic.hasOwnProperty(day._number + 1))
+                        if(!man._distByDayDic.hasOwnProperty(day._number + 1)
+                       // && man._testByDayDic.hasOwnProperty(day._number)
+                        )
                         {
-                            //-- завтра на работу или в больницу
-                            if(dayColor == 'green')
+                            //-- завтра на работу 
+
+
+                            if(dayColor == 'red')
                             {
                                 man.vx = -Math.abs(man.vx);
-                                man.vy = Math.abs(man.vy);
+                                man.vy = 10;
                             }
                             else{
                                 man.vx = -Math.abs(man.vx);
-                                man.vy = 0;
+                                man.vy = Math.abs(man.vy);
                             }
  
                             man._stukOff = true;
@@ -555,13 +386,12 @@ export class DrawHelper
                     //-- если завтра на удаленку
                     if(man.x < W-W/4)
                     {
-                        man.vx = 10;
-                        man.vy = -2;
+                        man.vx = 10* (Math.random());
+                        man.vy = -2* (Math.random());
                     }
-
                     else{
-                        man.vx = 10;
-                        man.vy = -10;
+                        man.vx = 9 * (Math.random());
+                        man.vy = -10 * Math.random();
                     }
                     otskokOff = false
                     man._stukOff = false;
@@ -573,11 +403,6 @@ export class DrawHelper
                 }
             }
 
-
-            if(!vvOK)  //-- 
-            {
-
-            }
 
             if(dayColor == 'blue')
             {

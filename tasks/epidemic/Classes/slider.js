@@ -247,6 +247,7 @@ function slider_redraw()
 					//-- основная линия стратегии
 					{
 						ctx.beginPath();
+						ctx.globalAlpha = 1;
 						ctx.lineWidth = 5;
 
 						if(str._id == selectedId)

@@ -73,12 +73,19 @@ export class StrategyHelper
         return result;
     }
 
-    static getDistManCount(strategy, greenCount, yellowCount)
+    static getDistManCount(strategy, greenCount, yellowCount, redCount)
     {
         if(strategy == null) return 0;
 
-        let manCount = greenCount + yellowCount;
+        let manCount = greenCount + yellowCount + redCount;
         return  Math.trunc(manCount/100 *  strategy._distPercent);
+    }
+
+    static getTestColorCount(strategy, manCount)
+    {
+        if(strategy == null) return 0;
+
+        return Math.trunc(manCount * strategy._testPercent/100);
     }
 
     static getTestManCount(strategy, greenRabCount, yellowRabCount, redRabCount)

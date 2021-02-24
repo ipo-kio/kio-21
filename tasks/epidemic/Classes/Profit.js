@@ -12,7 +12,7 @@ export class Profit
         //--  Gz, Rz, Yz - количество шариков разного цвета в данный день.
 
         let Gz = greenCount
-        let Rz = blueCount
+        let Bz = blueCount
         let Yz = yellowCount;
         let f = 0;
         if(strategy  && strategy._maskKoef > 0) 
@@ -26,9 +26,22 @@ export class Profit
             t = strategy._testPercent/100;
         }
 
-        let kT = Config._kT;  //-- 2
+        let kT = Config._kT;  //-- 2  тестирование
 
-        let result = ( Gz+Rz+Yz )*(1-f/10) - (Gz+Rz+Yz)*t*kT
+        let GBZ = Gz+Bz+Yz - realDistForDayCount/2;  //-- дома вдвое меньше производительность
+
+        let result;
+
+        if(kT == 0)
+        {
+            result = (GBZ)*(1-f/10) 
+        }
+        else{
+            result = (GBZ)*(1-f/10) - (realTestForDayCount) +  realTestForDayCount / kT
+          
+        }
+
+        //let result = (GBZ)*(1-f/10) - (realTestForDayCount) - realTestForDayCount / kT
 
         return result;
         
