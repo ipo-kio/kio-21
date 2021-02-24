@@ -38,7 +38,7 @@ export class PolyLineUtils {
     }
 
     // p1 rotated 90 in positive direction around p1 beginning equals p2
-    static isC4(p1: PolyLine, p2: PolyLine): boolean {
+    static isC4(p1: PolyLine, p2: PolyLine, sign: number): boolean {
         //p1 rotated around p1[0] goes to p2
         let o = p1.point(0);
         let n = p1.size;
@@ -55,7 +55,7 @@ export class PolyLineUtils {
             let dot = v1.dot(v2);
 
             //must hold: dot == 0, v1.len = v2.len, vec < 0
-            if (Math.abs(dot) >= EPS || Math.abs(v1.length2 - v2.length2) >= EPS || vec > 0)
+            if (Math.abs(dot) >= EPS || Math.abs(v1.length2 - v2.length2) >= EPS || sign * vec > 0)
                 return false;
         }
 

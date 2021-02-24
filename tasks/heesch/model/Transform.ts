@@ -84,11 +84,17 @@ export function R2(center: Point) {
     );
 }
 
-export function R4(center: Point) {
-    return new Transform(
-        0, -1, center.x + center.y,
-        1, 0, center.y - center.x,
-    ); //2, 1
+export function R4(center: Point, sign: number) {
+    if (sign > 0)
+        return new Transform(
+            0, -1, center.x + center.y,
+            1, 0, center.y - center.x
+        ); //2, 1
+    else
+        return new Transform(
+            0, 1, center.x - center.y,
+            -1, 0, center.y + center.x
+        ); //2, 1
 }
 
 //s1-e1 transforms by slide symmetry to s2-e2. s1 goes to s2, direction s1-e1 goes to s2-e2

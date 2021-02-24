@@ -90,7 +90,7 @@ export const TYPE_CC4C4C4C4 = new PieceType(
     ],
     function tessellate(piece, indexes) {
         let A = piece.point(indexes[2]);
-        let A_rot = R4(A);
+        let A_rot = R4(A, piece.sign);
 
         let E = piece.point(indexes[0]);
         let B = piece.point(indexes[1]);
@@ -368,7 +368,7 @@ export const TYPE_LLC4C4 = new PieceType(
         if (type !== "square")
             return null;
 
-        let rot = R4(D);
+        let rot = R4(D, piece.sign);
         let mirror_left = S(A, B);
 
         let piece1 = rot.applyToPiece(piece);
@@ -583,7 +583,7 @@ export const TYPE_LC4C4 = new PieceType(
         let B = piece.point(indexes[1]);
         let C = piece.point(indexes[2]);
 
-        let rot = R4(C);
+        let rot = R4(C, piece.sign);
         let B1 = rot.apply(B);
 
         let piece2 = rot.applyToPiece(piece);

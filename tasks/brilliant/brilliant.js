@@ -39,8 +39,9 @@ export class Brilliant
 	{
 		Brilliant.kioapi = kioapi
 		log('initialize')
-		this.initInterface(domNode, preferred_width)
 
+		domNode.style.position = "relative";
+		this.initInterface(domNode, preferred_width)
 	}
 
 	parameters () {

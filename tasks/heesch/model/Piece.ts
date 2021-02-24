@@ -29,6 +29,7 @@ export class Piece {
     readonly orientation: [Point, Point];
     private invariants_matrix: Invariants[][];
     private full_length: number;
+    readonly sign: number; //+-1
 
     constructor(points: Point[], orientation: [Point, Point] = DEFAULT_ORIENTATION) {
         this.points = points;
@@ -40,6 +41,7 @@ export class Piece {
             console.log('ERROR', o1.toString(), o2.toString());
 
         this.evaluate_invariants();
+        this.sign = this.evaluate_sign();
     }
 
     get size(): int {
@@ -216,7 +218,7 @@ export class Piece {
                                     continue;
                                 break;
                             case 'C4':
-                                if (!PolyLineUtils.isC4(previous_polyline.revert(), current_polyline))
+                                if (!PolyLineUtils.isC4(previous_polyline.revert(), current_polyline, this.sign))
                                     continue;
                                 break;
                         }
@@ -310,5 +312,19 @@ export class Piece {
         }
 
         this.full_length = this.invariants_matrix[0][n - 1][1] + this.points[n - 1].dist(this.points[0]);
+    }
+
+    private evaluate_sign(): number {
+        let sq = 0;
+        for (let i = 0; i < this.points.length; i++) {
+            let j = i == 0 ? this.points.length -1 : i - 1;
+            sq += this.points[j].vec(this.points[i]);
+        }
+        if (Math.abs(sq) < EPS)
+            return 0;
+        else if (sq > 0)
+            return 1;
+        else
+            return -1;
     }
 }
