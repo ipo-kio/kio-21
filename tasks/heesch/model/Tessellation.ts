@@ -1,19 +1,22 @@
 import {EPS, Piece} from "./Piece";
 import {Point} from "./Point";
 import {T} from "./Transform";
+import {PieceType} from "./PieceType";
 
 export class Tessellation {
     T1: Point;
     T2: Point;
     pieces: Piece[];
-    grid_type: number[];
+    grid_type: string;
+    piece_type: PieceType;
     indexes: number[];
 
-    constructor(T1: Point, T2: Point, pieces: Piece[], indexes: number[]) {
+    constructor(T1: Point, T2: Point, pieces: Piece[], piece_type: PieceType, indexes: number[]) {
         this.T1 = T1;
         this.T2 = T2;
         this.pieces = pieces;
-        this.grid_type = this.evaluate_grid_type();
+        this.grid_type = this.evaluate_grid_type().join('');
+        this.piece_type = piece_type;
         this.indexes = indexes.slice();
     }
 

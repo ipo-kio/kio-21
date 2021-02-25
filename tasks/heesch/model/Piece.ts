@@ -338,4 +338,8 @@ export class Piece {
         else
             return -1;
     }
+
+    // find_axis_of_symmetry(): Point | null {
+    //
+    // }
 }

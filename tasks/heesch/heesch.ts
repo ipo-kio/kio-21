@@ -5,7 +5,6 @@ import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {compareTessellations, Tessellation, tessellationIsTranslateblyEquivalent} from "./model/Tessellation";
-import {PieceType} from "./model/PieceType";
 
 export class Heesch {
     private settings: KioTaskSettings;
@@ -233,12 +232,15 @@ export class Heesch {
         let x0 = w / 2;
         let y0 = h / 2;
         let dog = this.draw_orientation ? this.kioapi.getResource('dog') as HTMLImageElement : null;
-        let tessellationView = new TessellationView(dog, this.tessellations[selectedIndex], x0, y0, w, h, 10);
+
+        let tessellation = this.tessellations[selectedIndex];
+
+        let tessellationView = new TessellationView(dog, tessellation, x0, y0, w, h, 10);
         tessellationView.draw(this.tessellation_ctx, 'black');
 
-        let p = this.tessellations[selectedIndex].pieces[0];
-        let i = this.tessellations[selectedIndex].indexes;
-        console.log("selecting tessellation");
+        let p = tessellation.pieces[0];
+        let i = tessellation.indexes;
+        console.log("selecting tessellation " + tessellation.piece_type.name + " " + tessellation.grid_type);
         for (let ii of i)
             console.log(p.point(ii).toString());
     }
@@ -271,7 +273,7 @@ export class Heesch {
             return;
         }
 
-        let tessellations_groups: [Tessellation, PieceType][][] = [];
+        let tessellations_groups: Tessellation[][] = [];
 
         piece.searchForType((pt, ind) => {
             let tessellation = pt.tessellate(piece, ind);
@@ -280,48 +282,57 @@ export class Heesch {
 
             let was_added = false;
             for (let tessellations_group of tessellations_groups) {
-                let [first_tessellation] = tessellations_group[0];
-                if (!tessellationIsTranslateblyEquivalent(tessellation, first_tessellation, this.need_take_care_of_orientation))
+                let first_tessellation = tessellations_group[0];
+
+                let grids_are_similar = first_tessellation.grid_type == tessellation.grid_type;
+                let tessellations_are_similar =
+                    tessellationIsTranslateblyEquivalent(
+                        tessellation,
+                        first_tessellation,
+                        this.need_take_care_of_orientation
+                    ) && grids_are_similar;
+
+                if (!tessellations_are_similar)
                     continue;
                 // either add tesselation or don't add if there is the same one
                 was_added = true;
                 if (tessellations_group.length > 20)
                     break;
-                for (let [tessellation_in_the_group] of tessellations_group)
+                for (let tessellation_in_the_group of tessellations_group)
                     if (compareTessellations(tessellation_in_the_group, tessellation, this.need_take_care_of_orientation))
                         return;
-                tessellations_group.push([tessellation, pt]);
+                tessellations_group.push(tessellation);
             }
             if (!was_added) {
-                let tessellations_group: [Tessellation, PieceType][] = [[tessellation, pt]];
+                let tessellations_group: Tessellation[] = [tessellation];
                 tessellations_groups.push(tessellations_group);
             }
         });
 
-        function item_name(tessellation: Tessellation, pt: PieceType) {
-            return pt.name + ' [' + tessellation.grid_type.join('') + ']';
-        }
-
         this.tessellations = [];
         this.tesselationSelect.innerHTML = '';
+        let group_index = 0;
         for (let tessellations_group of tessellations_groups) {
+            group_index++;
             if (tessellations_group.length > 1) {
                 let optgroup = document.createElement("optgroup");
-                optgroup.label = "Похожие";
-                for (let [tessellation, pt] of tessellations_group) {
+                optgroup.label = group_index + " похожие";
+                let index_in_the_group = 0;
+                for (let tessellation of tessellations_group) {
+                    index_in_the_group++;
                     let new_index = -1 + this.tessellations.push(tessellation);
                     let option = document.createElement("option");
                     option.value = "" + new_index;
-                    option.innerText = item_name(tessellation, pt);
+                    option.innerText = group_index + '-' + index_in_the_group;
                     optgroup.append(option);
                     this.tesselationSelect.add(optgroup);
                 }
             } else {
-                let [tessellation, pt] = tessellations_group[0];
+                let tessellation = tessellations_group[0];
                 let new_index = -1 + this.tessellations.push(tessellation);
                 let option = document.createElement("option");
                 option.value = "" + new_index;
-                option.innerText = item_name(tessellation, pt);
+                option.innerText = '' + group_index;
                 this.tesselationSelect.add(option);
             }
         }
