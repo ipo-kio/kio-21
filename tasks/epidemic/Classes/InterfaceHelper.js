@@ -37,6 +37,8 @@ export class InterfaceHelper
     {
         //log('setDay('+dayNumber+') src=' + src);
 
+        document.getElementById('day_cap').innerHTML = dayNumber
+
         if(dayNumber < 1 || dayNumber > Config._dayCount)
         {
             dayNumber = Config._dayCount;

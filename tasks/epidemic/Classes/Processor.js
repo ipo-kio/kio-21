@@ -209,7 +209,7 @@ export class Processor
             //-- определим дистанционщиков
             {
                 //-- количество людей на дистанционке по стратегии в день
-                let distManCount = StrategyHelper.getDistManCount(strategy, greenCount, yellowCount); 
+                let distManCount = StrategyHelper.getDistManCount(strategy, greenCount, yellowCount, redCount); 
                 toDistCnt = distManCount;
 
                 //-- продлеваем дистанционку тем кто на ней
@@ -217,7 +217,13 @@ export class Processor
                 {
                     man = Global._manArr[j];
 
-                    if(toDistCnt > 0 && (man._color == 'green' || man._color == 'yellow'))
+                    if(man._testStrId == strategyId)
+                    {
+                        //-- если он сидит Дома по Тестированию, то пусть сидит дальше
+                        continue;
+                    }
+
+                    if(toDistCnt > 0 && (man._color == 'green' || man._color == 'yellow' || man._color == 'red'))
                     {                      
                         if(man._distStrId == strategyId)
                         {
@@ -267,68 +273,39 @@ export class Processor
 
             //-- отправляем в больницу
             {
-                //--количество мест в больнице сделать ограниченным и оставлять больного в рабочем поле для заражения других, 
-                //--но не учитывать его как производителя.
-
-                for(let j=0; j < Global._manArr.length; j++)
-                {
-                    man = Global._manArr[j];
-
-                    if(man._color == 'red')
-                    {
-                        //-- если он уже в больнице то оставим его там
-                        if(man._bolnicaDayDic.hasOwnProperty(dayNumber-1))
-                        {
-                            if(bolnicaCount > 0)
-                            {
-                                //-- отправляем
-                                man._bolnicaDayDic[dayNumber] = 1;
-                                bolnicaFillCount++;
-                                bolnicaCount--;
-
-                                if(bolnicaCount == 0)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                
-                }
-
-                if(bolnicaCount > 0)
+                //if(bolnicaCount > 0)
                 {
                     //- заполняем новыми
                     for(let j=0; j < Global._manArr.length; j++)
                     {
                         man = Global._manArr[j];
 
-                        if(man._color == 'red' && !man._bolnicaDayDic.hasOwnProperty(dayNumber))
+                        if(man._color != 'red') continue;
+
+                        if(man._testStrId == strategyId && strategyId != 0) continue;  //-- пропустим тех кто Дома
+                        if(man._distStrId == strategyId && strategyId != 0) continue;  //-- пропустим тех кто Дома
+                        if(man._bolnicaDayDic.hasOwnProperty(dayNumber-1)) 
                         {
-                            if(man._firstRedDay == dayNumber)
+                            //-- он уже в больнице
+                            //-- продлеваем
+                            man._bolnicaDayDic[dayNumber] = 1;
+                            bolnicaFillCount++;
+                            bolnicaCount--;
+
+                            continue;  
+                        }
+
+                   
+                        {
+                            if(man._firstRedDay == dayNumber
+                                || man._distByDayDic.hasOwnProperty(dayNumber - 1))
                             {
-                                //-- если он на Дистанте то сразу в больницу
-                                if(man._distStrId == strategyId)
-                                {
-                                    if(bolnicaCount > 0)
-                                    {
-                                        //-- отправляем
-                                        man._bolnicaDayDic[dayNumber] = 1;
-                                        bolnicaFillCount++;
-                                        bolnicaCount--;
-    
-                                        if(bolnicaCount == 0)
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
                                 //-- первый день еще гуляет
+                                //-- либо только вышел из Дома
                             }
                             else
                             {
-                                if(bolnicaCount > 0)
+                                //if(bolnicaCount > 0)
                                 {
                                     //-- отправляем
                                     man._bolnicaDayDic[dayNumber] = 1;
@@ -337,7 +314,7 @@ export class Processor
 
                                     if(bolnicaCount == 0)
                                     {
-                                        break;
+                                        //break;
                                     }
                                 }
                             }
@@ -381,13 +358,16 @@ export class Processor
                         else{
                             toDistForDay++
                         }
+
                     }
                     else if(man._color == 'yellow')
                     {
                         yellowCount++;
 
-                        if(!man._distByDayDic.hasOwnProperty(dayNumber))
+                        if(!man._distByDayDic.hasOwnProperty(dayNumber)
+                        && (man._testStrId != strategyId || man._testStrId == 0))
                         {
+                            //-- если не Дома и не дома по Тестированию
                             yellowRabCount++;
                         }
                         else{
@@ -397,10 +377,20 @@ export class Processor
                     else if(man._color == 'red')
                     {
                         redCount++;
+
                         if(!man._bolnicaDayDic.hasOwnProperty(dayNumber))
                         {
-                            redRabCount++;
+                            if(man._testStrId != strategyId || strategyId == 0)
+                            {
+                                if(man._distStrId != strategyId || strategyId == 0)
+                                {
+                                    //-- если не в Больнице и не дома по Тестированию
+                                    redRabCount++;
+                                }
+                            }
                         }
+
+ 
                     }
                     else if(man._color == 'blue')
                     {
@@ -412,61 +402,70 @@ export class Processor
             }
 
             //-- тестирование
+            //-- берем процент для каждого цвета
+   
+            if(strategy && strategy._testPercent > 0)
             {
-                //-- количество тестируемых в этот день по стратегии
-                let testManCnt = StrategyHelper.getTestManCount(strategy, greenRabCount, yellowRabCount, redRabCount);  
-                toTestCnt = testManCnt;
+                let testGreenCount = StrategyHelper.getTestColorCount(strategy, greenRabCount);
+                let testYellowCount = StrategyHelper.getTestColorCount(strategy, yellowRabCount);
+                let testRedCount = StrategyHelper.getTestColorCount(strategy, redRabCount);
 
-                //-- продилим тестирование тех кто уже там
-                for(let j=0; j < Global._manArr.length; j++)
-                {
-                    man = Global._manArr[j];
+                //log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
 
-                    if(toTestCnt > 0  && (man._color != 'blue'))
-                    {
-                        if(man._testStrId == strategyId)
-                        {
-                            man._testByDayDic[dayNumber] = 1;
-                            toTestCnt--;                           
-                        }
-                    }
-                    else
-                    {
-                        //-- мест на тестировнии больше нет
-                        man._testStrId = 0;
-                    }
-
-                }
-
-                //-- отправляем на тестирование
-                if(toTestCnt > 0)
+                //if(testGreenCount + testYellowCount + testRedCount > 0)
                 {
                     for(let j=0; j < Global._manArr.length; j++)
                     {
                         man = Global._manArr[j];
+                        if(man._color == 'blue') continue;
 
-                        if(man._distStrId != strategyId && (man._color != 'blue'))
+                        if(man._testStrId == strategyId && strategyId > 0)
                         {
-                            //-- и если он не Дома и если не в больнице
-                            if(man._distStrId != strategyId
-                                && !man._bolnicaDayDic.hasOwnProperty(dayNumber))
+                            //-- он уже на тастировании (желтый или красный)
+                            //-- продилм ему сидение Дома, но он уже не в тестировании
+                            man._testByDayDic[dayNumber] = 1;
+                            man._distByDayDic[dayNumber] = 1;
+                        }
+
+                        if(
+                            !man._distByDayDic.hasOwnProperty(dayNumber)
+                            && !man._bolnicaDayDic.hasOwnProperty(dayNumber))
+                        {
+                            //-- если не Дома и не в больнице
+
+                            if(man._color == 'green' && testGreenCount > 0)
                             {
-                                toTestCnt--;
-                                man._distStrId = strategyId;
-                                man._testByDayDic[dayNumber] = 1;                              
+                                man._testByDayDic[dayNumber] = 1;
+                                testGreenCount--;
+                                toTestForDay++;
                             }
-
+                            else if(man._color == 'yellow' && testYellowCount > 0)
+                            {
+                                //-- отправляем Домой
+                                man._testByDayDic[dayNumber] = 1;
+                                man._distByDayDic[dayNumber] = 1;
+                                testYellowCount--
+                                yellowRabCount--;
+                                man._testStrId = strategyId;
+                                toTestForDay++;
+                            }
+                            else if(man._color == 'red' && testRedCount > 0)
+                            {
+                                //-- отправляем Домой
+                                man._testByDayDic[dayNumber] = 1;
+                                man._distByDayDic[dayNumber] = 1;
+                                testRedCount--
+                                redRabCount--;
+                                man._testStrId = strategyId;
+                                toTestForDay++;
+                            }                            
                         }
-
-                        if(toTestCnt == 0)
-                        {
-                            break;
-                        }
-                    }
+                    }                    
                 }
-            }            
+            }
+         
 
-            //-- TODO PETER - разобраться с тестируемыми. Как они влияют на заражение
+            
 
             //-- процесс заражения для этого дня. Происходит после ежедневного перехода состояний (смена цветов)
             {
@@ -481,7 +480,7 @@ export class Processor
                     zarazByDay = Zaraza.getZarazforDay(greenRabCount, yellowRabCount, redRabCount, blueRabCount, strategy, toDistForDay); 
                     
                     logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=+' + zarazByDay.toFixed(2) 
-                    +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount + '</td><td>D=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
+                    +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
 
                     //--Накапливаем, т.к. количество может быть меньше единицы
                     ySum = ySum + zarazByDay;
@@ -531,9 +530,15 @@ export class Processor
                 day._dayIndex = dayNumber-1;
 
 
-                day._ee = Profit.getProfitForDay(greenCount, yellowCount, redCount, blueCount, strategy, toDistForDay, toTestForDay) ; //- (redCount) --расчет ЭЭ за этот день
+                day._ee = Profit.getProfitForDay(greenCount
+                    , yellowCount
+                    , redCount
+                    , blueCount
+                    , strategy
+                    , toDistForDay
+                    , toTestForDay) ; //- --расчет ЭЭ за этот день
     
-                logStr = logStr + '<tr><td></td><td>E=' + day._ee.toFixed(2) +  '</td><td>G=' + greenCount + '</td><td>Y=' + yellowCount + '</td><td>R=' + redCount + '</td><td>B=' + blueCount  + '</td><td>D=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>';
+                logStr = logStr + '<tr><td></td><td>E=' + day._ee.toFixed(2) +  '</td><td>G=' + greenCount + '</td><td>Y=' + yellowCount + '</td><td>R=' + redCount + '</td><td>B=' + blueCount  + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>';
 
 
                 totalEE = totalEE + day._ee;

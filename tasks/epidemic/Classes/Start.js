@@ -74,7 +74,7 @@ export class Start
 
 			s = s + '<table class="str_t1">\
 			<tr>\
-			<td><span class="str_prop_name">Дистант</span></td>\
+			<td><span class="str_prop_name">Карантин</span></td>\
 			<td>';
 
 			//-- LEVEL SETTINGS
@@ -281,6 +281,12 @@ export class Start
 		{
 			Controller.recalc(); 
 		})
+
+		t = document.createElement('span')
+		t.id = 'day_cap'
+		t.className = 'day_cap'
+		t.innerHTML = '0';
+		div.appendChild(t);
 		//--------------------
 
 		div = document.createElement('div')
