@@ -56,8 +56,8 @@ export class DrawMoving
 			}
 
 			ctx.beginPath();
-			ctx.lineWidth="2";
-			ctx.strokeStyle="red";
+			ctx.lineWidth= 2;
+			ctx.strokeStyle='red';
 			//ctx.strokeRect(x1, y1, Global._storona, Global._storona);
 			ctx.strokeRect(x1, y1, stX, stY);
 			ctx.stroke();
@@ -79,8 +79,8 @@ export class DrawMoving
 				if(canMove)
 				{
 					ctx.beginPath();
-					ctx.lineWidth="2";
-					ctx.strokeStyle="blue";
+					ctx.lineWidth = 2;
+					ctx.strokeStyle='white';
 					//ctx.strokeRect(x1, y1, Global._storona, Global._storona);
 					ctx.strokeRect(x1, y1, stX, stY);
 					ctx.stroke();
