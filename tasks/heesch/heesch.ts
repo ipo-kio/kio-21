@@ -1,5 +1,5 @@
 import './heesch.scss';
-import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
+import {KioApi, KioParameterDescription, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
@@ -136,7 +136,7 @@ export class Heesch {
 
         this.tessellations = [];
         this.tesselationSelect = document.createElement("select");
-        this.tesselationSelect.size = 10;
+        this.tesselationSelect.size = 20;
         this.tesselationSelect.addEventListener("input", (e: any) => this.updateTessellationView());
 
         domNode.classList.add('heesch-task-container');
@@ -175,7 +175,7 @@ export class Heesch {
         ];
     }
 
-    parameters() {
+    parameters(): KioParameterDescription[] {
         return [{
             name: "ok",
             title: "Есть узор",
@@ -298,6 +298,10 @@ export class Heesch {
             }
         });
 
+        function item_name(tessellation: Tessellation, pt: PieceType) {
+            return pt.name + ' [' + tessellation.grid_type.join('') + ']';
+        }
+
         this.tessellations = [];
         this.tesselationSelect.innerHTML = '';
         for (let tessellations_group of tessellations_groups) {
@@ -308,7 +312,7 @@ export class Heesch {
                     let new_index = -1 + this.tessellations.push(tessellation);
                     let option = document.createElement("option");
                     option.value = "" + new_index;
-                    option.innerText = pt.name;
+                    option.innerText = item_name(tessellation, pt);
                     optgroup.append(option);
                     this.tesselationSelect.add(optgroup);
                 }
@@ -317,7 +321,7 @@ export class Heesch {
                 let new_index = -1 + this.tessellations.push(tessellation);
                 let option = document.createElement("option");
                 option.value = "" + new_index;
-                option.innerText = pt.name;
+                option.innerText = item_name(tessellation, pt);
                 this.tesselationSelect.add(option);
             }
         }

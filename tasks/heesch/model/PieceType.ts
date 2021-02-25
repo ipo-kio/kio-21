@@ -45,7 +45,7 @@ export const TYPE_TTTTTT = new PieceType(
         let T1 = piece.point(indexes[5]).sub(piece.point(indexes[1]));
         let T2 = piece.point(indexes[3]).sub(piece.point(indexes[1]));
         let pieces: Piece[] = [piece];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -74,7 +74,7 @@ export const TYPE_TCCTCC = new PieceType(
 
         let T2 = F_M3.sub(D);
         let pieces: Piece[] = [piece, M3_sym.applyToPiece(piece, true)];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -110,7 +110,7 @@ export const TYPE_CC4C4C4C4 = new PieceType(
             pieces.push(rotated_piece);
         }
 
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -140,7 +140,7 @@ export const TYPE_TG1G1TG2G2 = new PieceType(
         let T2 = E.sub(A_g);
 
         let pieces: Piece[] = [piece, g.applyToPiece(piece, true)];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -175,7 +175,7 @@ export const TYPE_TG1G2TG2G1 = new PieceType(
 
         let T2 = D_g.sub(E);
         let pieces: Piece[] = [piece, g.applyToPiece(piece, true)];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -192,7 +192,6 @@ export const TYPE_TCCTGG = new PieceType(
     ],
     function tessellate(piece, indexes) {
         let C = piece.point(indexes[0]);
-        let D = piece.point(indexes[1]);
         let F = piece.point(indexes[2]);
         let A = piece.point(indexes[3]);
         let B = piece.point(indexes[4]);
@@ -218,7 +217,7 @@ export const TYPE_TCCTGG = new PieceType(
             g.applyToPiece(piece, true),
             g.applyToPiece(left_piece, true)
         ];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -277,7 +276,7 @@ export const TYPE_CG1CG2G1G2 = new PieceType(
             piece_left,
             M1_rot.applyToPiece(piece_left, true)
         ];
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -304,13 +303,13 @@ export const TYPE_LTGGT = new PieceType(
         let T1 = A.sub(B);
         let T2 = B1.sub(B);
 
-        return {T1, T2,
-            pieces: [
+        return new Tessellation(T1, T2,
+            [
                 piece,
                 g.applyToPiece(piece)
             ],
-            indexes: indexes.slice()
-        };
+            indexes
+        );
     }
 );
 
@@ -345,7 +344,7 @@ export const TYPE_LTCCT = new PieceType(
 
         let T2 = A2.sub(A1);
 
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -389,7 +388,7 @@ export const TYPE_LLC4C4 = new PieceType(
         let T1 = D.sub(A).mul(4);
         let T2 = C.sub(A).mul(2);
 
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -422,10 +421,9 @@ export const TYPE_LLLL = new PieceType(
         let T1 = D.sub(A).mul(2);
         let T2 = B.sub(A).mul(2);
 
-        return {
-            T1, T2, pieces: [piece, piece1, piece2, piece3],
-            indexes: indexes.slice()
-        };
+        return new Tessellation(T1, T2, [piece, piece1, piece2, piece3],
+            indexes
+        );
     }
 );
 
@@ -452,7 +450,7 @@ export const TYPE_LTLT = new PieceType(
         let T1 = B.sub(A);
         let T2 = C.sub(B).mul(2);
 
-        return {T1, T2, pieces, indexes: indexes.slice()};
+        return new Tessellation(T1, T2, pieces, indexes);
     }
 );
 
@@ -488,12 +486,12 @@ export const TYPE_LCLC = new PieceType(
         let B_sym = sym.apply(B);
         let C_rot = R.apply(C);
 
-        return {
-            T1: B.sub(B_sym),
-            T2: B.sub(C_rot),
-            pieces: [piece, piece_up, piece_right, piece_4],
-            indexes: indexes.slice()
-        };
+        return new Tessellation(
+            B.sub(B_sym),
+            B.sub(C_rot),
+            [piece, piece_up, piece_right, piece_4],
+            indexes
+        );
     }
 );
 
@@ -529,7 +527,7 @@ export const TYPE_LGLG = new PieceType(
         let B_sym = sym.apply(B);
         let T2 = B_sym.sub(B);
 
-        return {T1, T2, pieces: [piece, piece2], indexes: indexes.slice()};
+        return new Tessellation(T1, T2, [piece, piece2], indexes);
     }
 );
 
@@ -566,12 +564,12 @@ export const TYPE_LLLC = new PieceType(
         let piece_right = sym.applyToPiece(piece);
         let piece_up_right = sym.applyToPiece(piece_up);
 
-        return {
-            T1: s2.mul(2),
-            T2: s1.add(s3),
-            pieces: [piece, piece_up, piece_right, piece_up_right],
-            indexes: indexes.slice()
-        };
+        return new Tessellation(
+            s2.mul(2),
+            s1.add(s3),
+            [piece, piece_up, piece_right, piece_up_right],
+            indexes
+        );
     }
 );
 
@@ -603,7 +601,7 @@ export const TYPE_LC4C4 = new PieceType(
         for (let p of pieces2)
             pieces3.push(sym2.applyToPiece(p));
 
-        return {T1: C.sub(A).mul(2), T2: C.sub(B).mul(2), pieces: pieces3, indexes: indexes.slice()};
+        return new Tessellation(C.sub(A).mul(2), C.sub(B).mul(2), pieces3, indexes);
     }
 );
 

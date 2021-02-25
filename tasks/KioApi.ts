@@ -11,3 +11,11 @@ export interface KioResourceDescription {
     id: string,
     src: string
 }
+
+export interface KioParameterDescription {
+    name: string,
+    title: string,
+    ordering: 'maximize' | 'minimize',
+    view?(v:number):string,
+    normalize?(v:number):number
+}

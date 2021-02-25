@@ -1,12 +1,45 @@
 import {EPS, Piece} from "./Piece";
 import {Point} from "./Point";
-import {T, Transform} from "./Transform";
+import {T} from "./Transform";
 
-export interface Tessellation {
+export class Tessellation {
     T1: Point;
     T2: Point;
     pieces: Piece[];
+    grid_type: number[];
     indexes: number[];
+
+    constructor(T1: Point, T2: Point, pieces: Piece[], indexes: number[]) {
+        this.T1 = T1;
+        this.T2 = T2;
+        this.pieces = pieces;
+        this.grid_type = this.evaluate_grid_type();
+        this.indexes = indexes.slice();
+    }
+
+    evaluate_grid_type(): number[] {
+        let {x: t1x, y:t1y} = this.T1;
+        let {x: t2x, y:t2y} = this.T2;
+
+        let piece0 = this.pieces[0];
+
+        let grid_type: number[] = [];
+
+        for (let p1 of piece0.points) {
+            let count = 0;
+            for (let piece of this.pieces)
+                for (let p2 of piece.points) {
+                    let tx = p2.x - p1.x;
+                    let ty = p2.y - p1.y;
+                    if (has_integer_coordinates(t1x, t1y, t2x, t2y, tx, ty))
+                        count++;
+                }
+            if (count > 2)
+                grid_type.push(count);
+        }
+
+        return grid_type;
+    }
 }
 
 function has_integer_coordinates(t1x: number, t1y: number, t2x: number, t2y: number, tx: number, ty: number) {
