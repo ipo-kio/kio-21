@@ -349,7 +349,17 @@ export class PieceEditor {
         for (let i = 0; i < this.points.length; i++) {
             let p = this.points[i];
             let [x, y] = this.point2pixel(p);
-            c.fillStyle = i == this.highlightedPoint ? HIGHLIGHTED_VERTEX_COLOR : VERTEX_COLOR;
+
+            //test point is on the edge
+            let p_1 = i == 0 ? this.points[this.points.length - 1] : this.points[i - 1];
+            let p_2 = i == this.points.length - 1 ? this.points[0] : this.points[i + 1];
+            if (Math.abs(p_1.sub(p).vec(p_2.sub(p))) < EPS)
+                c.fillStyle = 'rgba(255, 255, 255, 1)';
+            else
+                c.fillStyle = VERTEX_COLOR;
+            if (i == this.highlightedPoint)
+                c.fillStyle = HIGHLIGHTED_VERTEX_COLOR;
+
             c.beginPath();
             c.arc(x, y, VERTEX_RADIUS, 0, Math.PI * 2);
             c.fill();

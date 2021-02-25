@@ -278,6 +278,22 @@ export class Piece {
         return p;
     }
 
+    point_is_inside_edge(i: number) {
+        let p1 = this.point(i - 1);
+        let p2 = this.point(i);
+        let p3 = this.point(i + 1);
+
+        return Math.abs(p1.sub(p2).vec(p2.sub(p3))) < EPS;
+    }
+
+    get size_without_inner_points(): number {
+        let cnt = 0;
+        for (let i = 0; i < this.size; i++)
+            if (!this.point_is_inside_edge(i))
+                cnt++;
+        return cnt;
+    }
+
     private evaluate_invariants() {
         let n = this.size;
         this.invariants_matrix = new Array<Invariants[]>(n);

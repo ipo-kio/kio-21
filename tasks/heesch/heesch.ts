@@ -175,8 +175,26 @@ export class Heesch {
         ];
     }
 
-    parameters(): KioResourceDescription[] {
-        return [];
+    parameters() {
+        return [{
+            name: "ok",
+            title: "Есть узор",
+            ordering: "maximize",
+            view(v: number): string {
+                if (v == 1)
+                    return "да";
+                else
+                    return "нет";
+            }
+        }, {
+            name: "g",
+            title: "Видов узоров",
+            ordering: 'maximize'
+        }, {
+            name: "v",
+            title: "Вершин",
+            ordering: 'maximize'
+        }];
     }
 
     loadSolution(solution: Solution) {
@@ -235,7 +253,7 @@ export class Heesch {
     private updateTessellationPiece(piece: Piece) {
         let generateError = () => {
             this.has_error = true;
-            this.kioapi.submitResult({});
+            this.kioapi.submitResult({ok: 0, g: 0, v: piece.size_without_inner_points});
             this.updateTessellationView();
         }
 
@@ -316,8 +334,12 @@ export class Heesch {
             );
 */
         this.updateTessellationView();
-        console.log('sign', piece.sign, 'result: ', {groups: tessellations_groups.length, total: this.tessellations.length});
-        this.kioapi.submitResult({groups: tessellations_groups.length, total: this.tessellations.length});
+        let g = tessellations_groups.length;
+        this.kioapi.submitResult({
+            ok: g > 0,
+            g,
+            v: piece.size_without_inner_points
+        });
     }
 }
 

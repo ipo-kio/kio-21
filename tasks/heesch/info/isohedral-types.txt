@@ -90,7 +90,7 @@ IH-42: LTLT (L)
 
 trapeziums:
 IH-49: LCLC (L)
-IH-45: LGLG (L)
+IH-45: LGLG (L) // G must not be parallel to G
 IH-54: LLLC (L) //seems to be a variant of LCLC if it is not a trapezoid
 
 right-angled:

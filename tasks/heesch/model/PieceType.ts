@@ -517,6 +517,11 @@ export const TYPE_LGLG = new PieceType(
         let v2 = C.sub(D);
         if (Math.abs(v1.vec(v2)) >= EPS)
             return null;
+        //test BC not || CD
+        let w1 = C.sub(B);
+        let w2 = D.sub(A);
+        if (Math.abs(w1.vec(w2)) < EPS)
+            return null;
 
         let sym = S(C, D);
         let piece2 = sym.applyToPiece(piece);
