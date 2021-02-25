@@ -48,6 +48,16 @@ export class Brilliant
 		this.initInterface(domNode, preferred_width)
 	}
 
+	static preloadManifest ()
+	{
+		return [
+			{ id: 'background', src: 'brilliant-resources/background.png' },
+			{ id: 'block_big_0', src: 'brilliant-resources/Gem_40_80_dark.png' },
+			{ id: 'block_small_0', src: 'brilliant-resources/Gem_20_40_light.png' },
+		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
+
+	}	
+
 	parameters () {
 
 		log('parameters ()')

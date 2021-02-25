@@ -19,7 +19,18 @@ export class DrawHelper
 		Brilliant._stageTop.removeAllEventListeners();
 		Brilliant._stageTop.removeAllChildren();
 
+		Brilliant._stageBot.removeAllEventListeners();
+		Brilliant._stageBot.removeAllChildren();
 
+		let fff = new createjs.Shape()
+		fff.x = 0;
+		fff.y = 0;
+		fff.graphics.beginFill('#1f2a60');
+		fff.alpha = 0.5
+		fff.graphics.drawRect(0, 0, Global._W, Global._H)	
+		fff.graphics.endFill();
+		
+		Brilliant._stageBot.addChild(fff);
 
 		{
 			Brilliant._stageTop.on("stagemousemove", function(evt)
@@ -31,6 +42,21 @@ export class DrawHelper
 				DrawHelper._stageY = evt.stageY;
 
 				let target = Brilliant._stageTop.getObjectUnderPoint(evt.stageX, evt.stageY);
+				//let arr = Brilliant._stageTop.getObjectsUnderPoint(evt.stageX, evt.stageY);
+
+				/*
+				for(let i=0; i < arr.length; i++)
+				{
+					if(typeof arr[i] === 'object' && arr[i] !== null 
+					&& (arr[i].hasOwnProperty('id'))
+					)
+					{
+						//log(arr[i])
+						DrawHelper.onMouseMove(arr[i]);
+						break;
+					}
+				}
+				*/
 
 				DrawHelper.onMouseMove(target);
 			})
@@ -124,17 +150,17 @@ export class DrawHelper
 			kvShape.x = 0;
 			kvShape.y = 0;
 
-			Brilliant._stageTop.addChild(kvShape);
+			Brilliant._stageBot.addChild(kvShape);
 			
 			//kvShape.graphics.beginFill('lightpinck');
 			//kvShape.graphics.drawRect(0, 0, Global._canvasSuperTop.width, Global._canvasSuperTop.height);
 			//kvShape.graphics.endFill();
 			
-
-			kvShape.graphics.setStrokeStyle(1);
-			kvShape.graphics.beginStroke("red");
+			
+			kvShape.graphics.setStrokeStyle(2);
+			kvShape.graphics.beginStroke("#ffffff");
 			kvShape.graphics.beginFill('lightpink');
-		
+			kvShape.alpha = 0.5
 
 			for(i = 0; i < Global._klentkiCountX; i++)
 			{
@@ -154,15 +180,7 @@ export class DrawHelper
 
 						}
 					}
-					/*
-					x = storona * i;
-					y = storona * j;
-					kvShape.graphics.moveTo(x, y);
-					kvShape.graphics.lineTo(x + storona, y);
-					kvShape.graphics.lineTo(x + storona, y - storona );
-					kvShape.graphics.lineTo(x , y - storona );
-					kvShape.graphics.lineTo(x, y );			
-					*/		
+	
 				}
 			}
 
@@ -184,18 +202,19 @@ export class DrawHelper
 				selBlocks.push(block);
 			}
 			else{
-				DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona);
+				DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona, Brilliant._stageBot);
 			}
 		}
 
 		for(i=0; i < selBlocks.length; i++)
 		{
 			block = selBlocks[i];
-			DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona);
+			DrawHelper.drawBlock2(block, Brilliant._stageTop, true, Global._storona, Brilliant._stageBot);
 
 			//log(block)
 		}
 
+		Brilliant._stageBot.update();
 		Brilliant._stageTop.update();
 
 		//-- отрисовка шагов
@@ -206,11 +225,11 @@ export class DrawHelper
 
 			if(StepHelper._stepArr.length > 1)
 			{
-				let delDiv  = document.createElement('div');
-				delDiv.innerHTML = '&#8810;';
+				let delDiv  = document.createElement('button');
+				delDiv.innerHTML = '&#8810;'; //;
 				delDiv.setAttribute('title', 'Шаг назад');
-				delDiv.className = 'step_div';
-				delDiv.style.backgroundColor = 'lightpink'
+				delDiv.className = 'step_div_back';
+				//delDiv.style.backgroundColor = 'lightpink'
 
 				delDiv.addEventListener('click', function (evt) {
 					Global.delLastStep();
@@ -240,7 +259,7 @@ export class DrawHelper
 
 				if(step._stepType == 1)
 				{
-					stepDiv.innerHTML = '<span style="color: yellow;">' + i + '</span>';
+					//stepDiv.innerHTML = '<span style="color: yellow;">' + i + '</span>';
 				}
 
 
@@ -311,17 +330,41 @@ export class DrawHelper
 		}
 	}
 
-	static drawBlock2(block, stage, addEvent, storona)
+	static drawBlock2(block, stage, addEvent, storona, stageBot)
 	{
 		//log('drawBlock2() - id=' + block._id)
 		let  blockShape2
 		let x = (block._X1 * storona);
 		let y = (block._Y1 * storona);
+		let b1;
+		let hit
+		let img2;
 
 
-		//-- длина сторон
-		//let xLen = (block._X2 - block._X1 + 1) * Global._storona;
-		//let yLen = (block._Y2 - block._Y1 + 1) * Global._storona;
+		var bitmap;
+
+		if(addEvent)
+		{
+			img2 = Brilliant.kioapi.getResource('block_big_0');
+		}
+		else{
+			img2 = Brilliant.kioapi.getResource('block_small_0');
+		}
+
+		bitmap = new createjs.Bitmap(img2);
+		bitmap.x = x;
+		bitmap.y = y
+
+		if(block._VH == 'H')
+		{
+			bitmap.rotation = 90;
+			bitmap.x = x + storona*2
+		}
+
+
+
+		stageBot.addChild(bitmap);
+
 
 		block._part1ShapeId = block._kvadr1._id;
 		block._part2ShapeId = block._kvadr2._id;
@@ -338,20 +381,29 @@ export class DrawHelper
 			blockShape2._VH = block._VH;
 			blockShape2.x = x;
 			blockShape2.y = y;
-			blockShape2.graphics.beginFill('white');
+			//blockShape2.graphics.beginFill('red');
 
 			if(block._VH == 'V')
 			{
 				blockShape2.graphics.drawRect(0, 0, storona/2, storona * 2);
 				blockShape2._pos = 'L';  //-- левая половинка вертикального блока
+
+				hit = new createjs.Shape();
+				hit.graphics.beginFill("#000").rect(0, 0, storona/2, storona * 2);
+				blockShape2.hitArea = hit;
 			}
 			else
 			{
 				blockShape2.graphics.drawRect(0, 0, storona * 2, storona/2);
 				blockShape2._pos = 'T';  //-- верхняя половинка горизонтального блока
+
+				hit = new createjs.Shape();
+				hit.graphics.beginFill("#000").rect(0, 0, storona * 2, storona/2);
+				blockShape2.hitArea = hit;
 			}
 
-			blockShape2.graphics.endFill();
+			//blockShape2.graphics.endFill();
+
 
 			//-- контур 1
 
@@ -362,6 +414,8 @@ export class DrawHelper
 			else{
 				DrawHelper.drawKontur12( blockShape2,  'black', 1, storona);
 			}
+
+
 
 			if(addEvent)
 			blockShape2.on('click', function (event)
@@ -381,10 +435,15 @@ export class DrawHelper
 				Global.onMouseDown(event.target);
 			})
 
+			b1 = blockShape2;
 
 			stage.addChild(blockShape2);
 
+
+
 		}
+
+
 
 
 		//-- вторая половинка блока
@@ -396,7 +455,7 @@ export class DrawHelper
 			blockShape2._VH = block._VH;
 			blockShape2._blockId = block._id;
 
-			blockShape2.graphics.beginFill('white');
+			//blockShape2.graphics.beginFill('white');
 
 
 
@@ -406,6 +465,9 @@ export class DrawHelper
 				blockShape2.y = y;
 				blockShape2.graphics.drawRect(0, 0, storona/2, storona * 2);
 				blockShape2._pos = 'R';  //-- правая половинка вертикального блока
+				hit = new createjs.Shape();
+				hit.graphics.beginFill("#000").rect(0, 0, storona/2, storona * 2);
+				blockShape2.hitArea = hit;
 			}
 			else
 			{
@@ -413,12 +475,15 @@ export class DrawHelper
 				blockShape2.y = y + storona/2;
 				blockShape2.graphics.drawRect(0, 0, storona * 2, storona/2);
 				blockShape2._pos = 'B';  //-- нижняя половинка горизонтального блока
+				hit = new createjs.Shape();
+				hit.graphics.beginFill("#000").rect(0, 0, storona * 2, storona/2);
+				blockShape2.hitArea = hit;
 			}
 
-			blockShape2.graphics.endFill();
+			//blockShape2.graphics.endFill();
 
 			//-- контур 2
-
+			
 			if(block._isSelected && Global._mouseDown == false)
 			{
 				DrawHelper.drawKontur12( blockShape2, 'blue', 4, storona);
@@ -426,6 +491,7 @@ export class DrawHelper
 			else{
 				DrawHelper.drawKontur12( blockShape2,  'black', 1, storona);
 			}
+
 
 			if(addEvent)
 			blockShape2.on('click', function (event)
@@ -444,31 +510,21 @@ export class DrawHelper
 				Global.onMouseDown(event.target);
 			})
 
-
-
 			stage.addChild(blockShape2);
-
 		}
-
-		/*
-		let kondurDic = ConfigHelper._konturDic;
-		if(!kondurDic.hasOwnProperty((block._kvadr2._posX-0) + '-' + (block._kvadr2._posY+1)))
-		{
-			b1.graphics.beginFill('red');
-			b1.graphics.drawRect(0, 0, storona * 2, storona/2);
-			b1.graphics.endFill();
-
-			blockShape2.graphics.beginFill('red');
-			blockShape2.graphics.drawRect(0, 0, storona * 2, storona/2);
-			blockShape2.graphics.endFill();
-		}
-		*/
-
-		//log(Brilliant._stageTop)
 	}
 
 	static drawKontur12(blockShape2,  strokeColor, strokeStyle, storona)
 	{
+		if(strokeColor == 'blue')
+		{
+			strokeColor = '#ffffff';
+			strokeStyle = 3
+		}
+		else{
+			strokeColor = '#1e2b55';
+			strokeStyle = 1
+		}
 		blockShape2.graphics.beginStroke(strokeColor);
 		blockShape2.graphics.setStrokeStyle(strokeStyle);
 
@@ -488,6 +544,7 @@ export class DrawHelper
 				blockShape2.graphics.lineTo(storona * 2, 0);
 				blockShape2.graphics.lineTo(storona * 2, storona /2);
 			}
+
 		}
 		else
 		{
@@ -510,8 +567,6 @@ export class DrawHelper
 			}
 		}
 
-
-
 		blockShape2.graphics.endStroke();
 
 	}
@@ -524,19 +579,32 @@ export class DrawHelper
 		let startData = ConfigHelper.getStartData('drawStepPrev', step._str);
 
 
-
+		Brilliant._stagePrevBot.removeAllChildren();
 		Brilliant._stagePrev.removeAllChildren();
+
+		let fff = new createjs.Shape()
+		fff.x = 0;
+		fff.y = 0;
+		fff.graphics.beginFill('#1f2a60');
+		fff.alpha = 0.7
+		fff.graphics.drawRect(0, 0, Global._wP, Global._hP)	
+		fff.graphics.endFill();
+		
+		Brilliant._stagePrevBot.addChild(fff);
+
+
 
 		for(i = 0; i < startData._blockArr.length; i++)
 		{
 			block = startData._blockArr[i];
 
-			DrawHelper.drawBlock2(block, Brilliant._stagePrev, false, Global._storonaPrev);
+			DrawHelper.drawBlock2(block, Brilliant._stagePrev, false, Global._storonaPrev, Brilliant._stagePrevBot);
 		}
 
+		Brilliant._stagePrevBot.update();
 		Brilliant._stagePrev.update();
 
-		document.getElementById('prevInfoDiv').innerHTML = 'Шаг ' + stepIndex;
+		document.getElementById('prevInfoDiv').innerHTML = 'шаг ' + stepIndex;
 	}
 
 }

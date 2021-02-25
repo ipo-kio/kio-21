@@ -42,6 +42,11 @@ export class Start
 
 		//log('Global._klentkiCount = ' + Global._klentkiCountX + ' ' + Global._klentkiCountY)
 
+		Global._W = w;
+		Global._H = h;
+
+		domNode.style.backgroundImage = 'url("./brilliant-resources/background.png")';
+
 
 		let canvasContDiv = document.createElement('div')
 		canvasContDiv.innerHTML = ''
@@ -50,6 +55,14 @@ export class Start
 		canvasContDiv.style.width = (w) + 'px'
 		canvasContDiv.style.height = (h) + 'px'
 		domNode.appendChild(canvasContDiv)
+
+		let canvasBot = document.createElement('canvas')
+		canvasBot.width = w
+		canvasBot.height = h
+		canvasBot.className = 'canvas_top'
+		canvasBot.id = 'canvas_bot'
+		canvasContDiv.appendChild(canvasBot);
+		Global._canvasBot = canvasBot;
 
 		let canvasTop = document.createElement('canvas')
 		canvasTop.width = w
@@ -111,6 +124,9 @@ export class Start
 			let wP = (startData._maxX + 2) * Global._storonaPrev + Global._storonaPrev + 4;
 			let hP = (startData._maxY + 2) * Global._storonaPrev + Global._storonaPrev + 4;
 
+			Global._wP = wP;
+			Global._hP = hP;
+
 			let canvasContDiv2 = document.createElement('div')
 			canvasContDiv2.innerHTML = ''
 			canvasContDiv2.id = 'canvasContDiv2'
@@ -127,16 +143,28 @@ export class Start
 			canvasPrev.className = 'canvas_prev'
 			canvasContDiv2.appendChild(canvasPrev)
 
+			
+			let canvasPrevBot = document.createElement('canvas')
+			canvasPrevBot.width = wP
+			canvasPrevBot.height = hP
+			canvasPrevBot.className = 'canvas_prev_bot'
+			canvasContDiv2.appendChild(canvasPrevBot)
+
 			let prevInfoDiv = document.createElement('div')
-			prevInfoDiv.innerHTML = ''
-			prevInfoDiv.id = 'prevInfoDiv'
-			prevInfoDiv.className = 'prevInfoDiv'
+			prevInfoDiv.innerHTML = '<div id="prevInfoDiv" class="prevInfoDiv"></div>'
+			prevInfoDiv.id = 'prevInfoDiv1'
+			prevInfoDiv.className = 'prevInfoDiv1'
 			prevDiv.appendChild(prevInfoDiv)
 
+			Brilliant._stagePrevBot = new createjs.Stage(canvasPrevBot)
 			Brilliant._stagePrev = new createjs.Stage(canvasPrev)
+
+			Brilliant._stagePrevBot.nextStage = Brilliant._stagePrev
 		}
 
 		//------------------------------------------------
+
+		Brilliant._stageBot = new createjs.Stage(canvasBot)
 
 		Brilliant._stageTop = new createjs.Stage(canvasTop)
 		Brilliant._stageTop.enableMouseOver(1)
@@ -178,7 +206,10 @@ export class Start
 			DrawMoving.clear();
 		})
 
+		Brilliant._stageTop.nextStage = Brilliant._stageBot;
 		Brilliant._stageSuperTop.nextStage = Brilliant._stageTop;
+		
+		
 
 		//StepHelper.addNewStep(Start._blocksStr, 0, 'start');
 		Start.createNewFromString('start', Start._blocksStr);

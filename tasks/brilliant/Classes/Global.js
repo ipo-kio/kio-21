@@ -48,6 +48,7 @@ export class Global
 			//log(Global._blockDic)
 			//log('pos=' + selectedPartPos + ' firstBlockId=' + firstBlockId)
 			let block1 = Global._blockDic[firstBlockId];
+			//if(!block1) return;
 			let i, block2;
 			let block2Found = false;
 			for(i=0; i < Global._blockArr.length; i++)
