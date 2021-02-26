@@ -106,6 +106,9 @@ export class PieceEditor {
 
     errorEdges: Set<number> = new Set<number>();
 
+    info_points: Point[] = [];
+    info_lines: [Point, Point][] = [];
+
     private _pieceChangeListener: ((newPiece: Piece) => void) | undefined = undefined;
 
     constructor(canvas: HTMLCanvasElement) {
@@ -180,6 +183,7 @@ export class PieceEditor {
             let isTheSameAsNeighbour = thePoint.equals(this.points[prevInd]) || thePoint.equals(this.points[nextInd]);
 
             this.updateErrorEdges();
+            this.clear_info();
             this.redraw();
 
             // draw info about deleting a point
@@ -224,6 +228,7 @@ export class PieceEditor {
             this.highlight(this.getCursorPosition(e));
             this.updateErrorEdges();
 
+            this.clear_info();
             this.redraw();
             this.firePieceChange();
         });
@@ -235,6 +240,7 @@ export class PieceEditor {
         this.highlightedPoint = -1;
         this.highlightedEdge = -1;
         this.updateErrorEdges();
+        this.clear_info();
         this.redraw();
         this.firePieceChange();
     }
@@ -540,5 +546,21 @@ export class PieceEditor {
 
     set pieceChangeListener(value: (newPiece: Piece) => void) {
         this._pieceChangeListener = value;
+    }
+
+    clear_info(): void {
+        this.info_points = [];
+        this.info_lines = [];
+    }
+
+    draw_info_point(p: Point): void {
+        this.info_points.push(p);
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = 'white';
+        this.ctx.arc(this.X0 + GRID_STEP * p.x, this.Y0 - GRID_STEP * p.y, 4, 0, 2 * Math.PI);
+    }
+
+    draw_info_line(p1: Point, p2: Point): void {
+        this.info_lines.push([p1, p2]);
     }
 }

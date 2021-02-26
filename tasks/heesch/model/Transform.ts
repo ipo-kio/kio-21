@@ -1,5 +1,5 @@
 import {Point} from "./Point";
-import {Piece} from "./Piece";
+import {EPS, Piece} from "./Piece";
 
 const ZERO = new Point(0, 0);
 
@@ -74,6 +74,15 @@ export class Transform {
         let p2 = this.apply(p.orientation[1], round);
 
         return new Piece(new_points, [p1.sub(p0), p2.sub(p0)]);
+    }
+
+    equals(other: Transform) {
+        return Math.abs(this.a - other.a) < EPS &&
+            Math.abs(this.b - other.b) < EPS &&
+            Math.abs(this.c - other.c) < EPS &&
+            Math.abs(this.d - other.d) < EPS &&
+            Math.abs(this.e - other.e) < EPS &&
+            Math.abs(this.f - other.f) < EPS;
     }
 }
 

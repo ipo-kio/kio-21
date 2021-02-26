@@ -3,6 +3,7 @@ import {PiecePart} from "./PiecePart";
 import {Point} from "./Point";
 import {ALL_PIECE_TYPES, PieceType} from "./PieceType";
 import {PolyLineUtils} from "./PolyLineUtils";
+import {R2, R4, S, Transform} from "./Transform";
 
 export const EPS = 1e-10;
 
@@ -339,7 +340,62 @@ export class Piece {
             return -1;
     }
 
-    // find_axis_of_symmetry(): Point | null {
-    //
-    // }
+    find_symmetry(): ([typ: "sym", m: Point, n: Point] | [typ: "rot", m: Point])[] {
+        let n = this.points.length;
+        let symmetries: Transform[] = [];
+        let result: ([typ: "sym", m: Point, n: Point] | [typ: "rot", m: Point])[] = [];
+
+        function has_symmetry(sym: Transform): boolean {
+            for (let sym2 of symmetries)
+                if (sym2.equals(sym))
+                    return true;
+            return false;
+        }
+
+        for (let i = 0; i < n; i++) {
+            let {x: x1, y: y1} = this.points[i];
+            for (let j = i + 1; j < n; j++) {
+                let {x: x2, y: y2} = this.points[j];
+
+                if (Math.abs(x1 - x2) + Math.abs(y1 - y2) < EPS)
+                    continue;
+
+                let mx = (x1 + x2) / 2;
+                let my = (y1 + y2) / 2;
+                let nx = mx + (y1 - y2);
+                let ny = my + (x2 - x1);
+
+                let m = new Point(mx, my);
+                let m2 = new Point(nx, ny);
+                let sym = S(m, m2);
+                let rot = R2(m);
+                let sym_piece = sym.applyToPiece(this);
+                let rot_piece = rot.applyToPiece(this);
+
+                let is_symmetry = true;
+                for (let k = 0; k < n; k++)
+                    if (!this.point(i + k).equals(sym_piece.point(j - k))) {
+                        is_symmetry = false;
+                        break;
+                }
+                let is_rotation = true;
+                for (let k = 0; k < n; k++)
+                    if (!this.point(i + k).equals(sym_piece.point(j + k))) {
+                        is_rotation = false;
+                        break;
+                    }
+
+                if (is_symmetry && !has_symmetry(sym)) {
+                    symmetries.push(sym);
+                    result.push(["sym", m, m2]);
+                }
+                if (is_rotation && !has_symmetry(sym)) {
+                    symmetries.push(rot);
+                    result.push(["rot", m]);
+                }
+            }
+        }
+
+        return result;
+    }
 }

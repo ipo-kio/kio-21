@@ -21,6 +21,7 @@ export class Heesch {
     private need_take_care_of_orientation: boolean = false;
     private draw_orientation = true;
     private has_error: boolean = false;
+    private has_symmetries: boolean = false;
 
     /**
      *
@@ -209,8 +210,7 @@ export class Heesch {
         for (let i = 0; i < n; i += 2)
             newPoints.push(new Point(points[i], points[i + 1]));
         this.editor.updatePoints(newPoints);
-
-        console.log('loaded piece', this.editor.piece.toString());
+        this.update_symmetries(this.editor.piece);
     }
 
     private updateTessellationView() {
@@ -355,6 +355,19 @@ export class Heesch {
             g,
             v: piece.size_without_inner_points
         });
+
+        this.update_symmetries(piece);
+    }
+
+    update_symmetries(piece: Piece) {
+        let find_symmetries = piece.find_symmetry();
+        this.has_symmetries = find_symmetries.length > 0;
+        for (let [typ, ...params] of find_symmetries) {
+            if (typ == "rot")
+                this.editor.draw_info_point(params[0]);
+            else if (typ == "sym")
+                this.editor.draw_info_line(params[0], params[1]);
+        }
     }
 }
 
