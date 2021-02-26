@@ -261,5 +261,5 @@ function handleTick(){
 }
 
 function log(s){
-	console.log(s);
+	//console.log(s);
 }
