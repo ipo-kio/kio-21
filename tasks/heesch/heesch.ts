@@ -22,6 +22,7 @@ export class Heesch {
     private draw_orientation = true;
     private has_error: boolean = false;
     private has_symmetries: boolean = false;
+    private maximize_symmetries: boolean = false;
 
     /**
      *
@@ -32,6 +33,7 @@ export class Heesch {
         this.settings = settings;
         this.need_take_care_of_orientation = +settings.level > 0;
         this.draw_orientation = +settings.level > 0;
+        this.maximize_symmetries = +settings.level == 0;
     }
 
     /**
@@ -176,7 +178,7 @@ export class Heesch {
     }
 
     parameters(): KioParameterDescription[] {
-        return [{
+        let ok: KioParameterDescription = {
             name: "ok",
             title: "Есть узор",
             ordering: "maximize",
@@ -186,15 +188,33 @@ export class Heesch {
                 else
                     return "нет";
             }
-        }, {
+        };
+        let g: KioParameterDescription = {
             name: "g",
             title: "Видов узоров",
             ordering: 'maximize'
-        }, {
+        };
+        let v: KioParameterDescription = {
             name: "v",
             title: "Вершин",
             ordering: 'maximize'
-        }];
+        };
+        let s: KioParameterDescription = {
+            name: "s",
+            title: "Симметрии",
+            ordering: this.maximize_symmetries ? "maximize" : "minimize",
+            view(v) {
+                if (v == 1)
+                    return "есть";
+                else
+                    return "нет";
+            }
+        };
+
+        if (this.maximize_symmetries)
+            return [ok, g, v, s];
+        else
+            return [ok, s, g, v];
     }
 
     loadSolution(solution: Solution) {
@@ -255,7 +275,8 @@ export class Heesch {
     private updateTessellationPiece(piece: Piece) {
         let generateError = () => {
             this.has_error = true;
-            this.kioapi.submitResult({ok: 0, g: 0, v: piece.size_without_inner_points});
+            let size = piece == null ? 0 : piece.size_without_inner_points;
+            this.kioapi.submitResult({ok: 0, g: 0, v: size, s: 0});
             this.updateTessellationView();
         }
 
@@ -349,14 +370,15 @@ export class Heesch {
             );
 */
         this.updateTessellationView();
+        this.update_symmetries(piece);
+
         let g = tessellations_groups.length;
         this.kioapi.submitResult({
             ok: g > 0,
             g,
-            v: piece.size_without_inner_points
+            v: piece.size_without_inner_points,
+            s: this.has_symmetries ? 1 : 0
         });
-
-        this.update_symmetries(piece);
     }
 
     update_symmetries(piece: Piece) {
@@ -378,7 +400,7 @@ interface Solution {
 }
 
 // https://medium.com/@griffinmichl/implementing-debounce-in-javascript-eab51a12311e
-function debounce(func: any, wait: number = 500) {
+function debounce(func: any, wait: number = 100) {
     let timeout: any;
     return function(...args: any[]) {
         const context = this;

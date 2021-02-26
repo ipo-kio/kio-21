@@ -210,7 +210,7 @@ export class PieceEditor {
             this.firePieceChange();
         });
 
-        canvas.addEventListener('mouseup', e => {
+        document.addEventListener('mouseup', e => {
             if (this.movingPoint == -1)
                 return;
 
@@ -377,13 +377,34 @@ export class PieceEditor {
     }
 
     drawInfo() {
+
+        let cords = ({x, y}: Point): [number, number] => [this.X0 + GRID_STEP * x, this.Y0 - GRID_STEP * y];
+
         this.ctx.save();
+        this.ctx.strokeStyle = 'white';
+        this.ctx.lineWidth = 2;
+        this.ctx.globalAlpha = 1;
+
+        this.ctx.beginPath();
         for (let p of this.info_points) {
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = 'white';
-            this.ctx.arc(this.X0 + GRID_STEP * p.x, this.Y0 - GRID_STEP * p.y, 4, 0, 2 * Math.PI);
-            this.ctx.stroke();
+            this.ctx.arc(...cords(p), 4, 0, 2 * Math.PI);
         }
+        this.ctx.stroke();
+
+        this.ctx.setLineDash([4, 4]);
+
+        this.ctx.beginPath();
+        for (let [p1, p2] of this.info_lines) {
+            let [x1, y1] = cords(p1);
+            let [x2, y2] = cords(p2);
+            let x0 = x1 - (x2 - x1) * 100;
+            let y0 = y1 - (y2 - y1) * 100;
+            let x3 = x1 + (x2 - x1) * 100;
+            let y3 = y1 + (y2 - y1) * 2;
+            this.ctx.moveTo(x0, y0);
+            this.ctx.lineTo(x3, y3);
+        }
+        this.ctx.stroke();
         this.ctx.restore();
     }
 

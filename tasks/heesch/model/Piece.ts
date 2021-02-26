@@ -379,17 +379,19 @@ export class Piece {
                         break;
                 }
                 let is_rotation = true;
-                for (let k = 0; k < n; k++)
+                for (let k = 0; k < n; k++) {
+                    // if (i == 0 && j == 2)
+                    //     console.log("test_rot", k, this.point(i + k), rot_piece.point(j + k));
                     if (!this.point(i + k).equals(rot_piece.point(j + k))) {
                         is_rotation = false;
                         break;
                     }
-
+                }
                 if (is_symmetry && !has_symmetry(sym)) {
                     symmetries.push(sym);
                     result.push(["sym", m, m2]);
                 }
-                if (is_rotation && !has_symmetry(sym)) {
+                if (is_rotation && !has_symmetry(rot)) {
                     symmetries.push(rot);
                     result.push(["rot", m]);
                 }
