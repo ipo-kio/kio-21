@@ -114,5 +114,5 @@ export class MoveHelper
 
 function log(s)
 {
-	console.log(s);
+	//console.log(s);
 }

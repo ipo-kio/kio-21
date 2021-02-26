@@ -52,8 +52,14 @@ export class Brilliant
 	{
 		return [
 			{ id: 'background', src: 'brilliant-resources/background.png' },
-			{ id: 'block_big_0', src: 'brilliant-resources/Gem_40_80_dark.png' },
+			{ id: 'block_big_0', src: 'brilliant-resources/Gem_40_80_light.png' },
 			{ id: 'block_small_0', src: 'brilliant-resources/Gem_20_40_light.png' },
+			{ id: 'block_big_1', src: 'brilliant-resources/TealGem40_80_dark.png' },
+			{ id: 'block_small_1', src: 'brilliant-resources/TealGem_20_40_dark.png' },
+			{ id: 'block_big_2', src: 'brilliant-resources/YellowGem40_80_light.png' },
+			{ id: 'block_small_2', src: 'brilliant-resources/YellowGem20_40_light.png' },
+			{ id: 'block_big_light_1', src: 'brilliant-resources/TealGem40_80_light.png' },
+			{ id: 'block_small_light_1', src: 'brilliant-resources/TealGem_20_40_light.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 
 	}	
@@ -165,8 +171,6 @@ export class Brilliant
 		
 		if(!Global._appStarted)
 		{
-			log('startData')
-
 			Global._appStarted = true;
 		}
 		

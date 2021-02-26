@@ -377,6 +377,11 @@ export class Global
 	{
 		log('gotoStep() - ' + stepIdx)
 
+		if(stepIdx < 0)
+		{
+			stepIdx = 0;
+		}
+
 		let step = StepHelper.getStep(stepIdx);
 		StepHelper.setCurentStepIndex(stepIdx);
 		Start.createNewFromString('gotoStep', step._str);
@@ -442,5 +447,5 @@ export class Global
 }
 
 function log(s){
-	console.log(s);
+	//console.log(s);
 }

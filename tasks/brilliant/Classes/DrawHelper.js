@@ -337,19 +337,35 @@ export class DrawHelper
 		let x = (block._X1 * storona);
 		let y = (block._Y1 * storona);
 		let b1;
-		let hit
+		let hit, s
 		let img2;
 
 
 		var bitmap;
 
-		if(addEvent)
+
+
+		if(Global._level == 1 && (block._VH == 'V'))
 		{
-			img2 = Brilliant.kioapi.getResource('block_big_0');
+			if(addEvent)
+			{
+				img2 = Brilliant.kioapi.getResource('block_big_light_1');
+			}
+			else{
+				img2 = Brilliant.kioapi.getResource('block_small_light_1');
+			}	
 		}
 		else{
-			img2 = Brilliant.kioapi.getResource('block_small_0');
+			if(addEvent)
+			{
+				img2 = Brilliant.kioapi.getResource('block_big_' + Global._level);
+			}
+			else{
+				img2 = Brilliant.kioapi.getResource('block_small_' + Global._level);
+			}			
 		}
+
+
 
 		bitmap = new createjs.Bitmap(img2);
 		bitmap.x = x;
@@ -610,5 +626,5 @@ export class DrawHelper
 }
 
 function log(s){
-	console.log(s);
+	//console.log(s);
 }
