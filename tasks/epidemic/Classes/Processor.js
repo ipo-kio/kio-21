@@ -206,10 +206,10 @@ export class Processor
             }
 
 
-            //-- определим дистанционщиков
+            //-- определим дистанционщиков (карантин)
             {
                 //-- количество людей на дистанционке по стратегии в день
-                let distManCount = StrategyHelper.getDistManCount(strategy, greenCount, yellowCount, redCount); 
+                let distManCount = StrategyHelper.getDistManCount(strategy, greenCount, yellowCount, redCount, blueCount); 
                 toDistCnt = distManCount;
 
                 //-- продлеваем дистанционку тем кто на ней
@@ -217,26 +217,29 @@ export class Processor
                 {
                     man = Global._manArr[j];
 
-                    if(man._testStrId == strategyId)
+                    //-- по дистанционке синий сидит до конца стратегии
+                    //-- по тестированию синий сразу выходит с дистанционки
+
+                    //-- если он сидит Дома по Дистанционке, то пусть сидит до конца стратегии
+                    if(man._distStrId == strategyId && strategyId != 0)
                     {
-                        //-- если он сидит Дома по Тестированию, то пусть сидит дальше
+                        man._distByDayDic[dayNumber] = 1;
                         continue;
                     }
 
-                    if(toDistCnt > 0 && (man._color == 'green' || man._color == 'yellow' || man._color == 'red'))
-                    {                      
-                        if(man._distStrId == strategyId)
+                    //-- если он дома по Тестированию, то синий выходит
+                    if(man._testStrId == strategyId && strategyId != 0)
+                    {
+                        if(man._color == 'blue')
                         {
-                            //-- если он уже на дистанционке в эту стратегию, то оставляем его там же
+                            continue;
+                        }
+                        else{
                             man._distByDayDic[dayNumber] = 1;
-                            toDistCnt--;
                         }
                     }
-                    else
-                    {
-                        //-- мест на дистанционке больше нет
-                        man._distStrId = 0;
-                    }
+
+
                 }
                 
                 //-- отправляем на дистанционку
@@ -248,7 +251,7 @@ export class Processor
 
                         if(man._distStrId != strategyId)
                         {
-                            if(man._color == 'green')
+                            if(man._color == 'green11')
                             {
                                 man._distByDayDic[dayNumber] = 1;
                                 toDistCnt--;
@@ -273,7 +276,7 @@ export class Processor
 
             //-- отправляем в больницу
             {
-                //if(bolnicaCount > 0)
+                if(bolnicaCount > 0)
                 {
                     //- заполняем новыми
                     for(let j=0; j < Global._manArr.length; j++)
@@ -305,7 +308,7 @@ export class Processor
                             }
                             else
                             {
-                                //if(bolnicaCount > 0)
+                                if(bolnicaCount > 0)
                                 {
                                     //-- отправляем
                                     man._bolnicaDayDic[dayNumber] = 1;
@@ -314,7 +317,7 @@ export class Processor
 
                                     if(bolnicaCount == 0)
                                     {
-                                        //break;
+                                        break;
                                     }
                                 }
                             }
@@ -389,20 +392,23 @@ export class Processor
                                 }
                             }
                         }
-
- 
                     }
                     else if(man._color == 'blue')
                     {
                         blueCount++;
-                        blueRabCount++;
+                        
+                        if(man._distStrId != strategyId || strategyId == 0)
+                        {
+                            //-- если  не дома по Тестированию
+                            blueRabCount++;
+                        }
                     }                
     
                 }
             }
 
-            //-- тестирование
-            //-- берем процент для каждого цвета
+            //-- тестирование. Новые
+            //-- берем процент для каждого цвета кроме Синих
    
             if(strategy && strategy._testPercent > 0)
             {
@@ -410,9 +416,8 @@ export class Processor
                 let testYellowCount = StrategyHelper.getTestColorCount(strategy, yellowRabCount);
                 let testRedCount = StrategyHelper.getTestColorCount(strategy, redRabCount);
 
-                //log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
+                log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
 
-                //if(testGreenCount + testYellowCount + testRedCount > 0)
                 {
                     for(let j=0; j < Global._manArr.length; j++)
                     {
@@ -448,6 +453,7 @@ export class Processor
                                 yellowRabCount--;
                                 man._testStrId = strategyId;
                                 toTestForDay++;
+                                toDistForDay++;
                             }
                             else if(man._color == 'red' && testRedCount > 0)
                             {
@@ -458,6 +464,7 @@ export class Processor
                                 redRabCount--;
                                 man._testStrId = strategyId;
                                 toTestForDay++;
+                                toDistForDay++;
                             }                            
                         }
                     }                    
@@ -477,7 +484,8 @@ export class Processor
                 else
                 {
                     //-- кол. заразившихся в этот день    
-                    zarazByDay = Zaraza.getZarazforDay(greenRabCount, yellowRabCount, redRabCount, blueRabCount, strategy, toDistForDay); 
+                    zarazByDay = Zaraza.getZarazforDay(greenRabCount, yellowRabCount, redRabCount, blueRabCount
+                        , strategy, toDistForDay); 
                     
                     logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=+' + zarazByDay.toFixed(2) 
                     +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
@@ -530,15 +538,21 @@ export class Processor
                 day._dayIndex = dayNumber-1;
 
 
-                day._ee = Profit.getProfitForDay(greenCount
-                    , yellowCount
-                    , redCount
-                    , blueCount
+                day._ee = Profit.getProfitForDay(
+                      greenRabCount
+                    , yellowRabCount
+                    , redRabCount
+                    , blueRabCount
                     , strategy
                     , toDistForDay
                     , toTestForDay) ; //- --расчет ЭЭ за этот день
     
-                logStr = logStr + '<tr><td></td><td>E=' + day._ee.toFixed(2) +  '</td><td>G=' + greenCount + '</td><td>Y=' + yellowCount + '</td><td>R=' + redCount + '</td><td>B=' + blueCount  + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>';
+                logStr = logStr + '<tr><td></td><td>E=' + day._ee.toFixed(2) 
+                +  '</td><td>Gz=' + greenRabCount 
+                + '</td><td>Yz=' + yellowRabCount 
+                + '</td><td>Rz=' + redRabCount 
+                + '</td><td>Bz=' + blueRabCount  
+                + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>';
 
 
                 totalEE = totalEE + day._ee;

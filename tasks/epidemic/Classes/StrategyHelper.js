@@ -73,7 +73,7 @@ export class StrategyHelper
         return result;
     }
 
-    static getDistManCount(strategy, greenCount, yellowCount, redCount)
+    static getDistManCount(strategy, greenCount, yellowCount, redCount, blueCount)
     {
         if(strategy == null) return 0;
 

@@ -3,7 +3,7 @@ import { Config } from './Config.js';
 export class Zaraza
 {
     //-- количество заразившихся за один день
-    static getZarazforDay(greenCount, yellowCountZ, redCountZ, blueCount, strategy, realDistForDayCount)
+    static getZarazforDay(greenCountZ, yellowCountZ, redCountZ, blueCountZ, strategy, realDistForDayCount)
     {
         /*
         На самом деле количество встреч уменьшается при изменении здоровых или заразных определяется произведением 
@@ -31,22 +31,13 @@ export class Zaraza
             k = 1 / (Math.log2(f + 2));
         }
 
-        //-- дистанционка
-        //--переход на дистанционную работу части работников 
-        //--(указывается процент переведенных - дома производительность вдвое меньше)
+
         // -- Те кто на дистанте - те не заражаются и не заражают
 
-        if(strategy  && strategy._distPercent > 0) 
-        {
-            greenCount = (greenCount) - (realDistForDayCount/100 * strategy._distPercent)
-        }
 
-        //-- тестирование
-        //-- количество желтых опрделяется на этапе подготовки к вызову этой функции
+        blueCountZ = 0;
 
-        blueCount = 0;
-
-        res = (greenCount + blueCount) * (redCountZ + yellowCountZ) * k * p;
+        res = (greenCountZ + blueCountZ) * (redCountZ + yellowCountZ) * k * p;
 
         if(res < 0) res = 0;
 
