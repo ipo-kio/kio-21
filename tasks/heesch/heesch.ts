@@ -361,6 +361,7 @@ export class Heesch {
 
     update_symmetries(piece: Piece) {
         let find_symmetries = piece.find_symmetry();
+        console.log("symmetries", find_symmetries);
         this.has_symmetries = find_symmetries.length > 0;
         for (let [typ, ...params] of find_symmetries) {
             if (typ == "rot")
@@ -368,6 +369,7 @@ export class Heesch {
             else if (typ == "sym")
                 this.editor.draw_info_line(params[0], params[1]);
         }
+        this.editor.redraw();
     }
 }
 

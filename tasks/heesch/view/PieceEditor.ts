@@ -249,6 +249,7 @@ export class PieceEditor {
         this.drawGrid();
         this.drawEdges();
         this.drawVertices();
+        this.drawInfo();
     }
 
     private drawGrid() {
@@ -373,6 +374,17 @@ export class PieceEditor {
         }
 
         c.restore();
+    }
+
+    drawInfo() {
+        this.ctx.save();
+        for (let p of this.info_points) {
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = 'white';
+            this.ctx.arc(this.X0 + GRID_STEP * p.x, this.Y0 - GRID_STEP * p.y, 4, 0, 2 * Math.PI);
+            this.ctx.stroke();
+        }
+        this.ctx.restore();
     }
 
     getCursorPosition(e: MouseEvent): PixelPoint {
@@ -555,9 +567,6 @@ export class PieceEditor {
 
     draw_info_point(p: Point): void {
         this.info_points.push(p);
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = 'white';
-        this.ctx.arc(this.X0 + GRID_STEP * p.x, this.Y0 - GRID_STEP * p.y, 4, 0, 2 * Math.PI);
     }
 
     draw_info_line(p1: Point, p2: Point): void {

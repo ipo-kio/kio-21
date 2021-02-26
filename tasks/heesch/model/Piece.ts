@@ -380,7 +380,7 @@ export class Piece {
                 }
                 let is_rotation = true;
                 for (let k = 0; k < n; k++)
-                    if (!this.point(i + k).equals(sym_piece.point(j + k))) {
+                    if (!this.point(i + k).equals(rot_piece.point(j + k))) {
                         is_rotation = false;
                         break;
                     }
