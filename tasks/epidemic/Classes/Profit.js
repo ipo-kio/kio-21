@@ -28,7 +28,7 @@ export class Profit
 
         let kT = Config._kT;  //-- 2  тестирование
 
-        let GBZ = Gz+Bz+Yz - realDistForDayCount/2;  //-- дома вдвое меньше производительность
+        let GBZ = Gz+Bz+Yz;   // - realDistForDayCount;  //-- дома не работаем
 
         let result;
 
@@ -41,7 +41,6 @@ export class Profit
           
         }
 
-        //let result = (GBZ)*(1-f/10) - (realTestForDayCount) - realTestForDayCount / kT
 
         return result;
         
