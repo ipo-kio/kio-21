@@ -73,11 +73,12 @@ export class StrategyHelper
         return result;
     }
 
-    static getDistManCount(strategy, greenCount, yellowCount, redCount, blueCount)
+    static getDistManCount(strategy, yellowCount)
     {
         if(strategy == null) return 0;
 
-        let manCount = greenCount + yellowCount + redCount;
+        let manCount = yellowCount;
+
         return  Math.trunc(manCount/100 *  strategy._distPercent);
     }
 
@@ -88,32 +89,5 @@ export class StrategyHelper
         return Math.trunc(manCount * strategy._testPercent/100);
     }
 
-    static getTestManCount(strategy, greenRabCount, yellowRabCount, redRabCount)
-    {
-        /*
-        убираются из производственного процесса желтые попавшие в выборку шарики 
-        (по процентному Y/(Y+G) и удаляются из рабочего поля в другой угол 
-        (сидят на карантине, где с ними происходят те же переходы, 
-            но они выходят на рабочее поле только после того, как станут синими). 
-        На тестирование нужны затраты, пропорциональные числу тестируемых. 
-        Они должны быть существенны, чтобы невыгодно было тестировать максимальное число.
-        */
-        if(strategy == null) return 0;
 
-        let sum = greenRabCount +  yellowRabCount + redRabCount;
-
-        return sum * strategy._testPercent/100;
-        /*
-        let gy = greenCount + yellowCount;
-
-        if(gy > 0 && strategy._testPercent > 0)
-        {
-            return Math.trunc((yellowCount / gy) *  strategy._testPercent);
-        }
-        else{
-            return 0;
-        }
-        */
-
-    }
 }

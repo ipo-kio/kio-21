@@ -46,7 +46,7 @@ export class Global
 
     static getCurrentDayIndex()
     {
-        return  Math.trunc((Global._tikCounter - 1) / 10);  //-- 4 - это количество тиков в одном дне
+        return  Math.trunc((Global._tikCounter - 1) / 10);  //-- 10 - это количество тиков в одном дне
     }
 
 	static playStop()
@@ -104,7 +104,7 @@ export class Global
 
 	static setTikCounter(dayNumber)
 	{
-		Global._tikCounter = dayNumber * 10;  //-- 4 - это количество тиков в одном дне
+		Global._tikCounter = dayNumber * 10;  //-- 10 - это количество тиков в одном дне
 
 		//log('setTikCounter=' + Global._tikCounter + ' dayNumber=' + dayNumber )
 	}

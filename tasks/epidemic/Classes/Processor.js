@@ -39,6 +39,7 @@ export class Processor
             let blueRabCount;
             let bolnicaFillCount = 0;
             let strategyId;
+            let prevDay = null;
     
             Global._manArr = [];
             Global._dayArr = [];
@@ -109,12 +110,13 @@ export class Processor
         //-- крутим дни
         for(let dayIndex=0; dayIndex < Config._dayCount; dayIndex++)
         {
+            
             //-- переменные
             {
                 dayNumber = dayIndex + 1;
                 greenCount = 0;
                 yellowCount = 0;
-                greenRabCount = 0
+                greenRabCount = 0;
                 redCount = 0;
                 blueCount = 0;
                 redRabCount = 0;
@@ -122,7 +124,24 @@ export class Processor
                 yellowRabCount = 0;
                 bolnicaCount = Config._bolnicaMax;
                 bolnicaFillCount = 0;
+                toDistForDay = 0;
+                toTestForDay = 0;
+
+                if(prevDay != null)
+                {
+                    greenRabCount = prevDay._greenRabCount;
+                    yellowRabCount = prevDay._yellowRabCount;
+                    redRabCount = prevDay._redRabCount;
+                    blueRabCount = prevDay._blueRabCount;
+                }
+                else{
+                    yellowRabCount = 1;  //-- это первый зараженный
+                    greenRabCount = Config._manCount - 1;
+                }
+                
             }
+
+            
           
             //-- переход состояния от времени
             for(let j=0; j < Global._manArr.length; j++)
@@ -140,7 +159,7 @@ export class Processor
                     {
                         man._color = 'yellow';
                         man._firstYellowDay = dayNumber;                     
-                    }                    
+                    }                                      
                 }
                 else if(man._color == 'yellow')
                 {
@@ -195,6 +214,8 @@ export class Processor
                 }                
             }
 
+            
+
             strategy = Global.getStrategyForDay(dayNumber, solutionObject);
 
             if(strategy != null)
@@ -205,74 +226,6 @@ export class Processor
                 strategyId = 0;
             }
 
-
-            //-- определим дистанционщиков (карантин)
-            {
-                //-- количество людей на дистанционке по стратегии в день
-                let distManCount = StrategyHelper.getDistManCount(strategy, greenCount, yellowCount, redCount, blueCount); 
-                toDistCnt = distManCount;
-
-                //-- продлеваем дистанционку тем кто на ней
-                for(let j=0; j < Global._manArr.length; j++)
-                {
-                    man = Global._manArr[j];
-
-                    //-- по дистанционке синий сидит до конца стратегии
-                    //-- по тестированию синий сразу выходит с дистанционки
-
-                    //-- если он сидит Дома по Дистанционке, то пусть сидит до конца стратегии
-                    if(man._distStrId == strategyId && strategyId != 0)
-                    {
-                        man._distByDayDic[dayNumber] = 1;
-                        continue;
-                    }
-
-                    //-- если он дома по Тестированию, то синий выходит
-                    if(man._testStrId == strategyId && strategyId != 0)
-                    {
-                        if(man._color == 'blue')
-                        {
-                            continue;
-                        }
-                        else{
-                            man._distByDayDic[dayNumber] = 1;
-                        }
-                    }
-
-
-                }
-                
-                //-- отправляем на дистанционку
-                if(toDistCnt > 0)
-                {
-                    for(let j=0; j < Global._manArr.length; j++)
-                    {
-                        man = Global._manArr[j];
-
-                        if(man._distStrId != strategyId)
-                        {
-                            if(man._color == 'green11')
-                            {
-                                man._distByDayDic[dayNumber] = 1;
-                                toDistCnt--;
-                                man._distStrId = strategyId;
-                            }
-                            else if(man._color == 'yellow')
-                            {
-                                man._distByDayDic[dayNumber] = 1;
-                                toDistCnt--;
-                                man._distStrId = strategyId;
-                            }
-
-                            if(toDistCnt == 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
 
             //-- отправляем в больницу
             {
@@ -314,14 +267,14 @@ export class Processor
                                     man._bolnicaDayDic[dayNumber] = 1;
                                     bolnicaFillCount++;
                                     bolnicaCount--;
+                                    redRabCount--
 
                                     if(bolnicaCount == 0)
                                     {
                                         break;
                                     }
                                 }
-                            }
-    
+                            }  
                         }                    
                     }                    
                 }
@@ -330,10 +283,74 @@ export class Processor
 
             }
 
+            
+            //-- определим дистанционщиков (карантин)
+            {
 
+              let distYellowCount = 0;
+
+               if(strategy != null)
+               {
+                    if(strategy._dayStart == dayNumber)
+                    {
+                       //-- запоминаем количество на Карантин для первого дня стратегии
+                        strategy._distManCount = StrategyHelper.getDistManCount(strategy, yellowRabCount);
+                    }                   
+                    distYellowCount = strategy._distManCount;
+               }
+
+               //log(dayNumber + ') dg=' +distGreenCount  + ' Gz=' + greenRabCount)
+
+                //-- продлеваем дистанционку тем кто на ней
+                for(let j=0; j < Global._manArr.length; j++)
+                {
+                    man = Global._manArr[j];
+
+                    //-- по дистанционке синий сидит до конца стратегии
+                    //-- по тестированию синий сразу выходит с дистанционки
+
+                    //-- если он сидит Дома по Дистанционке, то пусть сидит до конца стратегии
+                    if(man._distStrId == strategyId && strategyId != 0)
+                    {
+                        man._distByDayDic[dayNumber] = 1;
+                        toDistForDay++;
+                        distYellowCount--;
+                        continue;
+                    }
+
+                    //-- если он дома по Тестированию, то синий выходит, а остальные сидят дальше
+                    if(man._testStrId == strategyId && strategyId != 0)
+                    {
+                        if(man._color != 'blue')
+                        {
+                            man._distByDayDic[dayNumber] = 1;
+                            toDistForDay++;
+                        }
+                        else
+                        {
+                            blueRabCount++;
+                        }
+                        continue;
+                    }
+                    //-- отправляем новых на карантин
+                    {                           
+                        if(man._color == 'yellow' && distYellowCount > 0)
+                        {
+                            man._distByDayDic[dayNumber] = 1;
+                            distYellowCount--;
+                            man._distStrId = strategyId;
+                            yellowRabCount--
+                            toDistForDay++;
+                        }                                                                                       
+                    }
+                }
+                
+
+            }            
 
             //-- подсчитаем количества цветов перед заражением и тестированием
             {
+                
                 greenCount = 0;
                 yellowCount = 0;
                 yellowRabCount = 0;
@@ -342,7 +359,7 @@ export class Processor
                 blueCount = 0;
                 redRabCount = 0;
                 blueRabCount = 0;
-                toDistForDay = 0;
+                //toDistForDay = 0;
                 toTestForDay = 0;
 
                 
@@ -359,7 +376,7 @@ export class Processor
                             greenRabCount++;
                         }
                         else{
-                            toDistForDay++
+                            //toDistForDay++
                         }
 
                     }
@@ -374,7 +391,7 @@ export class Processor
                             yellowRabCount++;
                         }
                         else{
-                            toDistForDay++
+                            //toDistForDay++
                         }
                     }
                     else if(man._color == 'red')
@@ -405,18 +422,20 @@ export class Processor
                     }                
     
                 }
+                
             }
+
 
             //-- тестирование. Новые
             //-- берем процент для каждого цвета кроме Синих
-   
+           
             if(strategy && strategy._testPercent > 0)
             {
                 let testGreenCount = StrategyHelper.getTestColorCount(strategy, greenRabCount);
                 let testYellowCount = StrategyHelper.getTestColorCount(strategy, yellowRabCount);
                 let testRedCount = StrategyHelper.getTestColorCount(strategy, redRabCount);
 
-                log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
+                //log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
 
                 {
                     for(let j=0; j < Global._manArr.length; j++)
@@ -493,6 +512,8 @@ export class Processor
                     //--Накапливаем, т.к. количество может быть меньше единицы
                     ySum = ySum + zarazByDay;
                 }     
+
+             
                 
                 if(ySum >= 1)
                 {
@@ -510,8 +531,9 @@ export class Processor
                             man._state = 'Y'
                             n--;
                             greenCount--;
+                            greenRabCount--
                             yellowCount++;
-
+                            yellowRabCount++;
                             zAdd++;
                         }
     
@@ -567,12 +589,18 @@ export class Processor
                 day._ySum = ySum;
                 day._strategy = strategy;
                 day._bolnicaCount = bolnicaFillCount;
+
+                day._redRabCount = redRabCount;
+                day._blueRabCount = blueRabCount;
+                day._greenRabCount = greenRabCount;
+                day._yellowRabCount = yellowRabCount;
     
                 Global._dayArr.push(day);
 
                 //log(dayNumber + ' zarazByDay=' + zarazByDay)
             }            
 
+            prevDay = day;
         } //-- for крутим дни
 
         document.getElementById('div_log').innerHTML = '<table>' +  logStr + '</table>';
