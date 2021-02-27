@@ -9,14 +9,16 @@ export class PolyLineUtils {
         let p0 = p.point(0);
         let pLast = p.point(n - 1);
 
-        let c = p0.middle(pLast);
+        let cx = (p0.x + pLast.x) / 2;
+        let cy = (p0.y + pLast.y) / 2;
 
         for (let i = 1; 2 * i <= n; i++) {
             let pi = p.point(i);
             let pj = p.point(n - i - 1);
 
-            let cc = pi.middle(pj);
-            if (!c.equals(cc))
+            let ccx = (pi.x + pj.x) / 2;
+            let ccy = (pi.y + pj.y) / 2;
+            if (Math.abs(ccx - cx) >= EPS || Math.abs(ccy - cy) >= EPS)
                 return false;
         }
         return true;
