@@ -24,6 +24,26 @@ $editor_skip: 8px;
     margin-left: $editor_size + $editor_skip;
     position: relative;
     height: $editor_size;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(108, 143, 193, 0.9);
+    color: white;
+    line-height: 1.2;
+
+    optgroup {
+      font-style: normal;
+      font-weight: bold;
+      padding: 4px;
+
+      option {
+        padding: 0 1em;
+
+      }
+    }
+
+    option.top {
+      padding: 4px;
+      font-weight: bold;
+    }
+
+    width: 8em;
   }
 }

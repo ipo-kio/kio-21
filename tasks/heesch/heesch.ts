@@ -5,6 +5,12 @@ import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {compareTessellations, Tessellation, tessellationIsTranslateblyEquivalent} from "./model/Tessellation";
+import {TYPE_TTTTTT} from "./model/PieceType";
+
+const ONE = 10;
+const BG_COLOR = '#A3B3CE';
+const COLOR = '#6C8FC1';
+const ZERO = new Point(0, 0);
 
 export class Heesch {
     private settings: KioTaskSettings;
@@ -23,6 +29,7 @@ export class Heesch {
     private has_error: boolean = false;
     private has_symmetries: boolean = false;
     private maximize_symmetries: boolean = false;
+    private dog_number: number = 1;
 
     /**
      *
@@ -32,8 +39,9 @@ export class Heesch {
     constructor(settings: KioTaskSettings) {
         this.settings = settings;
         this.need_take_care_of_orientation = +settings.level > 0;
-        this.draw_orientation = +settings.level > 0;
+        this.draw_orientation = true; //+settings.level > 0;
         this.maximize_symmetries = +settings.level == 0;
+        this.dog_number = +settings.level % 2 == 0 ? 1 : 2;
     }
 
     /**
@@ -173,7 +181,9 @@ export class Heesch {
 
     static preloadManifest(): KioResourceDescription[] {
         return [
-            {id: "dog", src: "heesch-resources/dog.png"},
+            {id: "dog", src: "heesch-resources/squid.png"},
+            {id: "dog2", src: "heesch-resources/jellyfish.png"},
+            {id: "wave", src: "heesch-resources/wave.png"}
         ];
     }
 
@@ -236,10 +246,44 @@ export class Heesch {
     private updateTessellationView() {
         let w = this.tesselation_canvas.width;
         let h = this.tesselation_canvas.height;
-        this.tessellation_ctx.clearRect(0, 0, w, h);
+
+        let b = this.tesselationSelect.getBoundingClientRect();
+        let x0 = (w + b.right) / 2;
+        let y0 = h / 2;
+
+        let resourceId = this.dog_number == 1 ? 'dog' : 'dog2';
+        let dog = this.draw_orientation ? this.kioapi.getResource(resourceId) as HTMLImageElement : null;
 
         if (this.tesselationSelect.length == 0) {
-            // draw only one piece in the center
+            let c = this.tessellation_ctx;
+            c.clearRect(0, 0, w, h);
+            c.fillStyle = c.createPattern(this.kioapi.getResource('wave') as HTMLImageElement, "repeat");
+            c.fillRect(0, 0, w, h);
+
+            let piece = this.editor.piece;
+            if (this.has_error || !piece) //!piece probably implies has_error
+                return;
+
+
+            /*c.fillStyle = BG_COLOR;
+            c.strokeStyle = COLOR;
+            c.lineWidth = 2;
+
+
+            c.beginPath();
+            let p0 = piece.point(0);
+            c.moveTo(x0 + ONE * p0.x, y0 - ONE * p0.y);
+            for (let i = 1; i < piece.size; i++) {
+                let p = piece.point(i);
+                c.lineTo(x0 + ONE * p.x, y0 - ONE * p.y);
+            }
+            c.closePath();
+            c.stroke();
+            c.fill();*/
+
+            let tessellation = new Tessellation(ZERO, ZERO, [piece], TYPE_TTTTTT, []);
+            let tessellationView = new TessellationView(dog, tessellation, x0, y0, w, h, ONE);
+            tessellationView.draw(c, COLOR, BG_COLOR);
 
             return;
         }
@@ -249,14 +293,10 @@ export class Heesch {
 
         let selectedIndex: number = +this.tesselationSelect.value;
 
-        let x0 = w / 2;
-        let y0 = h / 2;
-        let dog = this.draw_orientation ? this.kioapi.getResource('dog') as HTMLImageElement : null;
-
         let tessellation = this.tessellations[selectedIndex];
 
-        let tessellationView = new TessellationView(dog, tessellation, x0, y0, w, h, 10);
-        tessellationView.draw(this.tessellation_ctx, 'black');
+        let tessellationView = new TessellationView(dog, tessellation, x0, y0, w, h, ONE);
+        tessellationView.draw(this.tessellation_ctx, COLOR, BG_COLOR);
 
         let p = tessellation.pieces[0];
         let i = tessellation.indexes;
@@ -337,7 +377,7 @@ export class Heesch {
             group_index++;
             if (tessellations_group.length > 1) {
                 let optgroup = document.createElement("optgroup");
-                optgroup.label = group_index + " похожие";
+                optgroup.label = group_index + " (похожие)";
                 let index_in_the_group = 0;
                 for (let tessellation of tessellations_group) {
                     index_in_the_group++;
@@ -354,6 +394,7 @@ export class Heesch {
                 let option = document.createElement("option");
                 option.value = "" + new_index;
                 option.innerText = '' + group_index;
+                option.classList.add("top");
                 this.tesselationSelect.add(option);
             }
         }

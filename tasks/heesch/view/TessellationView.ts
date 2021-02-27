@@ -1,6 +1,5 @@
 import {Tessellation} from "../model/Tessellation";
 import {EPS} from "../model/Piece";
-import {KioApi} from "../../KioApi";
 import {Point} from "../model/Point";
 
 export class TessellationView {
@@ -23,8 +22,12 @@ export class TessellationView {
         this.dog = dog;
     }
 
-    draw(ctx: CanvasRenderingContext2D, color: string): void {
+    draw(ctx: CanvasRenderingContext2D, color: string, bg_color: string): void {
         ctx.save();
+
+        ctx.fillStyle = bg_color;
+        if (this.tesselation.T1.x != 0 || this.tesselation.T1.y != 0)
+            ctx.fillRect(0, 0, this.width, this.height);
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = color;
@@ -74,20 +77,25 @@ export class TessellationView {
                     let translate_x = T1[0] * t1 + T2[0] * t2;
                     let translate_y = T1[1] * t1 + T2[1] * t2;
 
-                    draw_piece(ctx, piece, translate_x, translate_y, piece_in_points.orientation, this.dog);
+                    draw_piece(ctx, piece, translate_x, translate_y, piece_in_points.orientation, this.dog, false);
                 }
 
                 return L <= U;
             };
 
-            let t1 = 0;
-            while (t1 < 100)
-                if (!process_t1(t1++))
-                    break;
-            t1 = -1;
-            while (t1 > -100)
-                if (!process_t1(t1--))
-                    break;
+            if (T1[0] == 0 && T2[0] == 0) {
+                ctx.lineWidth = 4;
+                draw_piece(ctx, piece, 0, 0, piece_in_points.orientation, this.dog, true);
+            } else {
+                let t1 = 0;
+                while (t1 < 100)
+                    if (!process_t1(t1++))
+                        break;
+                t1 = -1;
+                while (t1 > -100)
+                    if (!process_t1(t1--))
+                        break;
+            }
         }
 
         ctx.restore();
@@ -106,7 +114,7 @@ function pair_of_inequalities(a: number, b: number, c: number, d: number): [numb
         return [Math.ceil(right - EPS), Math.floor(left + EPS)];
 }
 
-function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number][], translate_x: number, translate_y: number, orientation: [Point, Point], img: HTMLImageElement | null): void {
+function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number][], translate_x: number, translate_y: number, orientation: [Point, Point], img: HTMLImageElement | null, bg: boolean): void {
     ctx.save();
 
     ctx.beginPath();
@@ -129,6 +137,8 @@ function draw_piece(ctx: CanvasRenderingContext2D, piece: [x: number, y: number]
     }
     ctx.closePath();
     ctx.clip();
+    if (bg)
+        ctx.fill();
     ctx.stroke();
 
     if (img) {

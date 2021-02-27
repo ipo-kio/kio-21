@@ -5,22 +5,25 @@ const GRID_STEP = 20;
 const WIDTH = 400;
 const HEIGHT = 400;
 
-const EDGE_COLOR = 'blue';
-const ERROR_EDGE_COLOR = 'red';
-const EDGE_LINE_WIDTH = 3;
+const EDGE_COLOR = '#3366cc';
+const ERROR_EDGE_COLOR = '#e6332a';
+const EDGE_LINE_WIDTH = 2;
 
-const VERTEX_BORDER_COLOR = 'black';
-const VERTEX_COLOR = 'red';
-const VERTEX_RADIUS = 6;
-const VERTEX_BORDER_WIDTH = 0.5;
+const VERTEX_BORDER_COLOR = '#000000';
+const VERTEX_COLOR = '#3366cc';
+const VERTEX_RADIUS = 8;
+const VERTEX_BORDER_WIDTH = 1.5;
+
+const GRID_LINE_COLOR = '#91b8d7';
+const GRID_LINE_WIDTH = 0.75;
 
 const HOVER_DIST = 2 * GRID_STEP / 3;
 
-const HIGHLIGHTED_VERTEX_COLOR = '#e7e302';
-const EDGE_HIGHLIGHT_COLOR = HIGHLIGHTED_VERTEX_COLOR; //'rgb(231,227,2, 0.4)';
-const EDGE_HIGHLIGHT_WIDTH = 2 * EDGE_LINE_WIDTH; // 2 * HOVER_DIST
+const HIGHLIGHTED_VERTEX_COLOR = '#ffde00';
+const EDGE_HIGHLIGHT_COLOR = '#000000';
+const EDGE_HIGHLIGHT_WIDTH = EDGE_LINE_WIDTH; // 2 * HOVER_DIST
 
-const BG_COLOR = '#5aff00';
+const BG_COLOR = '#afeccc'; // b0f4df
 
 type Segment = [p1: Point, p2: Point];
 
@@ -270,15 +273,16 @@ export class PieceEditor {
         c.beginPath();
         for (let x = xMin; x <= xMax; x++) {
             let xx = this.X0 + x * GRID_STEP;
-            c.moveTo(xx + 0.5, 0);
-            c.lineTo(xx + 0.5, HEIGHT);
+            c.moveTo(xx, 0);
+            c.lineTo(xx, HEIGHT);
         }
         for (let y = yMin; y <= yMax; y++) {
             let yy = this.Y0 - y * GRID_STEP;
-            c.moveTo(0, yy + 0.5);
-            c.lineTo(WIDTH, yy + 0.5);
+            c.moveTo(0, yy);
+            c.lineTo(WIDTH, yy);
         }
-        c.strokeStyle = 'rgba(0,0,0,0.5)'; // TODO make a constant
+        c.strokeStyle = GRID_LINE_COLOR; // TODO make a constant
+        c.lineWidth = GRID_LINE_WIDTH;
 
         c.stroke();
 
@@ -310,28 +314,16 @@ export class PieceEditor {
         let [xStart, yStart] = this.point2pixel(this.points[0]);
         c.beginPath()
         c.moveTo(xStart, yStart);
-        let xMin = 1e100;
-        let xMax = -1e100;
-        let yMin = 1e100;
-        let yMax = -1e100;
 
         let n = this.points.length;
 
         for (let i = 1; i < n; i++) {
             let [x, y] = this.point2pixel(this.points[i]);
-            xMin = Math.min(xMin, x);
-            xMax = Math.max(xMax, x);
-            yMin = Math.min(yMin, y)
-            yMax = Math.max(yMin, y)
             c.lineTo(x, y);
         }
         c.closePath();
 
-        let grad = c.createLinearGradient(xMin, yMin, xMax, yMax);
-        grad.addColorStop(0, 'rgba(200, 200, 255, 0.4)'); // Make a constant
-        grad.addColorStop(1, 'rgba(0, 0, 255, 0.4)'); // Make a constant
-
-        c.fillStyle = grad;
+        c.fillStyle = 'rgba(163, 179, 206, 0.5)';
         c.fill();
 
         for (let i = 0; i < n; i++)
@@ -350,7 +342,6 @@ export class PieceEditor {
         let c = this.ctx;
         c.save();
 
-        c.strokeStyle = VERTEX_BORDER_COLOR;
         c.lineWidth = VERTEX_BORDER_WIDTH;
 
         for (let i = 0; i < this.points.length; i++) {
@@ -360,17 +351,27 @@ export class PieceEditor {
             //test point is on the edge
             let p_1 = i == 0 ? this.points[this.points.length - 1] : this.points[i - 1];
             let p_2 = i == this.points.length - 1 ? this.points[0] : this.points[i + 1];
-            if (Math.abs(p_1.sub(p).vec(p_2.sub(p))) < EPS)
-                c.fillStyle = 'rgba(255, 255, 255, 1)';
-            else
-                c.fillStyle = VERTEX_COLOR;
-            if (i == this.highlightedPoint)
+
+            let is_on_line = Math.abs(p_1.sub(p).vec(p_2.sub(p))) < EPS;
+            let need_fill = true;
+            let need_stroke = true;
+            if (i == this.highlightedPoint) {
                 c.fillStyle = HIGHLIGHTED_VERTEX_COLOR;
+                c.strokeStyle = VERTEX_BORDER_COLOR;
+            } else if (is_on_line) {
+                need_fill = false;
+                c.strokeStyle = VERTEX_COLOR;
+            } else {
+                need_stroke = false;
+                c.fillStyle = VERTEX_COLOR;
+            }
 
             c.beginPath();
             c.arc(x, y, VERTEX_RADIUS, 0, Math.PI * 2);
-            c.fill();
-            c.stroke();
+            if (need_fill)
+                c.fill();
+            if (need_stroke)
+                c.stroke();
         }
 
         c.restore();
