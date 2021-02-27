@@ -318,9 +318,16 @@ export class Heesch {
             let size = piece == null ? 0 : piece.size_without_inner_points;
             this.kioapi.submitResult({ok: 0, g: 0, v: size, s: 0});
             this.updateTessellationView();
+
+            let optgroup = document.createElement("optgroup");
+            optgroup.label = "не фигура";
+            this.tesselationSelect.add(optgroup);
         }
 
         this.has_error = false;
+
+        this.tessellations = [];
+        this.tesselationSelect.innerHTML = '';
 
         if (piece == null) {
             generateError();
@@ -370,8 +377,6 @@ export class Heesch {
             }
         });
 
-        this.tessellations = [];
-        this.tesselationSelect.innerHTML = '';
         let group_index = 0;
         for (let tessellations_group of tessellations_groups) {
             group_index++;
@@ -420,6 +425,12 @@ export class Heesch {
             v: piece.size_without_inner_points,
             s: this.has_symmetries ? 1 : 0
         });
+
+        if (g == 0) {
+            let optgroup = document.createElement("optgroup");
+            optgroup.label = "нет узоров";
+            this.tesselationSelect.add(optgroup);
+        }
     }
 
     update_symmetries(piece: Piece) {
