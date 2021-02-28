@@ -23,7 +23,7 @@ export class Profit
         let t = 0;
         if(strategy  && strategy._testPercent > 0) 
         {
-            t = strategy._testPercent/100;
+            t = strategy._testPercent;
         }
 
         let kT = Config._kT;  //-- 2  тестирование
@@ -32,6 +32,7 @@ export class Profit
 
         let result;
 
+        /*
         if(kT == 0)
         {
             result = (GBZ)*(1-f/10) 
@@ -40,6 +41,9 @@ export class Profit
             result = (GBZ)*(1-f/10) - (realTestForDayCount) +  realTestForDayCount / kT
           
         }
+        */
+
+       result = (GBZ)*(1-f/10) - (GBZ*t*kT)
 
 
         return result;

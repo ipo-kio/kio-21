@@ -39,6 +39,9 @@ export class StrategyHelper
         str._distPercent = 0;
         str._testPercent = 0;
         str._distManCount = 0;
+        str._distGreenCount = 0;
+        str._distGrYellowCount = 0;
+        str._distRedCount = 0;
 
         return str;
     }

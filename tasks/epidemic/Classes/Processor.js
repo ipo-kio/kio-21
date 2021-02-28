@@ -287,16 +287,25 @@ export class Processor
             //-- определим дистанционщиков (карантин)
             {
 
+              let distGreenCount = 0;
               let distYellowCount = 0;
+              let distRedCount = 0;
 
                if(strategy != null)
                {
                     if(strategy._dayStart == dayNumber)
                     {
                        //-- запоминаем количество на Карантин для первого дня стратегии
-                        strategy._distManCount = StrategyHelper.getDistManCount(strategy, yellowRabCount);
+
+                        strategy._distGreenCount =  StrategyHelper.getDistManCount(strategy, greenRabCount);
+                        strategy._distYellowCount =  StrategyHelper.getDistManCount(strategy, yellowRabCount);
+                        strategy._distRedCount =  StrategyHelper.getDistManCount(strategy, redRabCount);
+
+                        distGreenCount = strategy._distGreenCount;
+                        distYellowCount = strategy._distYellowCount;
+                        distRedCount = strategy._distRedCount;
                     }                   
-                    distYellowCount = strategy._distManCount;
+
                }
 
                //log(dayNumber + ') dg=' +distGreenCount  + ' Gz=' + greenRabCount)
@@ -314,7 +323,19 @@ export class Processor
                     {
                         man._distByDayDic[dayNumber] = 1;
                         toDistForDay++;
-                        distYellowCount--;
+                        if(man._color == 'green')
+                        {
+                            distGreenCount--;
+                        }
+                        else if(man._color == 'yellow')
+                        {
+                            distYellowCount--;
+                        }
+                        else if(man._color == 'red')
+                        {
+                            distRedCount--;
+                        }                        
+                        
                         continue;
                     }
 
@@ -334,6 +355,14 @@ export class Processor
                     }
                     //-- отправляем новых на карантин
                     {                           
+                        if(man._color == 'green' && distGreenCount > 0)
+                        {
+                            man._distByDayDic[dayNumber] = 1;
+                            distGreenCount--;
+                            man._distStrId = strategyId;
+                            greenRabCount--
+                            toDistForDay++;
+                        }         
                         if(man._color == 'yellow' && distYellowCount > 0)
                         {
                             man._distByDayDic[dayNumber] = 1;
@@ -341,7 +370,15 @@ export class Processor
                             man._distStrId = strategyId;
                             yellowRabCount--
                             toDistForDay++;
-                        }                                                                                       
+                        } 
+                        if(man._color == 'red' && distRedCount > 0)
+                        {
+                            man._distByDayDic[dayNumber] = 1;
+                            distRedCount--;
+                            man._distStrId = strategyId;
+                            redRabCount--
+                            toDistForDay++;
+                        }                                                                                                                               
                     }
                 }
                 
