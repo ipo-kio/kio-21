@@ -12,6 +12,7 @@ export class SolutionHelper
 		solution._totalProfit = 0;
         solution._totalAvr = 0;
 		solution._strategyArr = [];
+		solution._isComplit = true;
 
 		return solution;
 	}

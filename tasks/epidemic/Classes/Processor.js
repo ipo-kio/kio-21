@@ -40,6 +40,7 @@ export class Processor
             let bolnicaFillCount = 0;
             let strategyId;
             let prevDay = null;
+            let isComplit = true;
     
             Global._manArr = [];
             Global._dayArr = [];
@@ -271,7 +272,15 @@ export class Processor
 
                                     if(bolnicaCount == 0)
                                     {
-                                        break;
+                                        //break;
+                                    }
+                                }
+                                else
+                                {
+                                    if(bolnicaFillCount >= Config._bolnicaMax)
+                                    {
+                                        isComplit = false;
+                                        //break;
                                     }
                                 }
                             }  
@@ -279,8 +288,7 @@ export class Processor
                     }                    
                 }
 
-
-
+              
             }
 
             
@@ -646,6 +654,8 @@ export class Processor
     
                 Global._dayArr.push(day);
 
+                
+
                 //log(dayNumber + ' zarazByDay=' + zarazByDay)
             }            
 
@@ -660,6 +670,7 @@ export class Processor
 
             solutionObject._totalProfit = Math.round(totalEE);
             solutionObject._totalProfitAvr = Math.round(totalEEAvr);
+            solutionObject._isComplit = isComplit;
         }
 
         Global._currentSolution = solutionObject;

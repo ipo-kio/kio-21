@@ -34,7 +34,7 @@ export class Epidemic
 		log('initialize()')
 
 		Config.init(this.settings.level);
-
+		Epidemic._level = this.settings.level;
 
 		this.initInterface(domNode, preferred_width)
 	}
@@ -56,6 +56,19 @@ export class Epidemic
 
 		log('parameters ()')
 
+		let _isComplit = {
+			name: '_isComplit',
+			title: 'Больных',
+			ordering: 'maximize',
+			view: function (ok) {
+			  if (ok) {
+				return 'В норме'
+			  } else {
+				return 'Переполнение'
+			  }
+			}
+		}
+
 		let _totalProfit = {
 			name: '_totalProfit',
 			title: 'Доход:',
@@ -68,7 +81,16 @@ export class Epidemic
 			ordering: 'minimize'
 		}
 
-		return[_totalProfit, _strCount];
+		
+
+		if(this.settings.level == 2)
+		{
+			return[_isComplit, _totalProfit, _strCount];
+		}
+		else{
+			return[_totalProfit, _strCount];
+		}
+
 	}
 
 	solution (){
@@ -124,10 +146,24 @@ export class Epidemic
 			}
 		}
 
-		Epidemic.kioapi.submitResult({
-			_totalProfit: solution._totalProfit,
-			_strCount: strCount
-		})
+		
+
+		if(Epidemic._level == 2)
+		{
+			Epidemic.kioapi.submitResult({
+				_isComplit: solution._isComplit,
+				_totalProfit: solution._totalProfit,
+				_strCount: strCount
+			})
+		}
+		else{
+			Epidemic.kioapi.submitResult({
+				_totalProfit: solution._totalProfit,
+				_strCount: strCount
+			})
+		}
+
+
 	}
 
 	initInterface (domNode, preferred_width)
