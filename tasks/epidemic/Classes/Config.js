@@ -5,7 +5,7 @@ export class Config
     static _manCount;
     static _startYCount;
     static _toRedDays = 14;
-    static _toBlueDays = 28;
+    static _toBlueDays = 60; //28;
     static _toGreenDays = 0;
     static _stukByDayCount = 1;
     static _maskZ = 0.5; // Маски - изменяют количество заражений в день и изменяют ЕЕ за день. 

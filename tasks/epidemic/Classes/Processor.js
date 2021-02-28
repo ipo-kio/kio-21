@@ -605,13 +605,25 @@ export class Processor
                     , strategy
                     , toDistForDay
                     , toTestForDay) ; //- --расчет ЭЭ за этот день
+
+                let f = 0;
+                let t = 0;
+                let kT = Config._kT;
+                if(strategy)
+                {
+                    f = strategy._maskKoef;
+                    t = strategy._testPercent/100;
+
+                }
     
                 logStr = logStr + '<tr><td></td><td>E=' + day._ee.toFixed(2) 
                 +  '</td><td>Gz=' + greenRabCount 
                 + '</td><td>Yz=' + yellowRabCount 
                 + '</td><td>Rz=' + redRabCount 
                 + '</td><td>Bz=' + blueRabCount  
-                + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>';
+                + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay 
+                + '</td><td>E=('+greenRabCount+'+'+yellowRabCount+'+'+blueRabCount+') * (1-'+f+'/10) - (('+greenRabCount+'+'+yellowRabCount+'+'+blueRabCount+')*'+t+'*'+kT+') = ' + day._ee.toFixed(2)
+                + '</td></tr>';
 
 
                 totalEE = totalEE + day._ee;

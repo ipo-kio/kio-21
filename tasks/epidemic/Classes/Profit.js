@@ -23,7 +23,7 @@ export class Profit
         let t = 0;
         if(strategy  && strategy._testPercent > 0) 
         {
-            t = strategy._testPercent;
+            t = strategy._testPercent/100;
         }
 
         let kT = Config._kT;  //-- 2  тестирование
