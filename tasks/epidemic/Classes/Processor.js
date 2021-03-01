@@ -41,6 +41,7 @@ export class Processor
             let strategyId;
             let prevDay = null;
             let isComplit = true;
+            let uncomplitDayNumber = 0;
     
             Global._manArr = [];
             Global._dayArr = [];
@@ -605,6 +606,14 @@ export class Processor
                 day._dayIndex = dayNumber-1;
 
 
+                day._isComplit = isComplit;
+
+                if(!isComplit && uncomplitDayNumber == 0)
+                {
+                    uncomplitDayNumber = dayNumber;
+                }
+
+
                 day._ee = Profit.getProfitForDay(
                       greenRabCount
                     , yellowRabCount
@@ -613,6 +622,12 @@ export class Processor
                     , strategy
                     , toDistForDay
                     , toTestForDay) ; //- --расчет ЭЭ за этот день
+
+
+                if(!day._isComplit)
+                {
+                    day._ee = 0;
+                }                    
 
                 let f = 0;
                 let t = 0;
@@ -634,6 +649,8 @@ export class Processor
                 + '</td></tr>';
 
 
+
+
                 totalEE = totalEE + day._ee;
     
                 day._eeTotal = totalEE;
@@ -651,6 +668,7 @@ export class Processor
                 day._blueRabCount = blueRabCount;
                 day._greenRabCount = greenRabCount;
                 day._yellowRabCount = yellowRabCount;
+                
     
                 Global._dayArr.push(day);
 
@@ -671,6 +689,8 @@ export class Processor
             solutionObject._totalProfit = Math.round(totalEE);
             solutionObject._totalProfitAvr = Math.round(totalEEAvr);
             solutionObject._isComplit = isComplit;
+
+            solutionObject._uncomplitDayNumber = uncomplitDayNumber;
         }
 
         Global._currentSolution = solutionObject;

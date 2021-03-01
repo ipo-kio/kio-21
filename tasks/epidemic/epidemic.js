@@ -127,6 +127,13 @@ export class Epidemic
 
 		Global.recalcFromInterface('loadSolution');
 
+		solutionObject = Global._currentSolution;
+
+		if(solutionObject._strategyArr.length > 0)
+        {
+            Global.setSelectedStrategy('loadSolution', solutionObject._strategyArr[0]._id)
+        }
+
 	}
 
 	static saveCurrentSolution (src)

@@ -18,6 +18,8 @@ export class Slider
 		slider._max_value = max_value;
 		slider._tik = 0;
 		slider._is_over = false;
+		slider._mouseX = 0;
+		slider._headerH = 20
 	
 		parentDiv.appendChild(slider._canvas);
 
@@ -33,6 +35,10 @@ export class Slider
 		slider.setValue = slider_setValue;
 		slider.getValue = slider_getValue;
 		slider.setMaxValue = slider_setMaxValue;
+
+		slider._strategyH = 15;
+		slider._scalaH = 40;
+		slider._mouseMoveValue = 0;
 	
 	
 		var $canvas = $(slider._canvas);	
@@ -130,21 +136,68 @@ function slider_handleMouseDown(e) {
 	// test for possible start of dragging
 	let tr = this.humb_rect();
 
-	if (this.point_in_thumb({x, y}, tr)) {
-		this.dx = x - tr.x - this._img.width / 2;
-	} else {
-		this._value = this.position_2_value(x);
-		this.dx = 0;
+	let act, str;
+
+	if(y < this._headerH + this._scalaH)
+	{
+		//-- зона слайдера
+		if (this.point_in_thumb({x, y}, tr)) {
+			this.dx = x - tr.x - this._img.width / 2;
+		} else {
+			this._value = this.position_2_value(x);
+			this.dx = 0;
+		}
+
+		this.setup_waiting_mouse_up(true);		
+	}
+	else
+	{
+		//-- ищем стратегию под кликом
+		let val = Math.trunc(this.position_2_value(x)) + 1;
+
+		if(y < this._headerH + this._scalaH + this._strategyH)
+		{
+			//-- хорошая стратегия
+			act = true;
+		}
+		else{
+			//-- ниже плохая стратеия
+			act = false;
+		}
+
+		let strArr = Global.getStrategyArrForDay(val)
+
+		for(let i = 0; i < strArr.length; i++)
+		{
+			str = strArr[i];
+			if(act && str._isActive)
+			{
+				Global.setSelectedStrategy('slider_handleMouseDown1', str._id);
+				break;
+			}
+			else if(!act && !str._isActive)
+			{
+				Global.setSelectedStrategy('slider_handleMouseDown2', str._id);
+				break;
+			}
+		}
+
+		this.redraw();
+
 	}
 
-	this.setup_waiting_mouse_up(true);
+
 
 	//this.redraw();
 }
 
 function slider_handleMouseMove(e)
 {
-	this.is_over = this.point_in_thumb(this.event2point(e), this.humb_rect());
+	let ee = this.event2point(e);
+	this.is_over = this.point_in_thumb(ee, this.humb_rect());
+	this._mouseX = ee.x;
+	this._mouseMoveValue = Math.trunc(this.position_2_value(ee.x));
+	//log(Math.trunc(this.position_2_value(ee.x)))
 	this.redraw();
 }
 
@@ -171,6 +224,10 @@ function slider_setup_waiting_mouse_up(on) {
 
 function slider_redraw()
 {
+	let solution = Global.getCurrentSolution();
+	var prevVal = -1;
+	var val;
+	var y, x, n;
 	//log('redraw = ' +  this._value)
 	var ctx = this._ctx;
 
@@ -180,52 +237,85 @@ function slider_redraw()
 
 	// центральная полоска
 	{
-		y  = this._canvas.height - this._img.width / 2 - 10;
+		y  = this._img.width  + 10 + this._headerH;
 
 		ctx.lineWidth = 4;
-		ctx.lineCap = 'round';
+		//ctx.lineCap = 'round';
 		ctx.beginPath();
 		ctx.moveTo(0, y);
 		ctx.lineTo(this._canvas.width, y);
 		ctx.strokeStyle = '#085e7d'; //--#f7f700
 		ctx.stroke();		
+
 	}
 
 
 	//-- засечки
 	{
-        var prevVal = -1;
-        var val;
-		var y, x;
+
         var tikPos = 0;
         var imgW2 = this._img.width / 2 ;
 
         ctx.beginPath();
         ctx.lineWidth = 1;
+		
 
+		
 
 		for (var i = 0; i <= this._max_value ; i++)
 		{
+			if(this._mouseMoveValue == i)
+			{
+				ctx.strokeStyle = 'black';
+				n = 10;
+			}
+			else{
+				n = 0;
+				ctx.strokeStyle = 'black';
+			}
+			
 			x = (this.value_2_pos(i));
+
+
 
 			if(i % 10 == 0 || i == this._max_value )
 			{
-				ctx.moveTo(x , y - 20);
+				ctx.moveTo(x , y - n - 20);
 			}
 			else{
-				ctx.moveTo(x , y - 15);
+				ctx.moveTo(x , y - n - 15);
 			}
 
-			ctx.lineTo(x, y);
+			ctx.lineTo(x, y + 15);
 		}
 
 
         ctx.stroke();
+
+
+
+	}
+
+	//-- красная полоса блокировки
+	if(solution)
+	{
+		if(!solution._isComplit && solution._uncomplitDayNumber > 0)
+		{
+			x = this.value_2_pos(solution._uncomplitDayNumber) ;
+
+			ctx.save()
+			ctx.beginPath();
+			ctx.lineWidth = 5;
+			ctx.moveTo(x, y);
+			ctx.lineTo(this._canvas.width, y);
+			ctx.strokeStyle = 'red'; //--#f7f700
+			ctx.stroke();
+			ctx.restore()
+		}
 	}
 
 	//-- Стратегии
 	{
-		let solution = Global.getCurrentSolution();
 
 		if(solution)
 		{
@@ -240,37 +330,82 @@ function slider_redraw()
 			{
 				str = solution._strategyArr[i];
 
-				if(str._isActive)
+				y = this._headerH + this._scalaH ;
 				{
-					y = 5 ;
+					if(str._isActive)
+					{
+						//y = ;
+						if(str._id == selectedId)
+						{
+							lineColor = 'blue';
+						}
+						else{
+							lineColor = 'gray';
+						}
+					}
+					else{
+						y = y + this._strategyH ;
+						if(str._id == selectedId)
+						{
+							lineColor = 'blue';
+						}
+						else{
+							lineColor = 'red';
+						}
+					}
 					
 					//-- основная линия стратегии
 					{
+
+						if(str._dayStart <= str._dayFinish)
+						{
+							n = str._dayFinish
+						}
+						else{
+							n = Config._dayCount;
+						}
+
+						strX1 = this.value_2_pos(str._dayStart) ;
+						strX2 = this.value_2_pos(n) ;
+
+
+
+						//-- засечка
+						ctx.beginPath();
+						ctx.lineWidth = 1;
+						ctx.strokeStyle = lineColor;
+						x = (strX1) - 7  ;
+						ctx.moveTo(x , y);						
+						ctx.lineTo(x , y + 18);						
+						x = (strX2)  ;
+						ctx.moveTo(x , y);						
+						ctx.lineTo(x , y + 18);
+						ctx.stroke();
+
+						//-- прямоуголник
 						ctx.beginPath();
 						ctx.globalAlpha = 1;
-						ctx.lineWidth = 5;
+						ctx.fillStyle = lineColor;
+						ctx.rect(strX1 - 7, y, (strX2 - strX1) + 7 , this._strategyH)
 
 						if(str._id == selectedId)
 						{
-							ctx.strokeStyle = 'blue';
+							ctx.lineWidth = 3;
+							ctx.strokeStyle = 'yellow';
+							ctx.stroke()
 						}
-						else{
-							ctx.strokeStyle = 'gray';
-						}
 
-						strX1 = this.value_2_pos(str._dayStart) - 3;
-						ctx.moveTo(strX1 , y);
+						ctx.fill();
 
-						strX2 = this.value_2_pos(str._dayFinish) - 2;
-						ctx.lineTo(strX2 , y);					
 
-						ctx.stroke();						
+			
 					}
 
 					//-- линия маски
 					//-- LEVEL SETTINGS
 					if(Config._level != 0)
 					{
+						/*
 						y = y + 6
 						lineColor = 'green';
 						if(str._maskKoef > 0)
@@ -297,10 +432,12 @@ function slider_redraw()
 						ctx.moveTo(strX1 , y);
 						ctx.lineTo(strX2 , y);
 						ctx.stroke();
+						*/
 					}
 
 					//-- линия Дистант
 					{
+						/*
 						y = y + 6
 						lineColor = 'red';
 						if(str._distPercent > 0)
@@ -314,10 +451,7 @@ function slider_redraw()
 						}
 						else{
 							aa = 0.09;
-						}
-
-
-						
+						}		
 
 						ctx.beginPath();
 						ctx.lineWidth = 3;
@@ -326,10 +460,12 @@ function slider_redraw()
 						ctx.moveTo(strX1 , y);
 						ctx.lineTo(strX2 , y);
 						ctx.stroke();
+						*/
 					}
 
 					//-- линия Тестирования
 					{
+						/*
 						y = y + 6
 						lineColor = 'brown';
 						if(str._testPercent > 0)
@@ -345,9 +481,6 @@ function slider_redraw()
 							aa = 0.09;
 						}
 
-
-						
-
 						ctx.beginPath();
 						ctx.lineWidth = 3;
 						ctx.globalAlpha = aa;
@@ -355,6 +488,7 @@ function slider_redraw()
 						ctx.moveTo(strX1 , y);
 						ctx.lineTo(strX2 , y);
 						ctx.stroke();
+						*/
 					}
 
 				}
@@ -363,6 +497,28 @@ function slider_redraw()
 
 	}
 
+	//-- день под мышкой
+	{
+		x = this._mouseX - 5;
+		y =  15;
+
+		ctx.beginPath();
+		ctx.globalAlpha = 1;
+		ctx.font = "bold 12px Arial";
+		ctx.fillStyle = 'black';
+		ctx.fillText(this._mouseMoveValue + 0, x, y)
+		ctx.fill();
+
+		/*
+		x = x + 2.5;
+		ctx.beginPath();
+		ctx.lineWidth = 0.5;
+		ctx.strokeStyle = 'black'
+		ctx.moveTo(x, this._headerH);
+		ctx.lineTo(x, this._canvas.height - 5);
+		ctx.stroke();
+		*/
+	}
 
 	//-- Указатель
 	{
@@ -370,7 +526,7 @@ function slider_redraw()
 
 		ctx.globalAlpha = 1;
 		ctx.drawImage(this._img, tr.x, tr.y);
-		ctx.globalAlpha = 1;		
+		
 	}
 
 }
@@ -393,7 +549,7 @@ function slider_humb_rect()
 	return {
 		x: xx - this._img.width/2,
 		//y: this._canvas.height / 2 - this._img.height / 2,
-		y: this._canvas.height - this._img.height - 5 ,
+		y: 10 + this._headerH ,
 		w: this._img.width,
 		h: this._img.height
 	};

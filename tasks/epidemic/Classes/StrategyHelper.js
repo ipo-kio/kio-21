@@ -2,15 +2,15 @@
 import { Global } from './Global.js'
 import { Funcs } from './Funcs.js'
 import { InterfaceHelper } from "./InterfaceHelper";
+import { Config } from './Config.js';
 
 export class StrategyHelper
 {
     static _newDivId = 1;
 
     static addNewManually()
-    {
-        
-
+    {        
+        document.getElementById('add_str_btn').disabled = true;
         let str = StrategyHelper.createEmptyStarategy(StrategyHelper._newDivId);
 
         StrategyHelper._newDivId++;
@@ -19,9 +19,20 @@ export class StrategyHelper
         str._dayFinish = str._dayStart + 1;
 
 
-        InterfaceHelper.createStrategyDiv(str);
+        let div = InterfaceHelper.createStrategyDiv(str);
 
-        $('#strategy_' + str._id).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        $('#strategy_' + str._id).fadeOut(100).fadeIn(100).promise().done(function(){
+
+            document.getElementById('add_str_btn').disabled = false;
+        }
+        );
+        
+
+        InterfaceHelper.showStrategyDiv('addNewManually', div, str._dayStart);
+        Global.setSelectedStrategy('addNewManually', str._id);
+
+
+        return div;
     }
 
     static createEmptyStarategy(strId)
@@ -42,6 +53,7 @@ export class StrategyHelper
         str._distGreenCount = 0;
         str._distGrYellowCount = 0;
         str._distRedCount = 0;
+       
 
         return str;
     }
@@ -72,6 +84,13 @@ export class StrategyHelper
             }
         }
     
+        if(result > Config._dayCount)
+        {
+            result = Config._dayCount - 1;
+        }
+        else if(result < 1){
+            result = 1;
+        }
 
         return result;
     }

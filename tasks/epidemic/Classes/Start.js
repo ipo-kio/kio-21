@@ -19,172 +19,37 @@ export class Start
 		//superDiv.style.height = (H) + 'px'
 		domNode.appendChild(superDiv);
 
-		//------strategy--patternDiv------------
-
-
-		let s = '<div>\
-			<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
-			<span class="str_cap">Промежуток дней</span>\
-			<button class="str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
-			<span style="float: right;">\
-				<button id="str_del_" onclick="" class="str_del_btn" title="Удалить стратегию" >&#9932;</button>\
-			</span>\
-		</div>\
-			<table class="str_t1">\
-				<tr>\
-					<td>\
-						<input type="text" id="str_from_" value="1" class="str_day">\
-						<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
-						<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
-					</td>\
-					<td>-</td>\
-					<td>\
-						<input type="text" id="str_to_" value="1" class="str_day">\
-						<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
-						<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
-					</td>\
-				</tr>\
-				<tr>\
-					<td></td>\
-					<td></td>\
-					<td></td>\
-				</tr>\
-			</table>';
-
-			//-- LEVEL SETTINGS
-			if(Config._level == 2)
-			{
-				s = s + '<span class="str_prop_name">Маски</span>\
-				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
-				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
-				<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
-				<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
-				<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
-				<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>';			
-			}
-			else if(Config._level == 1)
-			{
-				s = s + '<span class="str_prop_name">Маски</span>\
-				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
-				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>';			
-			}
-
-
-
-
-			s = s + '<table class="str_t1">\
-			<tr>\
-			<td><span class="str_prop_name">Карантин</span></td>\
-			<td>';
-
-			//-- LEVEL SETTINGS
-			if(Config._level == 0)
-			{
-				s = s + '<input type="text" id="str_dist_" value="30" disabled class="str_day">%';
-				s = s + '<input type="checkbox" id="str_dist_act_" >';
-			}
-			else{
-				s = s + '<input type="text" id="str_dist_" value="0" class="str_day">%\
-				<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
-				<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
-			}
-
-			s = s + '</td>\
-			</tr>\
-			<tr>\
-			<td><span class="str_prop_name">Тестирование</span></td>\
-			<td>\
-			<input type="text" id="str_test_" value="0" class="str_day">%\
-			<button class="str_day_plusminus" id="str_test_minus_" onclick="" pm="minus" >-</button>\
-			<button class="str_day_plusminus" id="str_test_plus_" onclick="" pm="plus">+</button>\
-			</td>\
-			</tr>\
-			</table>\
-			';
-
-
-		let divSSPattern = document.createElement('div')
-		divSSPattern.innerHTML = s;
-		divSSPattern.id = 'strategy_';
-		divSSPattern.className = 'str_div';
-		divSSPattern.setAttribute('title', '')
-		divSSPattern.setAttribute('mask_koef', '0')
-		superDiv.appendChild(divSSPattern);
-
-		//-------------------
-
-		let divSS = document.createElement('div')
-		divSS.innerHTML = '';
-		divSS.id = 'div_str_super';
-		superDiv.appendChild(divSS);
-
-		let divSControls = document.createElement('div')
-		divSControls.innerHTML = '';
-		divSControls.id = 'div_str_controlls';
-		divSS.appendChild(divSControls);
-
-		btn = document.createElement('button')
-		btn.innerHTML = 'Добавить стратегию'; // <<
-		btn.className = 'btn_str_control';
-		btn.setAttribute('title', 'Добавить стратегию');
-		divSControls.appendChild(btn);
-		btn.addEventListener('click', function()
-		{
-			Controller.addStrategy();
-		})
-
-		//-- конейнер для стратегий
 		div = document.createElement('div')
 		div.innerHTML = '';
-		div.id = 'strategy_cont';
-		divSS.appendChild(div);
-
-		//--------------------
-
-		div = document.createElement('div')
-		div.innerHTML = '';
-		div.className = 'div_canvas'
-		div.id = 'div_canvas';
+		div.id = 'div_slider';
 		superDiv.appendChild(div);
 
-		Global._canvas1W = 800;
-		Global._canvas1H = 400;
+		let img = Epidemic.kioapi.getResource('slider_p');
 
-		let canvas1 = document.createElement('canvas');
-		canvas1.id = 'canvas1';
-		canvas1.width = Global._canvas1W;
-		canvas1.height = Global._canvas1H;
-		canvas1.className = 'canvas1'
-		div.appendChild(canvas1);
+		Global._slider = Slider.Create(div, 900, 100, 'canvas_slider'
+		,img
+		, 0, Config._dayCount
+		);
 
-		Global._ctx = canvas1.getContext('2d');
 
-		div = document.createElement('div')
-		div.innerHTML = '';
-		div.className = 'div_day_info'
-		div.id = 'div_day_info';
-		superDiv.appendChild(div);
+		Global._slider.onvaluechangeManual = function () {
+			// -- тащим руками
 
-		/*
-		Global._canvas2W = 100;
-		Global._canvas2H = 200;
+			let dayNumber = Global._slider.getValue();
 
-		let canvas2 = document.createElement('canvas');
-		canvas2.id = 'canvas2';
-		canvas2.width = Global._canvas2W;
-		canvas2.height = Global._canvas2H;
-		canvas2.className = 'canvas2'
-		div.appendChild(canvas2);
+			if(dayNumber < 1 )
+			{
+				dayNumber = 1;
+			}
+			else  if( dayNumber >= Config._dayCount)
+			{
+				dayNumber = Config._dayCount;
+			}
 
-		Global._ctx2 = canvas2.getContext('2d');
-		*/
+			Controller.go2Day(dayNumber);
+		}		
 
-		//------------------
-		div = document.createElement('div')
-		div.innerHTML = '';
-		div.className = 'div_log'
-		div.id = 'div_log';
-		superDiv.appendChild(div);
+
 
 
 
@@ -289,40 +154,185 @@ export class Start
 		div.appendChild(t);
 		//--------------------
 
-		div = document.createElement('div')
-		div.innerHTML = '';
-		div.id = 'div_slider';
-		superDiv.appendChild(div);
 
-		let img = Epidemic.kioapi.getResource('slider_p');
 
-		Global._slider = Slider.Create(div, 800, 70, 'canvas_slider'
-		,img
-		, 0, Config._dayCount
-		);
-
-		Global._slider.onvaluechangeManual = function () {
-			// -- тащим руками
-
-			let dayNumber = Global._slider.getValue();
-
-			if(dayNumber < 1 )
-			{
-				dayNumber = 1;
-			}
-			else  if( dayNumber >= Config._dayCount)
-			{
-				dayNumber = Config._dayCount;
-			}
-
-			Controller.go2Day(dayNumber);
-		}
 
 		Global._slider.onvaluechangeExternal = function () {
 			// -- изменяем программно
 			//log('22222 = '+ _slider.getValue());
 		
 		}
+
+		//------strategy--patternDiv------------
+
+
+		let s = '<div>\
+			<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
+			<span class="str_cap">Промежуток дней</span>\
+			<button class="str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
+			<span style="float: right;">\
+				<button id="str_del_" onclick="" class="str_del_btn" title="Удалить стратегию" >&#9932;</button>\
+			</span>\
+		</div>\
+			<table class="str_t1">\
+				<tr>\
+					<td>\
+						<input type="text" id="str_from_" value="1" class="str_day">\
+						<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
+						<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
+					</td>\
+					<td>-</td>\
+					<td>\
+						<input type="text" id="str_to_" value="1" class="str_day">\
+						<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
+						<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
+					</td>\
+				</tr>\
+				<tr>\
+					<td></td>\
+					<td></td>\
+					<td></td>\
+				</tr>\
+			</table>';
+
+			//-- LEVEL SETTINGS
+			if(Config._level == 2)
+			{
+				s = s + '<span class="str_prop_name">Маски</span>\
+				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
+				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
+				<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
+				<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
+				<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
+				<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>';			
+			}
+			else if(Config._level == 1)
+			{
+				s = s + '<span class="str_prop_name">Маски</span>\
+				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
+				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>';			
+			}
+
+
+
+
+			s = s + '<table class="str_t1">\
+			<tr>\
+			<td><span class="str_prop_name">Карантин</span></td>\
+			<td>';
+
+			//-- LEVEL SETTINGS
+			if(Config._level == 0)
+			{
+				s = s + '<input type="text" id="str_dist_" value="30" disabled class="str_day">%';
+				s = s + '<input type="checkbox" id="str_dist_act_" >';
+			}
+			else{
+				s = s + '<input type="text" id="str_dist_" value="0" class="str_day">%\
+				<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
+				<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
+			}
+
+			s = s + '</td>\
+			</tr>\
+			<tr>\
+			<td><span class="str_prop_name">Тестирование</span></td>\
+			<td>\
+			<input type="text" id="str_test_" value="0" class="str_day">%\
+			<button class="str_day_plusminus" id="str_test_minus_" onclick="" pm="minus" >-</button>\
+			<button class="str_day_plusminus" id="str_test_plus_" onclick="" pm="plus">+</button>\
+			</td>\
+			</tr>\
+			</table>\
+			';
+
+
+		let divSSPattern = document.createElement('div')
+		divSSPattern.innerHTML = s;
+		divSSPattern.id = 'strategy_';
+		divSSPattern.className = 'str_div';
+		divSSPattern.setAttribute('title', '')
+		divSSPattern.setAttribute('mask_koef', '0')
+		superDiv.appendChild(divSSPattern);
+
+		//-------------------
+
+		let divSS = document.createElement('div')
+		divSS.innerHTML = '';
+		divSS.id = 'div_str_super';
+		superDiv.appendChild(divSS);
+
+		let divSControls = document.createElement('div')
+		divSControls.innerHTML = '';
+		divSControls.id = 'div_str_controlls';
+		divSS.appendChild(divSControls);
+
+
+
+		//-- конейнер для стратегий
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'strategy_cont';
+		div.className = 'strategy_cont';
+		divSS.appendChild(div);
+
+		//--------------------
+
+		btn = document.createElement('button')
+		btn.id = 'add_str_btn'
+		btn.innerHTML = 'Добавить стратегию'; // <<
+		btn.className = 'btn_str_control';
+		btn.setAttribute('title', 'Добавить стратегию');
+		divSS.appendChild(btn);
+		btn.addEventListener('click', function()
+		{
+			Controller.addStrategy();
+		})
+		//----
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_canvas'
+		div.id = 'div_canvas';
+		superDiv.appendChild(div);
+
+		Global._canvas1W = 800;
+		Global._canvas1H = 400;
+
+		let canvas1 = document.createElement('canvas');
+		canvas1.id = 'canvas1';
+		canvas1.width = Global._canvas1W;
+		canvas1.height = Global._canvas1H;
+		canvas1.className = 'canvas1'
+		div.appendChild(canvas1);
+
+		Global._ctx = canvas1.getContext('2d');
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_day_info'
+		div.id = 'div_day_info';
+		superDiv.appendChild(div);
+
+		/*
+		Global._canvas2W = 100;
+		Global._canvas2H = 200;
+
+		let canvas2 = document.createElement('canvas');
+		canvas2.id = 'canvas2';
+		canvas2.width = Global._canvas2W;
+		canvas2.height = Global._canvas2H;
+		canvas2.className = 'canvas2'
+		div.appendChild(canvas2);
+
+		Global._ctx2 = canvas2.getContext('2d');
+		*/
+		//------------------
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.className = 'div_log'
+		div.id = 'div_log';
+		superDiv.appendChild(div);
 
 		Global.setZarazKoef()
 

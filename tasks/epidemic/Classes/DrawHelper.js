@@ -52,7 +52,7 @@ export class DrawHelper
         let testH = 150;
         let bolW = 200;
 
-        
+
     
 
         if(day._strategy != null)
@@ -252,6 +252,8 @@ export class DrawHelper
 
 
 
+
+
         //-- если прыгаем по дням
         if(!Global._isPlay)
         {
@@ -290,9 +292,27 @@ export class DrawHelper
             }
         }
 
+        if(!day._isComplit)
+        {
+            y = headerH - headerH * n;
+            x = 0;
+                 
+            ctx.fillStyle = 'red';
+            ctx.globalAlpha = 0.7;
+            ctx.fillRect(0, headerH, W, H); 
+
+            ctx.beginPath();
+            ctx.font = "bold 30px Arial";
+            ctx.fillStyle = 'black';
+            ctx.fillText('Переполнение больницы', 200, 250);
+            ctx.fill(); 
+
+            return;
+        }
+
         Global._manArr.forEach((element) => {element._stuk = false;})
 
-  
+        
         for(let i=0; i < Global._manArr.length; i++)
         {
             man = Global._manArr[i];

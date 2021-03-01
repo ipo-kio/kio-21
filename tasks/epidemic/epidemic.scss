@@ -44,12 +44,18 @@ height1: 600px;
 	margin: 4px;
 }
 
+.strategy_cont
+{
+	display: inline-block;
+}
+
 .str_div
 {
 	padding: 2px;
 	background-color: bisque;
-	border: solid black 2px;
+	border: solid blue 3px;
 	display: none;
+	margin-left: 300px;
 }
 
 .str_del_btn

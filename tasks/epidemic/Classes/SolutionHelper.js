@@ -13,6 +13,7 @@ export class SolutionHelper
         solution._totalAvr = 0;
 		solution._strategyArr = [];
 		solution._isComplit = true;
+		solution._uncomplitDayNumber = 0
 
 		return solution;
 	}

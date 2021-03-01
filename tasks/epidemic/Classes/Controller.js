@@ -67,16 +67,19 @@ export class Controller
 
     static addStrategy()
     {
-        StrategyHelper.addNewManually();
+        let div = StrategyHelper.addNewManually();
+        
         Global.recalcFromInterface('addStrategy');
     }
 
     static strDelete(strId)
     {
         let strDiv = document.getElementById('strategy_' + strId);
-        $('#strategy_' + strId).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).promise().done(function(){
+        $('#strategy_' + strId).fadeOut(100).fadeIn(100).promise().done(function(){
             strDiv.parentNode.removeChild(strDiv);
+            
             Global.recalcFromInterface('strDelete ');
+            Global.setSelectedStrategy('strDelete', 0);
         });
 
         return false;

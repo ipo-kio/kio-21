@@ -24,6 +24,30 @@ export class Global
 	static _ctx2;
 	static _selectedStrategyId = -1;
 
+	static getStrategyByDay(dayNumber)
+	{
+		let solutionObject = Global._currentSolution;
+		return Global.getStrategyForDay(dayNumber, solutionObject);
+	}
+
+	static getStrategyById(strategyId)
+	{
+		let strategy = null;
+		let solutionObject = Global._currentSolution;
+
+		for(let i=0; i < solutionObject._strategyArr.length; i++)
+		{
+			strategy = solutionObject._strategyArr[i];
+
+			if(strategy._id == strategyId) 
+			{
+				return strategy;
+			}
+		}
+
+		return null;
+	}
+
     static getStrategyForDay(dayNumber, solutionObject)
     {
 		let strategy = null;
@@ -42,6 +66,32 @@ export class Global
 		}
 
 		return null;
+    }
+
+	static getStrategyArrForDay(dayNumber)
+    {
+		let strategy = null;
+		let solutionObject = Global._currentSolution;
+		let resultArr = [];
+		
+		for(let i=0; i < solutionObject._strategyArr.length; i++)
+		{
+			strategy = solutionObject._strategyArr[i];
+
+			if(dayNumber >= strategy._dayStart  && dayNumber <= strategy._dayFinish)
+			{
+				resultArr.push(strategy);
+			}
+			else{
+				if(dayNumber >= strategy._dayStart  && strategy._dayStart > strategy._dayFinish)
+				{
+					//-- это для плохих стратегий у которых начало позже конца
+					resultArr.push(strategy);
+				}
+			}
+		}
+
+		return resultArr;
     }
 
     static getCurrentDayIndex()
@@ -128,15 +178,24 @@ export class Global
 		}
 	}
 
-	static setSelectedStrategy(strategyId)
+	static setSelectedStrategy(src, strategyId)
 	{
+		log('Global.setSelectedStrategy('+ strategyId+') src=' + src)
+		if(strategyId == 0)
+		{
+			if(Global._currentSolution._strategyArr.length > 0)
+			{
+				strategyId = Global._currentSolution._strategyArr[0]._id;
+			}
+		}
 		Global._selectedStrategyId = strategyId;
+		InterfaceHelper.showStrategyDivByStrId('setSelectedStrategy', strategyId);
 		Global._slider.redraw();
 	}
 
 	static setZarazKoef()
 	{
-		let s = document.getElementById('zaraz_koef').value.trim();
+		let s = document.getElementById('zaraz_koef').value.trim().replace(' ', '',).replace(',', '.',);
 
         let zz = parseFloat(s);
 
@@ -152,7 +211,7 @@ export class Global
 
 		//---------------------------------
 
-		s = document.getElementById('prof_kt').value.trim();
+		s = document.getElementById('prof_kt').value.trim().replace(' ', '',).replace(',', '.',);
 
         zz = parseFloat(s);
 

@@ -31,6 +31,8 @@ export class InterfaceHelper
             InterfaceHelper.createStrategyDiv(strategy);
         }
 
+
+
     }
 
     static setDay(src, dayNumber)
@@ -268,7 +270,64 @@ export class InterfaceHelper
         {
             Controller.strMaskSet(newId, strategy._maskKoef + '');
         }
+
+        return newDiv;
         
+    }
+
+    static showStrategyDivByStrId(src, selectedStrId)
+    {
+        log('InterfaceHelper.showStrategyDivByStrId('+selectedStrId+') src=' + src)
+
+        let strategy = Global.getStrategyById(selectedStrId);
+
+        if(strategy == null) return;
+
+        let dayStart = strategy._dayStart;
+
+        let div, strId
+        let arr = document.getElementsByClassName('str_div')
+
+
+        for(let i=0; i < arr.length; i++)
+        {
+            div = arr[i];
+            strId = div.getAttribute('str_id');
+            if(strId == null) continue; //-- это шаблон
+
+            if(strId == selectedStrId)
+            {
+                InterfaceHelper.showStrategyDiv('showStrategyDivByStrId', div, dayStart);
+                return;
+            }
+
+        }
+    }
+
+    static showStrategyDiv(src, strDiv, dayStart)
+    {
+        log('showStrategyDiv() src=' + src)
+        let div, strId;
+        let arr = document.getElementsByClassName('str_div')
+
+        for(let i=0; i < arr.length; i++)
+        {
+            div = arr[i];
+            strId = div.getAttribute('str_id');
+            if(strId == null) continue; //-- это шаблон
+
+            if(strDiv.id == div.id)
+            {
+                div.style.display = 'inline-block'
+                //div.style.marginLeft = (dayStart * 8) + 'px';
+
+                
+            }
+            else{
+                div.style.display = 'none'
+            }
+            
+        }
     }
 
     static strategyDivClick(strDivId, strategyId )
@@ -290,7 +349,7 @@ export class InterfaceHelper
             }
         }
 
-        Global.setSelectedStrategy(strategyId);
+        Global.setSelectedStrategy('strategyDivClick', strategyId);
     }
 }
 
