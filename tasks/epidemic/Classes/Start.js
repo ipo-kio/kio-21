@@ -269,6 +269,12 @@ export class Start
 
 
 
+		div = document.createElement('div')
+		div.innerHTML = 'Не действует';
+		div.id = 'strategy_error';
+		div.className = 'strategy_error';
+		divSS.appendChild(div);
+
 		//-- конейнер для стратегий
 		div = document.createElement('div')
 		div.innerHTML = '';
@@ -289,6 +295,24 @@ export class Start
 			Controller.addStrategy();
 		})
 		//----
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'day_log0';
+		div.className = 'day_log';
+		divSS.appendChild(div);
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'day_log1';
+		div.className = 'day_log';
+		divSS.appendChild(div);
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'day_log2';
+		div.className = 'day_log';
+		divSS.appendChild(div);
+		//--
 
 		div = document.createElement('div')
 		div.innerHTML = '';

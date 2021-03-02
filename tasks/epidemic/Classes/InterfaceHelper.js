@@ -58,6 +58,37 @@ export class InterfaceHelper
         }
         
         Global._slider.setValue(dayNumber);
+
+
+        let day = Global._dayArr[dayNumber-1];
+
+        let t ;
+
+        t = document.getElementById('day_log0');
+        t.innerHTML = 'Перед тестированием';
+        t.innerHTML += '<br>Gz = ' + day._greenRabCount1;
+        t.innerHTML += '<br>Yz = ' + day._yellowRabCount1;
+        t.innerHTML += '<br>Rz = ' + day._redRabCount1;
+        t.innerHTML += '<br>Bz = ' + day._blueRabCount1;
+
+        t = document.getElementById('day_log1');
+        t.innerHTML = '';
+        t.innerHTML += '<br>Больница: ' + day._bolnicaCount + '(+' + day._bolnicaDayAdd + ')';
+        t.innerHTML += '<br>Карантин сумма: ' + day._toDistForDay;
+        t.innerHTML += '<br>Карантин Карантин: ' + day._toDistForDayK;
+        t.innerHTML += '<br>Карантин Карантин (новые): ' + day._toDistForDayKone;
+        t.innerHTML += '<br>Карантин Тестирование: ' + day._toDistForDayT;
+        t.innerHTML += '<br>Карантин Тестирование (новые): ' + day._toDistForDayTone;       
+        t.innerHTML += '<br>Заражение (новые): ' + day._zarazPlus;
+        t.innerHTML += '';
+
+        t = document.getElementById('day_log2');
+        t.innerHTML = 'В конце дня (переход-больница-карантин-тестирование-заражение)';
+        t.innerHTML += '<br>Gz = ' + day._greenRabCount;
+        t.innerHTML += '<br>Yz = ' + day._yellowRabCount;
+        t.innerHTML += '<br>Rz = ' + day._redRabCount;
+        t.innerHTML += '<br>Bz = ' + day._blueRabCount;
+
     }
 
     static createStrategyDiv(strategy)
@@ -307,7 +338,7 @@ export class InterfaceHelper
     static showStrategyDiv(src, strDiv, dayStart)
     {
         log('showStrategyDiv() src=' + src)
-        let div, strId;
+        let div, strId, s;
         let arr = document.getElementsByClassName('str_div')
 
         for(let i=0; i < arr.length; i++)
@@ -319,9 +350,17 @@ export class InterfaceHelper
             if(strDiv.id == div.id)
             {
                 div.style.display = 'inline-block'
-                //div.style.marginLeft = (dayStart * 8) + 'px';
-
+                //div.style.marginLeft = (dayStart * 8) + 'px';         
                 
+                if(div.style.backgroundColor == 'red')
+                {
+                    s = 'Не действует'
+                }
+                else{
+                    s = '';
+                }
+
+                document.getElementById('strategy_error').innerHTML = s;
             }
             else{
                 div.style.display = 'none'

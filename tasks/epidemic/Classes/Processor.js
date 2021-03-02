@@ -23,16 +23,26 @@ export class Processor
             let redCount = 0;
             let blueCount = 0;
             let strategy;
-            let kY, ySum;
+            let kY
+            let ySum = 0;
             let totalEE = 0;
             let zarazByDay;
-            let zAdd;
+            let zAdd = 0;
             let toDistCnt;
             let toDistForDay;
+            let toDistForDayT;
+            let toDistForDayTone;
+            let toDistForDayK;
+            let toDistForDayKone;
+            let bolnicaDayAdd;
             let toTestForDay;
             let toTestCnt;
             let redRabCount;
             let yellowRabCount;
+            let yellowRabCount1;
+            let blueRabCount1;
+            let greenRabCount1;
+            let redRabCount1;
             let bolnicaCount; //-- счетчик оставшихся мест в больнице
             let logStr = '';
             let greenRabCount;
@@ -124,10 +134,18 @@ export class Processor
                 redRabCount = 0;
                 blueRabCount = 0;
                 yellowRabCount = 0;
+                yellowRabCount1 = 0;
+                greenRabCount1 = 0;
+                redRabCount1 = 0;
                 bolnicaCount = Config._bolnicaMax;
                 bolnicaFillCount = 0;
                 toDistForDay = 0;
+                toDistForDayT = 0;
+                toDistForDayTone = 0;
+                toDistForDayK = 0;
+                toDistForDayKone = 0;
                 toTestForDay = 0;
+                bolnicaDayAdd = 0
 
                 if(prevDay != null)
                 {
@@ -270,7 +288,7 @@ export class Processor
                                     bolnicaFillCount++;
                                     bolnicaCount--;
                                     redRabCount--
-
+                                    bolnicaDayAdd++
                                     if(bolnicaCount == 0)
                                     {
                                         //break;
@@ -295,6 +313,34 @@ export class Processor
             
             //-- определим дистанционщиков (карантин)
             {
+
+                // если прекратилось действие предыдущей стратегии, то надо выпустить всех из карантина
+                //--перед началом действия следующей стратегии
+                if(strategy == null
+                    || (strategy && strategy._dayStart == dayNumber)
+                )
+                {
+                    for(let j=0; j < Global._manArr.length; j++)
+                    {
+                        man = Global._manArr[j];
+
+                        if(man._distByDayDic.hasOwnProperty(dayNumber - 1))
+                        {
+                            if(man._color == 'green')
+                            {
+                                greenRabCount++;
+                            }
+                            else if(man._color == 'yellow')
+                            {
+                                yellowRabCount++;
+                            }
+                            else if(man._color == 'red')
+                            {
+                                redRabCount++;
+                            }  
+                        }
+                    }
+                }
 
               let distGreenCount = 0;
               let distYellowCount = 0;
@@ -343,7 +389,9 @@ export class Processor
                         else if(man._color == 'red')
                         {
                             distRedCount--;
-                        }                        
+                        }         
+                        
+                        toDistForDayK++
                         
                         continue;
                     }
@@ -355,6 +403,7 @@ export class Processor
                         {
                             man._distByDayDic[dayNumber] = 1;
                             toDistForDay++;
+                            toDistForDayT++
                         }
                         else
                         {
@@ -371,6 +420,8 @@ export class Processor
                             man._distStrId = strategyId;
                             greenRabCount--
                             toDistForDay++;
+                            toDistForDayK++
+                            toDistForDayKone++
                         }         
                         if(man._color == 'yellow' && distYellowCount > 0)
                         {
@@ -379,6 +430,8 @@ export class Processor
                             man._distStrId = strategyId;
                             yellowRabCount--
                             toDistForDay++;
+                            toDistForDayK++
+                            toDistForDayKone++
                         } 
                         if(man._color == 'red' && distRedCount > 0)
                         {
@@ -387,6 +440,8 @@ export class Processor
                             man._distStrId = strategyId;
                             redRabCount--
                             toDistForDay++;
+                            toDistForDayK++
+                            toDistForDayKone++
                         }                                                                                                                               
                     }
                 }
@@ -471,6 +526,10 @@ export class Processor
                 
             }
 
+            greenRabCount1 = greenRabCount
+            yellowRabCount1 = yellowRabCount
+            redRabCount1 = redRabCount;
+            blueRabCount1 = blueRabCount;
 
             //-- тестирование. Новые
             //-- берем процент для каждого цвета кроме Синих
@@ -481,7 +540,7 @@ export class Processor
                 let testYellowCount = StrategyHelper.getTestColorCount(strategy, yellowRabCount);
                 let testRedCount = StrategyHelper.getTestColorCount(strategy, redRabCount);
 
-                //log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
+                log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
 
                 {
                     for(let j=0; j < Global._manArr.length; j++)
@@ -495,6 +554,7 @@ export class Processor
                             //-- продилм ему сидение Дома, но он уже не в тестировании
                             man._testByDayDic[dayNumber] = 1;
                             man._distByDayDic[dayNumber] = 1;
+                            //toDistForDayT++
                         }
 
                         if(
@@ -519,6 +579,8 @@ export class Processor
                                 man._testStrId = strategyId;
                                 toTestForDay++;
                                 toDistForDay++;
+                                toDistForDayT++
+                                toDistForDayTone++
                             }
                             else if(man._color == 'red' && testRedCount > 0)
                             {
@@ -530,6 +592,8 @@ export class Processor
                                 man._testStrId = strategyId;
                                 toTestForDay++;
                                 toDistForDay++;
+                                toDistForDayT++
+                                toDistForDayTone++
                             }                            
                         }
                     }                    
@@ -541,6 +605,8 @@ export class Processor
 
             //-- процесс заражения для этого дня. Происходит после ежедневного перехода состояний (смена цветов)
             {
+                zAdd = 0
+
                 if(dayNumber == 1) //-- первый день обрабатываем особо. В нем никто не заражается
                 {
                     ySum = 0;
@@ -553,7 +619,8 @@ export class Processor
                         , strategy, toDistForDay); 
                     
                     logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=+' + zarazByDay.toFixed(2) 
-                    +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
+                    +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount 
+                    + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
 
                     //--Накапливаем, т.к. количество может быть меньше единицы
                     ySum = ySum + zarazByDay;
@@ -565,6 +632,7 @@ export class Processor
                 {
                     n = Math.trunc(ySum); //-- если накопилось целое, то конвертируем его цвета (заражаем)
                     n1 = n;
+                    
     
                     for(let j=0; j < Global._manArr.length; j++)
                     {
@@ -668,7 +736,19 @@ export class Processor
                 day._blueRabCount = blueRabCount;
                 day._greenRabCount = greenRabCount;
                 day._yellowRabCount = yellowRabCount;
-                
+
+                day._redRabCount1 = redRabCount1;
+                day._greenRabCount1 = greenRabCount1;
+                day._yellowRabCount1 = yellowRabCount1;
+                day._blueRabCount1 = blueRabCount1;
+
+                day._toDistForDayK = toDistForDayK;
+                day._toDistForDayKone = toDistForDayKone;
+                day._toDistForDayT = toDistForDayT;
+                day._toDistForDayTone = toDistForDayTone;
+                day._toDistForDay = toDistForDay;
+                day._bolnicaDayAdd = bolnicaDayAdd;
+
     
                 Global._dayArr.push(day);
 

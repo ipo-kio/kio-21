@@ -337,17 +337,17 @@ function slider_redraw()
 						//y = ;
 						if(str._id == selectedId)
 						{
-							lineColor = 'blue';
+							lineColor = 'green';
 						}
 						else{
-							lineColor = 'gray';
+							lineColor = '#2cdb3d';// 'lightgreen';
 						}
 					}
 					else{
 						y = y + this._strategyH ;
 						if(str._id == selectedId)
 						{
-							lineColor = 'blue';
+							lineColor = 'brown';
 						}
 						else{
 							lineColor = 'red';
@@ -499,6 +499,16 @@ function slider_redraw()
 
 	//-- день под мышкой
 	{
+		/*
+		if(Global._isPlay)
+		{
+			x = this.value_2_pos(this.value) ;
+		}
+		else
+		{
+			x = this._mouseX - 5;			
+		}
+		*/
 		x = this._mouseX - 5;
 		y =  15;
 

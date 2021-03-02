@@ -55,7 +55,22 @@ height1: 600px;
 	background-color: bisque;
 	border: solid blue 3px;
 	display: none;
-	margin-left: 300px;
+}
+.strategy_error
+{
+	display: inline-block;
+	font-size: 30px;
+	color:  red;
+	font-weight: bold;
+	width: 200px;
+	padding-left: 100px;
+}
+
+.day_log
+{
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 50px;
 }
 
 .str_del_btn
