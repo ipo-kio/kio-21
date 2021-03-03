@@ -51,7 +51,11 @@ export class Start
 
 
 
-
+		t = document.createElement('span')
+		t.id = 'day_cap'
+		t.className = 'day_cap'
+		t.innerHTML = '0';
+		div.appendChild(t);
 
 		//--------------------
 
@@ -138,6 +142,42 @@ export class Start
 		t.className = 'input_txt'
 		div.appendChild(t);
 
+		t = document.createElement('span')
+		t.id = 'rb_cap'
+		t.className = 'prop_cap'
+		t.innerHTML = 'R-B';
+		div.appendChild(t);
+
+		t = document.createElement('input')
+		t.type = 'text'
+		t.value = '60';
+		t.id = 'rb_kt';
+		t.className = 'input_txt'
+		div.appendChild(t);
+
+		//--------------------------
+
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'div_params';
+		div.className = 'div_params';
+		superDiv.appendChild(div);
+
+		//-------
+		t = document.createElement('span')
+		t.id = 'ystart_cap'
+		t.className = 'prop_cap'
+		t.innerHTML = 'Y старт';
+		div.appendChild(t);
+
+		t = document.createElement('input')
+		t.type = 'text'
+		t.value = '1';
+		t.id = 'ystart_kt';
+		t.className = 'input_txt'
+		div.appendChild(t);
+
+		//---------
 		btn = document.createElement('button');
 		btn.innerHTML = 'Перерасчет'; 
 		btn.className = '';
@@ -147,11 +187,7 @@ export class Start
 			Controller.recalc(); 
 		})
 
-		t = document.createElement('span')
-		t.id = 'day_cap'
-		t.className = 'day_cap'
-		t.innerHTML = '0';
-		div.appendChild(t);
+
 		//--------------------
 
 
@@ -270,7 +306,7 @@ export class Start
 
 
 		div = document.createElement('div')
-		div.innerHTML = 'Не действует';
+		div.innerHTML = '';
 		div.id = 'strategy_error';
 		div.className = 'strategy_error';
 		divSS.appendChild(div);

@@ -273,11 +273,11 @@ export class Processor
 
                    
                         {
-                            if(man._firstRedDay == dayNumber
-                                || man._distByDayDic.hasOwnProperty(dayNumber - 1))
+                            //if(man._firstRedDay == dayNumber &&  man._distByDayDic.hasOwnProperty(dayNumber - 1))
+                            if(man._firstRedDay == dayNumber)
                             {
                                 //-- первый день еще гуляет
-                                //-- либо только вышел из Дома
+                                //-- но из Карантина сразу в больницу
                             }
                             else
                             {
@@ -540,7 +540,7 @@ export class Processor
                 let testYellowCount = StrategyHelper.getTestColorCount(strategy, yellowRabCount);
                 let testRedCount = StrategyHelper.getTestColorCount(strategy, redRabCount);
 
-                log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
+                //log(dayNumber + ' ' +testGreenCount + '(' + greenRabCount + ')-' +  testYellowCount + '(' + yellowRabCount + ')-' +  testRedCount+ '(' + redRabCount + ')-'  + ' bol=' + bolnicaFillCount )
 
                 {
                     for(let j=0; j < Global._manArr.length; j++)
@@ -617,13 +617,27 @@ export class Processor
                     //-- кол. заразившихся в этот день    
                     zarazByDay = Zaraza.getZarazforDay(greenRabCount, yellowRabCount, redRabCount, blueRabCount
                         , strategy, toDistForDay); 
+
+                    ySum = ySum + zarazByDay;
+
+                    let kM = 0;
+                    if(strategy )
+                    {
+                        kM = strategy._maskKoef;
+                    }    
+
+                    kM =  1 / (Math.log2(kM + 2)) ;
+                    
                     
                     logStr = logStr + '<tr><td>' +   dayNumber + ')</td><td> Z=+' + zarazByDay.toFixed(2) 
                     +  '</td><td>Gz=' + greenRabCount + '</td><td>Yz=' + yellowRabCount + '</td><td>Rz=' + redRabCount + '</td><td>Bz=' + blueRabCount 
-                    + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay + '</td></tr>' ;
+                    + '</td><td>K=' + toDistForDay + '</td><td>T=' + toTestForDay +'</td><td>'
+                    + 'Z=(' + greenRabCount + ')*(' + yellowRabCount + '+' + redRabCount + ')*' + kM.toFixed(2) + '*' + Config._zarazKoef  
+                    + ' = ' + zarazByDay.toFixed(2) + ' (' + ySum.toFixed(2) + ')'
+                    + '</td></tr>' ;
 
                     //--Накапливаем, т.к. количество может быть меньше единицы
-                    ySum = ySum + zarazByDay;
+                    
                 }     
 
              

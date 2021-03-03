@@ -196,7 +196,7 @@ function slider_handleMouseMove(e)
 	let ee = this.event2point(e);
 	this.is_over = this.point_in_thumb(ee, this.humb_rect());
 	this._mouseX = ee.x;
-	this._mouseMoveValue = Math.trunc(this.position_2_value(ee.x));
+	this._mouseMoveValue = Math.trunc(this.position_2_value(ee.x - 5));
 	//log(Math.trunc(this.position_2_value(ee.x)))
 	this.redraw();
 }
@@ -264,7 +264,7 @@ function slider_redraw()
 
 		for (var i = 0; i <= this._max_value ; i++)
 		{
-			if(this._mouseMoveValue == i)
+			if(this._mouseMoveValue == i - 1)
 			{
 				ctx.strokeStyle = 'black';
 				n = 10;
@@ -301,7 +301,7 @@ function slider_redraw()
 	{
 		if(!solution._isComplit && solution._uncomplitDayNumber > 0)
 		{
-			x = this.value_2_pos(solution._uncomplitDayNumber) ;
+			x = this.value_2_pos(solution._uncomplitDayNumber-1) ;
 
 			ctx.save()
 			ctx.beginPath();
@@ -374,10 +374,12 @@ function slider_redraw()
 						ctx.beginPath();
 						ctx.lineWidth = 1;
 						ctx.strokeStyle = lineColor;
+
 						x = (strX1) - 7  ;
 						ctx.moveTo(x , y);						
-						ctx.lineTo(x , y + 18);						
-						x = (strX2)  ;
+						ctx.lineTo(x , y + 18);	
+
+						x = (strX2);
 						ctx.moveTo(x , y);						
 						ctx.lineTo(x , y + 18);
 						ctx.stroke();
@@ -516,7 +518,7 @@ function slider_redraw()
 		ctx.globalAlpha = 1;
 		ctx.font = "bold 12px Arial";
 		ctx.fillStyle = 'black';
-		ctx.fillText(this._mouseMoveValue + 0, x, y)
+		ctx.fillText(this._mouseMoveValue + 1, x, y)
 		ctx.fill();
 
 		/*

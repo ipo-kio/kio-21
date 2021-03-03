@@ -224,6 +224,33 @@ export class Global
         Config._kT = zz;
 
 		document.getElementById('prof_cap').innerHTML = 'Затрат на тест = ' + zz
+
+		//---------------------------------
+
+		s = document.getElementById('rb_kt').value.trim().replace(' ', '',).replace(',', '.',);
+
+		zz = parseInt(s, 10);
+
+		if(isNaN(parseInt(s)))
+		{
+			alert('Ошибка значения R-B!!  Применяем по умолчанию = 60 ')
+			zz = 60
+		}  
+
+		Config._toBlueDays = zz;
+
+		document.getElementById('rb_cap').innerHTML = 'R-B=' + zz
+
+		//---------------------------------
+		s = document.getElementById('ystart_kt').value.trim().replace(' ', '',).replace(',', '.',);
+		zz = parseInt(s, 10);
+		if(isNaN(parseInt(s)))
+		{
+			alert('Ошибка значения Y start!!  Применяем по умолчанию = 1 ')
+			zz = 1
+		}  
+		Config._startYCount = zz;
+		document.getElementById('ystart_cap').innerHTML = 'Y start=' + zz
 	}
 
 }
