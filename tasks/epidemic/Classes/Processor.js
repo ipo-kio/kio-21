@@ -52,6 +52,8 @@ export class Processor
             let prevDay = null;
             let isComplit = true;
             let uncomplitDayNumber = 0;
+            let newYellowSum = 0;
+            let newYellowSumPrev = 0;
     
             Global._manArr = [];
             Global._dayArr = [];
@@ -60,34 +62,13 @@ export class Processor
         //-- подготовка людей
         for(i=0; i < Config._manCount; i++)
         {
-			man = new Object();
-			man._color = 'green';
-			man._firstYellowDay = -1;
-			man._firstRedDay = -1;
-			man._firstBlueDay = -1;
-			man._dayColorArr = [];
-			man.x = Global._canvas1W * Math.random() -0;
-			man.y = Global._canvas1H * Math.random() -0;
-			Processor.createVector(man);
-			man._stuk = true;
-			man._id = i;
-			man._lastStukId = i;	
-            man._distByDayDic = {};
-            man._testByDayDic = {};
-            man._bolnicaDayDic = {};
-            man._dayStateArr = [];
-            man._vxSetted = false;
-            man._testDayStart = 0;
-            man._state = 'G';
-            man._stukOff = false;
-            man._distStrId = 0;
-            man._testStrId = 0;
-            
-            
+
+            man = Processor.createNewGreenMan(i, 1);
+                       
 			Global._manArr.push(man);
         }
 
-        //-- первый зараженный Желтый и красный
+        //-- первый зараженный Желтый 
         {
             n = 0;
 
@@ -99,7 +80,6 @@ export class Processor
                 man._color = 'yellow';
                 man._firstYellowDay = 1;
                 man._firstRedDay = -1;
-                man._state = 'Y';
                 n++;
             }
 
@@ -137,7 +117,14 @@ export class Processor
                 yellowRabCount1 = 0;
                 greenRabCount1 = 0;
                 redRabCount1 = 0;
-                bolnicaCount = Config._bolnicaMax;
+                if(Config._level == 2)
+                {
+                    bolnicaCount = Config._bolnicaMax;
+                }
+                else{
+                    bolnicaCount = 99999999999999;
+                }
+                
                 bolnicaFillCount = 0;
                 toDistForDay = 0;
                 toDistForDayT = 0;
@@ -155,12 +142,43 @@ export class Processor
                     blueRabCount = prevDay._blueRabCount;
                 }
                 else{
-                    yellowRabCount = 1;  //-- это первый зараженный
-                    greenRabCount = Config._manCount - 1;
+                    yellowRabCount = Config._startYCount;  //-- это первый зараженный
+                    greenRabCount = Config._manCount - Config._startYCount;
                 }
                 
             }
 
+            //-- появление новых на поле
+            {
+                newYellowSumPrev = 0;
+                newYellowSum = Math.trunc((newYellowSum + Config._newYellowAdd)*100) / 100;
+
+                //log(dayNumber + ' newYellowSum=' + newYellowSum)
+
+                if(newYellowSum > 0)
+                {
+                    n = Math.trunc(newYellowSum);
+
+                    for(let j=0; j < n; j++)
+                    {
+                        man = Processor.createNewGreenMan(Global._manArr.length + 1, dayNumber);
+                        man._color = 'yellow';
+                        man._firstYellowDay = dayNumber;
+                        man._firstRedDay = -1;
+                        man.x = 10;
+                        man.y = Global._canvas1H - 10;
+
+                        yellowRabCount++;
+                        yellowCount++
+                       
+                        Global._manArr.push(man);
+
+                        newYellowSumPrev++;
+                    }
+
+                    newYellowSum = newYellowSum - n;
+                }
+            }
             
           
             //-- переход состояния от времени
@@ -197,8 +215,6 @@ export class Processor
                         man._firstBlueDay = dayNumber;
                         man._firstYellowDay = -1;
                         //man._testDayStart = 0;
-
-                        man._state = 'B'
                     }                    
                 }
                 else if(man._color == 'blue')
@@ -209,7 +225,6 @@ export class Processor
                         man._firstYellowDay = -1;
                         man._firstBlueDay = -1;
                         man._firstRedDay = -1;
-                        man._state = 'G'
                     }                    
                 }
 
@@ -298,7 +313,11 @@ export class Processor
                                 {
                                     if(bolnicaFillCount >= Config._bolnicaMax)
                                     {
-                                        isComplit = false;
+                                        if(Config._level == 2)
+                                        {
+                                            isComplit = false;
+                                        }
+                                        
                                         //break;
                                     }
                                 }
@@ -678,7 +697,7 @@ export class Processor
             for(let j=0; j < Global._manArr.length; j++)
             {
                 man = Global._manArr[j];        
-                man._dayColorArr.push(man._color);
+                man._dayColorArr[dayIndex] = (man._color);
             }
 
             //-- делаем текущий day
@@ -763,6 +782,9 @@ export class Processor
                 day._toDistForDay = toDistForDay;
                 day._bolnicaDayAdd = bolnicaDayAdd;
 
+                day._neeYellowAdd = newYellowSumPrev;
+                day._manCount = Global._manArr.length;
+
     
                 Global._dayArr.push(day);
 
@@ -789,6 +811,37 @@ export class Processor
 
         Global._currentSolution = solutionObject;
         Epidemic.saveCurrentSolution('calcSolution');
+
+   
+    }
+
+    static createNewGreenMan(manId, dayNumber)
+    {
+        let man = new Object();
+        man._firstGreenDay = dayNumber;
+        man._color = 'green';
+        man._firstYellowDay = -1;
+        man._firstRedDay = -1;
+        man._firstBlueDay = -1;
+        man._dayColorArr = {};
+        man.x = Global._canvas1W * Math.random() -0;
+        man.y = Global._canvas1H * Math.random() -0;
+        Processor.createVector(man);
+        man._stuk = true;
+        man._id = manId;
+        man._lastStukId = manId;	
+        man._distByDayDic = {};
+        man._testByDayDic = {};
+        man._bolnicaDayDic = {};
+        man._dayStateArr = [];
+        man._vxSetted = false;
+        man._testDayStart = 0;
+        man._state = 'G';
+        man._stukOff = false;
+        man._distStrId = 0;
+        man._testStrId = 0;
+
+        return man;
     }
 
     static createVector(man)

@@ -124,12 +124,14 @@ export class Controller
 
     static strDistClick(strId)
     {
-        Controller.setDist(strId);
+        //Controller.setDist(strId);
         Controller.strCheck(strId);
     }
 
     static setDist(strId)
     {
+        //-- LEVEL SETTINGS
+        /*
         if(Config._level == 0)
         {
             if(document.getElementById('str_dist_act_' + strId).checked)
@@ -140,6 +142,8 @@ export class Controller
                 document.getElementById('str_dist_' + strId).value = 0;
             }
         }
+        */
+       document.getElementById('str_dist_' + strId).value = 0;
     }
 
     static strMaskSet(strategyId, maskKoef)

@@ -212,17 +212,14 @@ export class Global
 		//---------------------------------
 
 		s = document.getElementById('prof_kt').value.trim().replace(' ', '',).replace(',', '.',);
-
         zz = parseFloat(s);
 
         if(isNaN(parseFloat(s)))
         {
-            alert('Ошибка коэффициента затрат на Тестирование!!  Применяем по умолчанию = 2 ')
-            zz = 2
+            alert('Ошибка коэффициента затрат на Тестирование!!  Применяем по умолчанию = 0.3')
+            zz = 0.3
         }  
-
         Config._kT = zz;
-
 		document.getElementById('prof_cap').innerHTML = 'Затрат на тест = ' + zz
 
 		//---------------------------------
@@ -246,11 +243,23 @@ export class Global
 		zz = parseInt(s, 10);
 		if(isNaN(parseInt(s)))
 		{
-			alert('Ошибка значения Y start!!  Применяем по умолчанию = 1 ')
-			zz = 1
+			alert('Ошибка значения Y start!!  Применяем по умолчанию = 10 ')
+			zz = 10
 		}  
 		Config._startYCount = zz;
 		document.getElementById('ystart_cap').innerHTML = 'Y start=' + zz
+
+		//---------------------------------
+		s = document.getElementById('yadd_kt').value.trim().replace(' ', '',).replace(',', '.',);
+        zz = parseFloat(s);
+
+        if(isNaN(parseFloat(s)))
+        {
+            alert('Ошибка появления новых на поле!!  Применяем по умолчанию = 0 ')
+            zz = 0
+        }  
+        Config._newYellowAdd = zz;
+		document.getElementById('yadd_cap').innerHTML = 'new (Y) = ' + zz
 	}
 
 }

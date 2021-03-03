@@ -137,7 +137,7 @@ export class Start
 
 		t = document.createElement('input')
 		t.type = 'text'
-		t.value = '2';
+		t.value = '0.3';
 		t.id = 'prof_kt';
 		t.className = 'input_txt'
 		div.appendChild(t);
@@ -172,8 +172,22 @@ export class Start
 
 		t = document.createElement('input')
 		t.type = 'text'
-		t.value = '1';
+		t.value = '10';
 		t.id = 'ystart_kt';
+		t.className = 'input_txt'
+		div.appendChild(t);
+
+		//-------
+		t = document.createElement('span')
+		t.id = 'yadd_cap'
+		t.className = 'prop_cap'
+		t.innerHTML = 'new (Y)';
+		div.appendChild(t);
+
+		t = document.createElement('input')
+		t.type = 'text'
+		t.value = '0';
+		t.id = 'yadd_kt';
 		t.className = 'input_txt'
 		div.appendChild(t);
 
@@ -258,6 +272,7 @@ export class Start
 			<td>';
 
 			//-- LEVEL SETTINGS
+			/*
 			if(Config._level == 0)
 			{
 				s = s + '<input type="text" id="str_dist_" value="30" disabled class="str_day">%';
@@ -268,6 +283,10 @@ export class Start
 				<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
 				<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
 			}
+			*/
+			s = s + '<input type="text" id="str_dist_" value="0" class="str_day">%\
+			<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
+			<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
 
 			s = s + '</td>\
 			</tr>\

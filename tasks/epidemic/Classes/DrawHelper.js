@@ -316,6 +316,7 @@ export class DrawHelper
         for(let i=0; i < Global._manArr.length; i++)
         {
             man = Global._manArr[i];
+            if(man._firstGreenDay > day._number) continue;  //-- этот еще не появился
             man._vxSetted = false;
             dayColor = DrawHelper.getColorForDay(man, day._dayIndex);
             otskokOff = false;
@@ -731,6 +732,9 @@ export class DrawHelper
 
     static getColorForDay(man, dayIndex)
     {
+        //let i = dayIndex + Config._dayCount - man._dayColorArr.length;
+        //return man._dayColorArr[i];
+
         return man._dayColorArr[dayIndex];
     }
 }

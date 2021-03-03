@@ -46,7 +46,7 @@ export class StrategyHelper
         str._isKarantin = false;
         str._isActive = true;
         str._maskKoef = 0;
-        str._distEnabled = false;
+        str._distEnabled = true;
         str._distPercent = 0;
         str._testPercent = 0;
         str._distManCount = 0;

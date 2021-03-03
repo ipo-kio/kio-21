@@ -14,6 +14,7 @@ export class Config
     static  _bolnicaCount = 100; //-- количество мест в больнице
     static _zarazKoef = 0.01;
     static _kT = 1;
+    static _newYellowAdd = 1;  //-- появление новых на поле извне
 
     static init(level)
     {

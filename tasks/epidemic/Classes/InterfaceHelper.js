@@ -80,6 +80,7 @@ export class InterfaceHelper
         t.innerHTML += '<br>Карантин Тестирование: ' + day._toDistForDayT;
         t.innerHTML += '<br>Карантин Тестирование (новые): ' + day._toDistForDayTone;       
         t.innerHTML += '<br>Заражение (новые): ' + day._zarazPlus;
+        t.innerHTML += '<br>Появление новых: ' + day._neeYellowAdd + ' (' + day._manCount + ')';
         t.innerHTML += '';
 
         t = document.getElementById('day_log2');
@@ -227,6 +228,7 @@ export class InterfaceHelper
 
 
             //-- LEVEL SETTINGS
+            /*
             if(Config._level != 0)
             {
                 t = document.getElementById('str_dist_' + newId);
@@ -251,6 +253,22 @@ export class InterfaceHelper
                     Controller.strDistClick(newId);
                 });
             }
+            */
+            t = document.getElementById('str_dist_' + newId);
+            t.addEventListener('input', function(){
+                Controller.strCheck(newId);
+            }); 
+
+            t = document.getElementById('str_dist_minus_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDayPlusMinus('str_dist_', newId, 'minus', 0, 100);
+            });
+
+            t = document.getElementById('str_dist_plus_' + newId);
+            t.addEventListener('click', function(){
+                Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
+            }); 
+            //-----------------
 
 
 
@@ -278,6 +296,7 @@ export class InterfaceHelper
 
 
         //-- LEVEL SETTINGS
+        /*
         let ch = document.getElementById('str_dist_act_' + newId);
         if(ch)
         {
@@ -290,6 +309,8 @@ export class InterfaceHelper
                 document.getElementById('str_dist_' + newId).value = strategy._distPercent;
             }
         }
+        */
+       document.getElementById('str_dist_' + newId).value = strategy._distPercent;
         
 
 
@@ -301,6 +322,7 @@ export class InterfaceHelper
         {
             Controller.strMaskSet(newId, strategy._maskKoef + '');
         }
+      
 
         return newDiv;
         
