@@ -201,8 +201,8 @@ export class Global
 
         if(isNaN(parseFloat(s)))
         {
-            alert('Ошибка коэффициента заражения!!  Применяем по умолчанию = 0.01 ')
-            zz = 0.01
+            alert('Ошибка коэффициента заражения!!  Применяем по умолчанию = 0.001 ')
+            zz = 0.001
         }  
 
         Config._zarazKoef = zz;
@@ -243,8 +243,8 @@ export class Global
 		zz = parseInt(s, 10);
 		if(isNaN(parseInt(s)))
 		{
-			alert('Ошибка значения Y start!!  Применяем по умолчанию = 10 ')
-			zz = 10
+			alert('Ошибка значения Y start!!  Применяем по умолчанию = 0 ')
+			zz = 0
 		}  
 		Config._startYCount = zz;
 		document.getElementById('ystart_cap').innerHTML = 'Y start=' + zz
@@ -255,8 +255,8 @@ export class Global
 
         if(isNaN(parseFloat(s)))
         {
-            alert('Ошибка появления новых на поле!!  Применяем по умолчанию = 0 ')
-            zz = 0
+            alert('Ошибка появления новых на поле!!  Применяем по умолчанию = 0.34 ')
+            zz = 0.34
         }  
         Config._newYellowAdd = zz;
 		document.getElementById('yadd_cap').innerHTML = 'new (Y) = ' + zz

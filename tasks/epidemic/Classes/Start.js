@@ -124,7 +124,7 @@ export class Start
 
 		t = document.createElement('input')
 		t.type = 'text'
-		t.value = '0.01';
+		t.value = '0.001';
 		t.id = 'zaraz_koef';
 		t.className = 'input_txt'
 		div.appendChild(t);
@@ -167,12 +167,12 @@ export class Start
 		t = document.createElement('span')
 		t.id = 'ystart_cap'
 		t.className = 'prop_cap'
-		t.innerHTML = 'Y старт';
+		t.innerHTML = 'Y start';
 		div.appendChild(t);
 
 		t = document.createElement('input')
 		t.type = 'text'
-		t.value = '10';
+		t.value = '0';
 		t.id = 'ystart_kt';
 		t.className = 'input_txt'
 		div.appendChild(t);
@@ -186,7 +186,7 @@ export class Start
 
 		t = document.createElement('input')
 		t.type = 'text'
-		t.value = '0';
+		t.value = '0.34';
 		t.id = 'yadd_kt';
 		t.className = 'input_txt'
 		div.appendChild(t);
@@ -246,7 +246,7 @@ export class Start
 			</table>';
 
 			//-- LEVEL SETTINGS
-			if(Config._level == 2)
+			if(Config._level != 0)
 			{
 				s = s + '<span class="str_prop_name">Маски</span>\
 				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
@@ -256,19 +256,14 @@ export class Start
 				<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
 				<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>';			
 			}
-			else if(Config._level == 1)
-			{
-				s = s + '<span class="str_prop_name">Маски</span>\
-				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
-				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>';			
-			}
+
 
 
 
 
 			s = s + '<table class="str_t1">\
 			<tr>\
-			<td><span class="str_prop_name">Карантин</span></td>\
+			<td><span class="str_prop_name">Карантин</span><div class="str_prop_val" id="str_dist_">0</div>%</td>\
 			<td>';
 
 			//-- LEVEL SETTINGS
@@ -284,23 +279,29 @@ export class Start
 				<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
 			}
 			*/
+			
+			s = s + '<div id="sliderDist_"></div>';
+			/*
 			s = s + '<input type="text" id="str_dist_" value="0" class="str_day">%\
 			<button class="str_day_plusminus" id="str_dist_minus_" onclick="" pm="minus" >-</button>\
 			<button class="str_day_plusminus" id="str_dist_plus_" onclick="" pm="plus">+</button>';
-
+			*/
 			s = s + '</td>\
 			</tr>\
 			<tr>\
-			<td><span class="str_prop_name">Тестирование</span></td>\
-			<td>\
+			<td><span class="str_prop_name">Тестирование</span><div class="str_prop_val" id="str_test_">0</div>%</td>\
+			<td>';
+			s = s + '<div id="sliderTest_"></div>';
+			/*
 			<input type="text" id="str_test_" value="0" class="str_day">%\
 			<button class="str_day_plusminus" id="str_test_minus_" onclick="" pm="minus" >-</button>\
 			<button class="str_day_plusminus" id="str_test_plus_" onclick="" pm="plus">+</button>\
-			</td>\
+			*/
+			s = s + '</td>\
 			</tr>\
 			</table>\
 			';
-
+			//-- SLIDER2
 
 		let divSSPattern = document.createElement('div')
 		divSSPattern.innerHTML = s;

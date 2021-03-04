@@ -122,7 +122,10 @@ module.exports = function (env) {
 function find_all_tasks_and_add_to_config(config, dist_folder) {
     config.entry = {};
 
-    let task_html_template = fs.readFileSync('./tasks/task.html', {encoding: "utf8"});
+            //-- peter
+    //let task_html_template = fs.readFileSync('./tasks/task.html', {encoding: "utf8"}); 
+    //--let task_html_template = fs.readFileSync('./tasks/task-brilliant.html', {encoding: "utf8"});
+    let task_html_template = fs.readFileSync('./tasks/task-epidemic.html', {encoding: "utf8"});
 
     if (!fs.existsSync(dist_folder))
         fs.mkdirSync(dist_folder);
@@ -143,12 +146,18 @@ function process_html_template(task_html_template, task_name) {
     task_html_template = replace_all(task_html_template, 'TASKNAME', task_name);
     task_html_template = replace_all(task_html_template, 'TASKNAME\\|CAPITALIZE', capitalized_task_name);
 
+    task_html_template = replace_all(task_html_template, 'XXX', (new Date()).getTime()); //-- peter
+
     return task_html_template;
 }
 
 function add_task_to_config(task_name, config, task_html_template, dist_folder) {
     if (task_name.indexOf('.') >= 0) // skip non directories
         return;
+
+    //-- peter
+    //if (task_name != 'brilliant') return;        
+    if (task_name != 'epidemic') return;       
 
     //add entries
     let task_file_js = path.join(task_name, task_name + '.js');

@@ -4,6 +4,9 @@ import { Controller } from "./Controller";
 import { SolutionHelper } from "./SolutionHelper";
 import { StrategyHelper } from "./StrategyHelper";
 import { Config } from "./Config";
+import { Epidemic } from "../epidemic";
+//-- SLIDER2
+import { Slider2 } from "./Slider2";
 
 export class InterfaceHelper
 {
@@ -39,7 +42,7 @@ export class InterfaceHelper
     {
         //log('setDay('+dayNumber+') src=' + src);
 
-        document.getElementById('day_cap').innerHTML = dayNumber
+        
 
         if(dayNumber < 1 || dayNumber > Config._dayCount)
         {
@@ -48,7 +51,7 @@ export class InterfaceHelper
             Global.playStop();
         }
 
-
+        document.getElementById('day_cap').innerHTML = dayNumber
 
         DrawHelper.drawTik(dayNumber);
 
@@ -180,7 +183,7 @@ export class InterfaceHelper
                     Controller.strMaskSet(newId, '1');
                 });     
                 
-                if(Config._level == 2)
+                //if(Config._level == 2)
                 {
                     t = document.getElementById('str_mask_btn2_' + newId);
                     t.addEventListener('click', function(){
@@ -254,39 +257,53 @@ export class InterfaceHelper
                 });
             }
             */
-            t = document.getElementById('str_dist_' + newId);
-            t.addEventListener('input', function(){
-                Controller.strCheck(newId);
-            }); 
+
+
+
 
             t = document.getElementById('str_dist_minus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_dist_', newId, 'minus', 0, 100);
-            });
+            if(t)
+            {
+                t = document.getElementById('str_dist_' + newId);
+                t.addEventListener('input', function(){
+                    Controller.strCheck(newId);
+                }); 
+
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_dist_', newId, 'minus', 0, 100);
+                });                
+            }
 
             t = document.getElementById('str_dist_plus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
-            }); 
+            if(t)
+            {
+                t = document.getElementById('str_dist_plus_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_dist_', newId, 'plus', 0, 100);
+                });                
+            }
+ 
             //-----------------
 
 
-
-
-            t = document.getElementById('str_test_' + newId);
-            t.addEventListener('input', function(){
-                Controller.strCheck(newId);
-            }); 
-
             t = document.getElementById('str_test_minus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_test_', newId, 'minus', 0, 100);
-            });
+            if(t)
+            {
+                t = document.getElementById('str_test_' + newId);
+                t.addEventListener('input', function(){
+                    Controller.strCheck(newId);
+                });
 
-            t = document.getElementById('str_test_plus_' + newId);
-            t.addEventListener('click', function(){
-                Controller.strDayPlusMinus('str_test_', newId, 'plus', 0, 100);
-            }); 
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_test_', newId, 'minus', 0, 100);
+                });
+    
+                t = document.getElementById('str_test_plus_' + newId);
+                t.addEventListener('click', function(){
+                    Controller.strDayPlusMinus('str_test_', newId, 'plus', 0, 100);
+                }); 
+            }
+
             
         }
 
@@ -310,12 +327,12 @@ export class InterfaceHelper
             }
         }
         */
-       document.getElementById('str_dist_' + newId).value = strategy._distPercent;
+        document.getElementById('str_dist_' + newId).innerHTML = strategy._distPercent;
         
 
 
-        
-        document.getElementById('str_test_' + newId).value = (strategy._testPercent);
+        document.getElementById('str_test_' + newId).innerHTML = (strategy._testPercent);
+        //document.getElementById('str_test_' + newId).value = (strategy._testPercent);
 
         //-- LEVEL SETTINGS
         if(Config._level != 0)
@@ -323,6 +340,40 @@ export class InterfaceHelper
             Controller.strMaskSet(newId, strategy._maskKoef + '');
         }
       
+        //-- SLIDER2
+        let s2div = document.getElementById('sliderDist_' + newId);
+
+        let img = Epidemic.kioapi.getResource('slider_p');
+        let sliderDist = Slider2.Create(s2div, 200, 20, 'canvas_slider2'
+		,img
+		, 0, 100
+		);
+
+        sliderDist.setValue(strategy._distPercent);
+
+        sliderDist.onvaluechangeManual = function () {
+			// -- тащим руками
+            document.getElementById('str_dist_' + newId).innerHTML = sliderDist.getValue();
+            Controller.strCheck(newId);
+		}
+
+        //------------------
+
+        s2div = document.getElementById('sliderTest_' + newId);
+
+   
+        let sliderTest = Slider2.Create(s2div, 140, 20, 'canvas_slider2'
+		,img
+		, 0, 70
+		);
+
+        sliderTest.setValue(strategy._testPercent);
+
+        sliderTest.onvaluechangeManual = function () {
+			// -- тащим руками
+            document.getElementById('str_test_' + newId).innerHTML = sliderTest.getValue();
+            Controller.strCheck(newId);
+		}
 
         return newDiv;
         
