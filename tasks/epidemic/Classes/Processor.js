@@ -11,10 +11,21 @@ export class Processor
     {
         log('Processor.calcSolution() - src=' + src);
 
+        //-- Выведем входные параметры в лог
+        {
+            log('Config._dayCount = '+ Config._dayCount);
+            log('Config._manCount = '+ Config._manCount);
+            log('Config._startYCount = '+ Config._startYCount);
+            log('Config._bolnicaMax = '+ Config._bolnicaMax);
+            log('Config._zarazKoef = '+ Config._zarazKoef);
+            log('Config._kT = '+ Config._kT);
+            log('Config._newYellowAdd = '+ Config._newYellowAdd);
+        }
+
         //-- переменные
         
             
-            Global.setZarazKoef();
+            //Global.setZarazKoef();
     
             let i, man, n, n1, day;
             let dayNumber;

@@ -3,6 +3,8 @@ import { Solution } from './Solution.js';
 import { Funcs } from './Funcs.js';
 import { Config } from './Config.js';
 import { StrategyHelper } from './StrategyHelper.js';
+import { InterfaceHelper } from './InterfaceHelper.js';
+
 
 export class SolutionHelper
 {
@@ -206,17 +208,20 @@ export class SolutionHelper
 				t = document.getElementById('strategy_' + str._id);
 				t.setAttribute('title', errMess);
 
+
+
 				if(str._isActive)
 				{	
 					bgColor = 'lightgreen';
 				}
 				else{
-					bgColor = 'red';
-					
+					bgColor = 'red';					
 				}
 
 				
-				t.style.backgroundColor = bgColor;			
+				t.style.backgroundColor = bgColor;	
+				
+				InterfaceHelper.setErrorMessage(!str._isActive);
 
 			}
 		}

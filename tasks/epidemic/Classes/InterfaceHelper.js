@@ -414,32 +414,49 @@ export class InterfaceHelper
         let div, strId, s;
         let arr = document.getElementsByClassName('str_div')
 
+        //log(strDiv)
+
         for(let i=0; i < arr.length; i++)
         {
             div = arr[i];
             strId = div.getAttribute('str_id');
             if(strId == null) continue; //-- это шаблон
 
+            //log(div)
+
             if(strDiv.id == div.id)
             {
-                div.style.display = 'inline-block'
-                //div.style.marginLeft = (dayStart * 8) + 'px';         
+                div.style.display = 'inline-block'        
                 
+                let err = false;
+
                 if(div.style.backgroundColor == 'red')
-                {
-                    s = 'Не действует'
-                }
-                else{
-                    s = '';
+                {                  
+                    err = true;
                 }
 
-                document.getElementById('strategy_error').innerHTML = s;
+
+                InterfaceHelper.setErrorMessage(err);
+
+                
             }
             else{
                 div.style.display = 'none'
             }
             
         }
+    }
+
+    static setErrorMessage(showErr)
+    {
+        let s = '';
+
+        if(showErr)
+        {
+            s = 'Не действует'
+        }
+
+        document.getElementById('strategy_error').innerHTML = s;
     }
 
     static strategyDivClick(strDivId, strategyId )

@@ -116,6 +116,7 @@ export class Start
 		})
 	
 		//--------------------
+		/*
 		t = document.createElement('span')
 		t.id = 'zaraz_cap'
 		t.className = 'prop_cap'
@@ -200,7 +201,7 @@ export class Start
 		{
 			Controller.recalc(); 
 		})
-
+		*/
 
 		//--------------------
 
@@ -414,7 +415,7 @@ export class Start
 		div.id = 'div_log';
 		superDiv.appendChild(div);
 
-		Global.setZarazKoef()
+		//Global.setZarazKoef()
 
 
 	}
