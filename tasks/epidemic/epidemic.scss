@@ -29,6 +29,8 @@
   height1: 200px;
   position1: absolute;
   background-color: white;
+  display: block;
+  margin: 0 auto;
 }
 
 .canvas2 {
@@ -186,10 +188,6 @@ table.str_t1 td {
   cursor: pointer;
   padding-left: 4px;
   padding-right: 4px;;
-}
-
-.div_canvas {
-  display: inline-block;
 }
 
 .div_day_info {

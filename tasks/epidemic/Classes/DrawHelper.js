@@ -81,8 +81,9 @@ export class DrawHelper
             n = day._eeTotal / Global._currentSolution._totalProfit;
             y = headerH - headerH * n;
 
-            ctx.fillStyle = 'blue';
-            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = '#f9c481';
+            // ctx.globalAlpha = 0.2;
+            ctx.globalAlpha = 1;
             ctx.fillRect(x, y, W - bolW - distW, headerH * n );  
         }
 
