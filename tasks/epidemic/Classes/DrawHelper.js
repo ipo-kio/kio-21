@@ -617,7 +617,7 @@ export class DrawHelper
             let xSdvig = 0;
             let rowCount = 0;
 
-            for(i = 0; i < n; i++)
+            for(let i = 0; i < n; i++)
             {
                 if(i%20 == 0)
                 {
