@@ -146,8 +146,8 @@ function slider2_redraw()
     //-- Указатель
 	{
 		
-		ctx.globalAlpha = 0.4;
-		ctx.drawImage(this._img, tr.x, tr.y);	
+		ctx.globalAlpha = 0.8;
+		ctx.drawImage(this._img, tr.x, tr.y);
 	}
 
 

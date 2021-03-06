@@ -51,7 +51,7 @@ export class Start
 
 
 
-		t = document.createElement('span')
+		t = document.createElement('div')
 		t.id = 'day_cap'
 		t.className = 'day_cap'
 		t.innerHTML = '0';
@@ -66,7 +66,7 @@ export class Start
 
 		btn = document.createElement('button')
 		btn.innerHTML = '&#8810;'; // <<
-		btn.className = 'btn';
+		btn.classList.add('btn', 'btn-slider');
 		btn.setAttribute('title', 'В начало');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
@@ -76,7 +76,7 @@ export class Start
 
 		btn = document.createElement('button')
 		btn.innerHTML = '&#8918;'; // <
-		btn.className = 'btn';
+		btn.classList.add('btn', 'btn-slider');
 		btn.setAttribute('title', 'Шаг назад');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
@@ -86,7 +86,7 @@ export class Start
 
 		btn = document.createElement('button')
 		btn.innerHTML = '&#8919;'; // >
-		btn.className = 'btn';
+		btn.classList.add('btn', 'btn-slider');
 		btn.setAttribute('title', 'Шаг вперед');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
@@ -96,7 +96,7 @@ export class Start
 
 		btn = document.createElement('button')
 		btn.innerHTML = '&#8811;'; // >>
-		btn.className = 'btn';
+		btn.classList.add('btn', 'btn-slider');
 		btn.setAttribute('title', 'В конец');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
@@ -107,7 +107,7 @@ export class Start
 		btn = document.createElement('button');
 		btn.id = 'btn_play';
 		btn.innerHTML = '&#9658;'; // play
-		btn.className = 'btn btn_play';
+		btn.className = 'btn btn_play btn-slider';
 		btn.setAttribute('title', 'Play');
 		div.appendChild(btn);
 		btn.addEventListener('click', function()
@@ -218,25 +218,25 @@ export class Start
 
 
 		let s = '<div>\
-			<button class="str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
+			<button class="btn btn-strategy btn-strategy-up str_day_to" id="str_day_toleft_" onclick="" title="Сдвиг">&lt;</button>\
 			<span class="str_cap">Промежуток дней</span>\
-			<button class="str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
+			<button class="btn btn-strategy btn-strategy-up str_day_to" id="str_day_toright_" onclick="" title="Сдвиг дней">&gt;</button>\
 			<span style="float: right;">\
-				<button id="str_del_" onclick="" class="str_del_btn" title="Удалить стратегию" >&#9932;</button>\
+				<button id="str_del_" onclick="" class="btn btn-strategy btn-strategy-up str_del_btn" title="Удалить стратегию" >&#9932;</button>\
 			</span>\
 		</div>\
 			<table class="str_t1">\
 				<tr>\
 					<td>\
-						<input type="text" id="str_from_" value="1" class="str_day">\
-						<button class="str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button>\
-						<button class="str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
+						<button class="btn btn-strategy str_day_plusminus" id="str_day1_minus_" onclick="" pm="minus" >-</button><!--\
+					 --><input type="text" id="str_from_" value="1" class="str_day"><!--\
+					 --><button class="btn btn-strategy str_day_plusminus" id="str_day1_plus_" onclick="" pm="plus">+</button>\
 					</td>\
-					<td>-</td>\
+					<td class="short-tire">–</td>\
 					<td>\
-						<input type="text" id="str_to_" value="1" class="str_day">\
-						<button class="str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button>\
-						<button class="str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
+						<button class="btn btn-strategy str_day_plusminus" id="str_day2_minus_" onclick="" pm="minus" >-</button><!--\
+						--><input type="text" id="str_to_" value="1" class="str_day"><!--\
+						--><button class="btn btn-strategy str_day_plusminus" id="str_day2_plus_" onclick="" pm="plus">+</button>\
 					</td>\
 				</tr>\
 				<tr>\
@@ -250,12 +250,12 @@ export class Start
 			if(Config._level != 0)
 			{
 				s = s + '<span class="str_prop_name">Маски</span>\
-				<button id="str_mask_btn0_" class="str_mask_btn" koef="0" onclick="">&#9932;</button>\
-				<button id="str_mask_btn1_" class="str_mask_btn" koef="1" onclick="">1</button>\
-				<button id="str_mask_btn2_" class="str_mask_btn" koef="2" onclick="">2</button>\
-				<button id="str_mask_btn3_" class="str_mask_btn" koef="3" onclick="">3</button>\
-				<button id="str_mask_btn4_" class="str_mask_btn" koef="4" onclick="">4</button>\
-				<button id="str_mask_btn5_" class="str_mask_btn" koef="5" onclick="">5</button>';			
+				<button id="str_mask_btn0_" class="btn str_mask_btn" koef="0" onclick="">&#9932;</button><!--\
+				--><button id="str_mask_btn1_" class="btn str_mask_btn" koef="1" onclick="">1</button><!--\
+				--><button id="str_mask_btn2_" class="btn str_mask_btn" koef="2" onclick="">2</button><!--\
+				--><button id="str_mask_btn3_" class="btn str_mask_btn" koef="3" onclick="">3</button><!--\
+				--><button id="str_mask_btn4_" class="btn str_mask_btn" koef="4" onclick="">4</button><!--\
+				--><button id="str_mask_btn5_" class="btn str_mask_btn" koef="5" onclick="">5</button>';
 			}
 
 
@@ -324,14 +324,6 @@ export class Start
 		divSControls.id = 'div_str_controlls';
 		divSS.appendChild(divSControls);
 
-
-
-		div = document.createElement('div')
-		div.innerHTML = '';
-		div.id = 'strategy_error';
-		div.className = 'strategy_error';
-		divSS.appendChild(div);
-
 		//-- конейнер для стратегий
 		div = document.createElement('div')
 		div.innerHTML = '';
@@ -339,14 +331,20 @@ export class Start
 		div.className = 'strategy_cont';
 		divSS.appendChild(div);
 
+		div = document.createElement('div')
+		div.innerHTML = '';
+		div.id = 'strategy_error';
+		div.className = 'strategy_error';
+		divSS.appendChild(div);
+
 		//--------------------
 
 		btn = document.createElement('button')
 		btn.id = 'add_str_btn'
 		btn.innerHTML = 'Добавить стратегию'; // <<
-		btn.className = 'btn_str_control';
+		btn.className = 'btn_str_control btn';
 		btn.setAttribute('title', 'Добавить стратегию');
-		divSS.appendChild(btn);
+		superDiv.appendChild(btn);
 		btn.addEventListener('click', function()
 		{
 			Controller.addStrategy();

@@ -1,195 +1,228 @@
-.super_div{
-background-color1: white;
-position1: relative;
-width1: 800px;
-height1: 600px;
+.super_div {
+  background-color1: white;
+  position1: relative;
+  width1: 800px;
+  height1: 600px;
 }
 
+#div_slider {
+  margin: 0 auto 1em auto;
+  width: 900px;
 
+  .canvas_slider {
+    display: block;
+  }
 
-.canvas1
-{
-	top1: 0px;
-	left1: 0px;
-	border: black solid 1px;
-	width1: 200px;
-	height1: 200px;
-	position1: absolute;
-	background-color: white;
+  .day_cap {
+    color: brown;
+    display: inline-block;
+    font-weight: bold;
+    background-color: #f9c481;
+  }
 }
 
-.canvas2{
-	border: black solid 1px;
-	background-color: white;
+.canvas1 {
+  top1: 0px;
+  left1: 0px;
+  border: black solid 1px;
+  width1: 200px;
+  height1: 200px;
+  position1: absolute;
+  background-color: white;
 }
 
-.btn{
-	color: black;
-	font-size: 30px;
-	font-weight: bold;
-	width: 50px;
-	text-align: center;
+.canvas2 {
+  border: black solid 1px;
+  background-color: white;
 }
 
-.btn_play{
-	margin-left: 50px;
+.str_day {
+  width: 40px;
+  border: 2px solid blue;
+  border-radius: 4px;
+  color: darkblue;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  margin: 4px 0;
+  height: 30px;
+  box-sizing: border-box;
 }
 
-.btn_str_control
-{
-	background-color: antiquewhite;
-	font-size: 18px;
-	font-weight: bold;
-	text-align: center;
-	margin: 4px;
+.btn {
+  border: 2px solid blue;
+  border-radius: 4px;
+  background-color: deepskyblue;
+  color: darkblue;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  margin: 4px;
+  cursor: pointer;
+  padding: 0;
+
+  &.btn-slider {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4em;
+    padding-bottom: 4px;
+  }
+
+  &.str_day_plusminus {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+  }
+
+  &.btn-strategy-up {
+    width: 30px;
+    height: 30px;
+  }
+
+  &.btn_str_control {
+    padding: 4px 1em;
+    height: 40px;
+    vertical-align: top;
+  }
+
+  &.str_mask_btn {
+    font-size: 12px;
+    width: 21px;
+    margin: 4px 1px;
+    height: 21px;
+  }
 }
 
-.strategy_cont
-{
-	display: inline-block;
+#superDiv {
+  background-image: url("epidemic-resources/bg.png");
+  background-repeat: repeat;
+  font-family: sans-serif;
 }
 
-.str_div
-{
-	padding: 2px;
-	background-color: bisque;
-	border: solid blue 3px;
-	display: none;
-}
-.strategy_error
-{
-	display: inline-block;
-	font-size: 30px;
-	color:  red;
-	font-weight: bold;
-	width: 200px;
-	padding-left: 100px;
+.btn_play {
+  margin-left: 2em;
 }
 
-.div_params
-{
-	margin-top: 10px;
+.strategy_cont {
+  display: block;
 }
 
-.day_log
-{
-	display: none;
-	vertical-align: middle;
-	margin-left: 50px;
+.str_div {
+  padding: 2px;
+  background-color: bisque;
+  border: solid blue 3px;
+  display: none;
 }
 
-.str_del_btn
-{
-	font-weight: bold;
-	font-size: 12px;
-	float: right; 
-	cursor: pointer;
-	padding-left: 2px;
-	padding-right: 2px;
-	margin-left1: 4px;
+.strategy_error {
+  display: inline-block;
+  color: red;
+  font-weight: bold;
+  padding: 4px 0;
+  background-color: #f9c481;
 }
 
-.str_day_plusminus
-{
-	font-size: 12px;
-	width: 21px;
-	padding: 0px;
-	margin: 0px;
+.div_params {
+  margin-top: 10px;
+}
+
+.day_log {
+  display: none;
+  vertical-align: middle;
+  margin-left: 50px;
+}
+
+.str_del_btn {
+  float: right;
 }
 
 table.str_t1 {
-	border-collapse: collapse;
-}	
-table.str_t1 td{
-	text-align: left;
-}
-.str_day{
-	width: 30px;
+  border-collapse: collapse;
+  display: block;
+  margin: 0 auto;
+
+  td.short-tire {
+    width: 2em;
+    text-align: center;
+  }
 }
 
-.str_cap{
-	font-size: 14px;
-	margin-right: 4px;
-	margin-left: 4px;
+#div_buttons, #div_str_super {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 1em;
 }
 
-.str_prop_name
-{
-	font-size: 14px;
-	font-weight: bold;
+table.str_t1 td {
+  text-align: left;
 }
 
-.str_num{
-
-	font-size: 16px;
-	font-weight: bold;
-	margin-left: 4px;
+.str_cap {
+  font-size: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
+  font-weight: bold;
 }
 
-.str_day_to
-{
-	border1: black solid 1px;
-	border-radius1: 2px;
-	font-weight1: bold;
-	font-size: 14px;
-	background-color1: burlywood;
-	cursor: pointer;
-	padding-left: 4px;
-	padding-right: 4px;;
+.str_prop_name {
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.div_canvas
-{
-	display: inline-block;
+.str_num {
+
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 4px;
 }
 
-.div_day_info
-{
-	display: inline-block;
+.str_day_to {
+  border1: black solid 1px;
+  border-radius1: 2px;
+  font-weight1: bold;
+  font-size: 14px;
+  background-color1: burlywood;
+  cursor: pointer;
+  padding-left: 4px;
+  padding-right: 4px;;
 }
 
-.str_mask_btn{
-	font-size: 12px;
-	width: 21px;
-	padding: 0px;
+.div_canvas {
+  display: inline-block;
 }
 
-.div_log
-{
-	display: none;
-	width: 800px;
-	height: 400px;
-	overflow: scroll;
-	white-space: nowrap;
-	margin-left: 20px;
-}
-.prop_cap
-{
-	margin-left: 10px;
-	margin-right: 10px;
-}
-.input_txt{
-	width: 40px;
+.div_day_info {
+  display: inline-block;
 }
 
-.day_cap
-{
-	font-size: 24px;
-	color: brown;
-	font-weight: bold;
-	margin-left: 40px;
+.div_log {
+  display: none;
+  width: 800px;
+  height: 400px;
+  overflow: scroll;
+  white-space: nowrap;
+  margin-left: 20px;
 }
 
-.canvas_slider2{
-	border1: black solid 1px;
-	background-color1: red;
+.prop_cap {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.str_prop_val
-{
-	font-weight: bold;
-	margin-right: 2px;
-	width: 30px;
-	display: inline-block;
-	text-align: right;
+.input_txt {
+  width: 40px;
+}
+
+.canvas_slider2 {
+  border1: black solid 1px;
+  background-color1: red;
+}
+
+.str_prop_val {
+  font-weight: bold;
+  margin-right: 2px;
+  width: 30px;
+  display: inline-block;
+  text-align: right;
 }

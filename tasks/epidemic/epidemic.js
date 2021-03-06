@@ -42,13 +42,13 @@ export class Epidemic
 	static preloadManifest ()
 	{
 		return [
-			{ id: 'slider_p', src: 'epidemic-resources/tasks/epidemic/res/slider_p.png' },
-			{ id: 'kucha', src: 'epidemic-resources/tasks/epidemic/res/kucha.png' },
-			{ id: 'm_red', src: 'epidemic-resources/tasks/epidemic/res/m_red.png' },
-			{ id: 'm_green', src: 'epidemic-resources/tasks/epidemic/res/m_green.png' },
-			{ id: 'm_yellow', src: 'epidemic-resources/tasks/epidemic/res/m_yellow.png' },
-			{ id: 'm_blue', src: 'epidemic-resources/tasks/epidemic/res/m_blue.png' },
-		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
+			{ id: 'slider_p', src: 'epidemic-resources/slider_p.png' },
+			{ id: 'kucha', src: 'epidemic-resources/kucha.png' },
+			{ id: 'm_red', src: 'epidemic-resources/m_red.png' },
+			{ id: 'm_green', src: 'epidemic-resources/m_green.png' },
+			{ id: 'm_yellow', src: 'epidemic-resources/m_yellow.png' },
+			{ id: 'm_blue', src: 'epidemic-resources/m_blue.png' },
+		]
 
 	}
 

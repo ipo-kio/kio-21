@@ -123,9 +123,9 @@ function find_all_tasks_and_add_to_config(config, dist_folder) {
     config.entry = {};
 
             //-- peter
-    //let task_html_template = fs.readFileSync('./tasks/task.html', {encoding: "utf8"}); 
-    //--let task_html_template = fs.readFileSync('./tasks/task-brilliant.html', {encoding: "utf8"});
-    let task_html_template = fs.readFileSync('./tasks/task-epidemic.html', {encoding: "utf8"});
+    let task_html_template = fs.readFileSync('./tasks/task.html', {encoding: "utf8"});
+    // --let task_html_template = fs.readFileSync('./tasks/task-brilliant.html', {encoding: "utf8"});
+    // let task_html_template = fs.readFileSync('./tasks/task-epidemic.html', {encoding: "utf8"});
 
     if (!fs.existsSync(dist_folder))
         fs.mkdirSync(dist_folder);

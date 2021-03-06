@@ -51,7 +51,7 @@ export class InterfaceHelper
             Global.playStop();
         }
 
-        document.getElementById('day_cap').innerHTML = dayNumber
+        document.getElementById('day_cap').innerHTML = 'День: ' + dayNumber
 
         DrawHelper.drawTik(dayNumber);
 
