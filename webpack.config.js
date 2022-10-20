@@ -111,9 +111,9 @@ module.exports = function (env) {
     find_all_tasks_and_add_to_config(config, dist_folder);
 
     if (production)
-        config = merge(config, productionConfig);
+        config = merge.merge(config, productionConfig);
     else
-        config = merge(config, debugConfig);
+        config = merge.merge(config, debugConfig);
 
     console.log("config is: ", config);
     return config;
@@ -157,7 +157,7 @@ function add_task_to_config(task_name, config, task_html_template, dist_folder) 
 
     //-- peter
     //if (task_name != 'brilliant') return;        
-    if (task_name != 'epidemic') return;       
+    // if (task_name != 'epidemic') return;
 
     //add entries
     let task_file_js = path.join(task_name, task_name + '.js');

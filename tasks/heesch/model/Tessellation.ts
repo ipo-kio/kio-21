@@ -7,7 +7,7 @@ export class Tessellation {
     T1: Point;
     T2: Point;
     pieces: Piece[];
-    grid_type: string;
+    grid_type: number;
     piece_type: PieceType;
     indexes: number[];
 
@@ -15,18 +15,20 @@ export class Tessellation {
         this.T1 = T1;
         this.T2 = T2;
         this.pieces = pieces;
-        this.grid_type = this.evaluate_grid_type().join('');
+        this.grid_type = this.evaluate_grid_type();
         this.piece_type = piece_type;
         this.indexes = indexes.slice();
     }
 
-    evaluate_grid_type(): number[] {
+    evaluate_grid_type(): number {
         let {x: t1x, y:t1y} = this.T1;
         let {x: t2x, y:t2y} = this.T2;
 
         let piece0 = this.pieces[0];
 
-        let grid_type: number[] = [];
+        let grid_type: number = 0
+        let grid_type_length: number = 0
+        let pow10: number = 1;
 
         for (let p1 of piece0.points) {
             let count = 0;
@@ -37,11 +39,26 @@ export class Tessellation {
                     if (has_integer_coordinates(t1x, t1y, t2x, t2y, tx, ty))
                         count++;
                 }
-            if (count > 2)
-                grid_type.push(count);
+            if (count > 2) {
+                grid_type = 10 * grid_type + count;
+                grid_type_length++;
+                pow10 *= 10;
+            }
         }
 
-        return grid_type;
+        // normalize the grid type
+        // we have, for example, grid_type=34433, grid_type_length=5, pow10 = 100000
+        let min_grid_type = grid_type;
+        for (let i = 1; i < grid_type_length; i++) {
+            let grid_type_last_digit = grid_type % 10;
+            grid_type = (grid_type - grid_type_last_digit) + grid_type_last_digit * pow10;
+            grid_type /= 10;
+
+            if (grid_type < min_grid_type)
+                min_grid_type = grid_type;
+        }
+
+        return min_grid_type;
     }
 }
 
