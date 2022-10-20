@@ -114,7 +114,7 @@ export class PieceEditor {
 
     private _pieceChangeListener: ((newPiece: Piece) => void) | undefined = undefined;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, message: (text: string) => string) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
@@ -196,7 +196,7 @@ export class PieceEditor {
                 this.ctx.textAlign = "center";
                 this.ctx.textBaseline = "bottom";
                 let [tx, ty] = this.point2pixel(thePoint);
-                let removeVertexText = "Удалить вершину";
+                let removeVertexText = message("Удалить вершину");
                 let measuredText = this.ctx.measureText(removeVertexText);
                 this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                 this.ctx.fillRect(

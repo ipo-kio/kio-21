@@ -1,19 +1,23 @@
 import './heesch.scss';
-import {KioApi, KioParameterDescription, KioResourceDescription, KioTaskSettings} from "../KioApi";
+import {KioApi, KioParameterDescription, KioResourceDescription, KioTask, KioTaskSettings} from "../KioApi";
 import {Piece} from "./model/Piece";
 import {Point} from "./model/Point";
 import {TessellationView} from "./view/TessellationView";
 import {PieceEditor} from "./view/PieceEditor";
 import {compareTessellations, Tessellation, tessellationIsTranslateblyEquivalent} from "./model/Tessellation";
 import {TYPE_TTTTTT} from "./model/PieceType";
+import {LOCALIZATION} from "./localization";
 
 const ONE = 10;
 const BG_COLOR = '#A3B3CE';
 const COLOR = '#6C8FC1';
 const ZERO = new Point(0, 0);
 
-export class Heesch {
-    private settings: KioTaskSettings;
+export class Heesch implements KioTask {
+
+    static LOCALIZATION = LOCALIZATION;
+
+    public settings: KioTaskSettings;
     private kioapi: KioApi;
 
     private editor_canvas: HTMLCanvasElement;
@@ -37,7 +41,6 @@ export class Heesch {
      * которое может быть 0, 1 или 2.
      */
     constructor(settings: KioTaskSettings) {
-        this.settings = settings;
         this.need_take_care_of_orientation = +settings.level > 0;
         this.draw_orientation = true; //+settings.level > 0;
         this.maximize_symmetries = +settings.level == 0;
@@ -169,7 +172,7 @@ export class Heesch {
             new Point(5, 3),
         ]);
 
-        this.editor = new PieceEditor(this.editor_canvas);
+        this.editor = new PieceEditor(this.editor_canvas, (this as any).message);
         this.editor.piece = piece;
 
         this.updateTessellationPiece(piece);
@@ -188,36 +191,42 @@ export class Heesch {
     }
 
     parameters(): KioParameterDescription[] {
+        if (!(this as any).message)
+            (this as any).message = (s:string) => s;
+        let message = (this as any).message;
+
+        console.log(message, message("да"), message("даыавп"), this);
+
         let ok: KioParameterDescription = {
             name: "ok",
-            title: "Есть узор",
+            title: message("Есть узор"),
             ordering: "maximize",
             view(v: number): string {
                 if (v == 1)
-                    return "да";
+                    return message("да");
                 else
-                    return "нет";
+                    return message("нет");
             }
         };
         let g: KioParameterDescription = {
             name: "g",
-            title: "Видов узоров",
+            title: message("Видов узоров"),
             ordering: 'maximize'
         };
         let v: KioParameterDescription = {
             name: "v",
-            title: "Вершин",
+            title: message("Вершин"),
             ordering: 'maximize'
         };
         let s: KioParameterDescription = {
             name: "s",
-            title: "Симметрии",
+            title: message("Симметрии"),
             ordering: this.maximize_symmetries ? "maximize" : "minimize",
             view(v) {
                 if (v == 1)
-                    return "есть";
+                    return message("есть");
                 else
-                    return "нет";
+                    return message("нет");
             }
         };
 
@@ -320,7 +329,7 @@ export class Heesch {
             this.updateTessellationView();
 
             let optgroup = document.createElement("optgroup");
-            optgroup.label = "не фигура";
+            optgroup.label = (this as any).message("не фигура");
             this.tesselationSelect.add(optgroup);
         }
 
@@ -382,7 +391,7 @@ export class Heesch {
             group_index++;
             if (tessellations_group.length > 1) {
                 let optgroup = document.createElement("optgroup");
-                optgroup.label = group_index + " (похожие)";
+                optgroup.label = group_index + " (" + (this as any).message("похожие") + ")";
                 let index_in_the_group = 0;
                 for (let tessellation of tessellations_group) {
                     index_in_the_group++;
@@ -428,7 +437,7 @@ export class Heesch {
 
         if (g == 0) {
             let optgroup = document.createElement("optgroup");
-            optgroup.label = "нет узоров";
+            optgroup.label = (this as any).message("нет узоров");
             this.tesselationSelect.add(optgroup);
         }
     }
