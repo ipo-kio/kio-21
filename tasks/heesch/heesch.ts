@@ -373,7 +373,7 @@ export class Heesch implements KioTask {
                     continue;
                 // either add tesselation or don't add if there is the same one
                 was_added = true;
-                if (tessellations_group.length > 20)
+                if (tessellations_group.length >= 20)
                     break;
                 for (let tessellation_in_the_group of tessellations_group)
                     if (compareTessellations(tessellation_in_the_group, tessellation, this.need_take_care_of_orientation))
